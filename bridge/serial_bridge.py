@@ -7,15 +7,18 @@ Run from the repo root:
     python bridge/serial_bridge.py --fake          # no hardware: simulated station
 
 Endpoints (all JSON):
-    GET  /health                       {"ok", "serial", "connected", "running"}
+    GET  /health                       {"ok", "serial", "connected", "running", "armed", "stress_feed"}
     WS   /ws/stream                    solar_event first, then {"kind":"reading","data":{...}} per reading,
                                        and {"kind":"cabin_air","data":{...}} every 5 s (gas sensor)
     POST /start    {"crew_id":"C003","duration_s":20}   begin a run (duration 5 to 120 s, default 60)
     POST /arm      {"crew_id":"C003","duration_s":20}   the station's button then starts a run for this crew
-    POST /tier     {"n":2}             0 off, 1 green, 2 amber, 3 red plus buzzer
-    POST /msg      {"text":"Rest+hydrate"}              LCD text, cut to 32 characters
+    POST /tier     {"n":2}             0 off, 1 green, 2 amber, 3 red (+ vibration motor if fitted)
+    POST /msg      {"text":"Rest+hydrate"}              OLED text, cut to 32 characters
     POST /replay                       re-send the last run's readings with source "replay"
-    POST /scenario                     send the Mars day 143 scenario readings once
+    POST /scenario                     send the Mars day 143 scenario readings once, with the saved stress feed merged in
+    POST /stress   {"crew_id":"C003","last_n":8,"interval_s":1.0,"mood":4}
+                                       stream the saved stress model output (held-out WESAD S17) live, one window
+                                       per interval_s, source "ml_saved"; mood (optional) adds a stress_mood_check
 """
 import argparse
 import asyncio
@@ -30,6 +33,7 @@ from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
+import stress
 from station import CREW_IDS, FakeUno, Run, cabin_air, clean_msg, parse_line
 
 DATA = Path(__file__).resolve().parent.parent / "data"
@@ -149,6 +153,13 @@ class MsgBody(BaseModel):
     text: str
 
 
+class StressBody(BaseModel):
+    crew_id: str = "C003"
+    last_n: int = Field(8, ge=5, le=120)
+    interval_s: float = Field(1.0, ge=0, le=15)
+    mood: int | None = Field(None, ge=1, le=5)
+
+
 def make_app(bridge):
     @asynccontextmanager
     async def lifespan(app):
@@ -165,7 +176,8 @@ def make_app(bridge):
     @app.get("/health")
     def health():
         return {"ok": True, "serial": bridge.label, "connected": bridge.connected,
-                "running": bridge.run is not None, "armed": bridge.armed[0]}
+                "running": bridge.run is not None, "armed": bridge.armed[0],
+                "stress_feed": stress.available()}
 
     @app.websocket("/ws/stream")
     async def stream(ws: WebSocket):
@@ -220,10 +232,21 @@ def make_app(bridge):
 
     @app.post("/scenario")
     def scenario():
-        readings = load(SCENARIO)
+        readings = stress.with_stress(load(SCENARIO))
         for r in readings:
             bridge.publish({"kind": "reading", "data": r})
         return {"ok": True, "count": len(readings)}
+
+    @app.post("/stress")
+    async def stress_feed(body: StressBody):
+        if body.crew_id not in CREW_IDS:
+            raise HTTPException(400, f"crew_id must be one of {sorted(CREW_IDS)}")
+        if not stress.available():
+            raise HTTPException(503, "ml/out/demo_predictions_physio.json not found")
+        asyncio.create_task(stress.replay_stress(bridge.publish, body.crew_id, body.last_n,
+                                                 body.interval_s, body.mood))
+        return {"ok": True, "crew_id": body.crew_id, "windows": body.last_n,
+                "seconds": round(body.last_n * body.interval_s, 1)}
 
     return app
 

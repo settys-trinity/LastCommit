@@ -12,6 +12,7 @@ from fastapi.middleware.cors import CORSMiddleware
 DATA = Path(__file__).resolve().parent.parent / "data"
 DONKI_CACHE = DATA / "donki_cache.json"
 SCENARIO = DATA / "scenario_mars_day143.json"
+STRESS = DATA / "scenario_stress_s17.json"  # built by ml/stress_feed.py; optional
 INTERVAL_S = 2.0
 LOOP_PAUSE_S = 5.0
 
@@ -34,6 +35,8 @@ async def stream(ws: WebSocket, speed: float = Query(1.0, gt=0, le=100)):
     # Read on connect, so edits to the data files apply without a restart.
     solar = load(DONKI_CACHE)["events"][0]
     readings = load(SCENARIO)
+    if STRESS.exists():  # merge the replayed stress feed into the timeline
+        readings = sorted(readings + load(STRESS), key=lambda r: r["timestamp"])
     try:
         await ws.send_json({"kind": "solar_event", "data": solar, "cached": True})
         while True:

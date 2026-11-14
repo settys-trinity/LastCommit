@@ -120,9 +120,10 @@ python bridge\test_station.py   # offline tests
 | `POST /arm` | same | Picks the crew the station's **button** starts a run for. Call it whenever the crew selector changes |
 | `POST /tier` | `{"n":0..3}` | Tier LEDs (and motor on 3) |
 | `POST /msg` | `{"text":"…"}` | OLED text, cut to 32 characters |
-| `POST /replay` | | Re-sends the last run's readings with `source: "replay"` |
-| `POST /scenario` | | Sends the Mars day 143 scenario readings once |
-| `GET /health` | | `{"ok","serial","connected","running","armed"}` |
+| `POST /replay` | | Re-sends the last run's readings with `source: "replay"` (the "Replay last test" button) |
+| `POST /scenario` | | Sends the Mars day 143 scenario readings once (scenario loader), with the saved stress feed merged in |
+| `POST /stress` | `{"crew_id":"C003","last_n":8,"interval_s":1.0,"mood":4}` | Streams the saved stress model output (held-out WESAD S17) live: `stress_prob` + `stress_label` per window, `source: "ml_saved"`; with `mood`, ends with a `stress_mood_check`. 400 bad crew ID, 503 predictions file missing |
+| `GET /health` | | `{"ok","serial","connected","running","armed","stress_feed"}` |
 
 A run produces these readings, all `source: "station"`:
 
