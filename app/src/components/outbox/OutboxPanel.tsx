@@ -1,4 +1,4 @@
-// Earth outbox. Owner: Nandini. Props only (plan C9); Shreya calls send() in App.tsx.
+// Earth outbox. Owner: Nandini. Props only (plan C9); Shreya calls send() in App.tsx and frames it in <Panel>.
 // Every triage at tier 1+ becomes a report to Earth with a reply countdown = mission round trip,
 // run at SPEED_UP (60: the 44 min Mars round trip counts down in 44 s; say so on stage, D15).
 //   Tier 3: message Earth, follow the action until the reply arrives.
@@ -8,6 +8,7 @@
 import { useEffect, useState } from "react";
 import type { Triage } from "../../types";
 import type { Mission } from "../../engine/delay";
+import { StatusTag } from "../term";
 import { formatCountdown, formatRoundTrip } from "../mission/format";
 
 export interface OutboxPacket {
@@ -65,38 +66,39 @@ interface Props {
 export function OutboxPanel({ packets, speedUp }: Props) {
   const now = useNow(250);
   return (
-    <section className="border border-neutral-700 p-3 font-mono text-sm text-neutral-300">
-      <header className="mb-2 flex items-baseline justify-between">
-        <h2 className="text-green-400">&gt; earth outbox</h2>
-        {speedUp !== 1 && <span className="text-xs text-neutral-500">demo speed x{speedUp}</span>}
-      </header>
-      {packets.length === 0 && <p className="text-neutral-500">no reports sent</p>}
-      <ul className="flex flex-col">
+    <div>
+      {speedUp !== 1 && <div className="text-dim">demo speed x{speedUp}</div>}
+      {packets.length === 0 && <div className="text-dim">no reports sent</div>}
+      <ul>
         {packets.map((p) => {
           const remainingS = p.replyDueAt === null ? null : ((p.replyDueAt - now) / 1000) * speedUp;
           const replied = remainingS !== null && remainingS <= 0;
           return (
-            <li key={p.id} className="border-t border-neutral-800 py-2 first:border-t-0">
-              <div className="flex items-center justify-between">
-                <span>
+            <li key={p.id} className="border-t border-line py-1 first:border-t-0">
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-fg">
                   #{p.id} {p.crewId} {p.mission.label} tier {p.triage.tier}
                 </span>
                 {remainingS === null ? (
-                  <span className="text-red-400">[QUEUED: NO LINK]</span>
+                  <span>
+                    <StatusTag status="fail" /> queued: no link
+                  </span>
                 ) : replied ? (
-                  <span className="text-green-400">[REPLY RECEIVED]</span>
+                  <span>
+                    <StatusTag status="ok" /> reply received
+                  </span>
                 ) : (
-                  <span className="text-xl tabular-nums text-neutral-100">reply in {formatCountdown(remainingS)}</span>
+                  <span className="tabular-nums text-fg">reply in {formatCountdown(remainingS)}</span>
                 )}
               </div>
-              <p className="text-neutral-400">{p.triage.reason}</p>
-              <p className="text-xs text-neutral-500">
+              <div className="text-fg">{p.triage.reason}</div>
+              <div className="text-dim">
                 {formatRoundTrip(p.mission.round_trip_s)}. {WHILE_WAITING[p.triage.acts]}
-              </p>
+              </div>
             </li>
           );
         })}
       </ul>
-    </section>
+    </div>
   );
 }
