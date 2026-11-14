@@ -1,0 +1,8 @@
+# Versions the saved model was trained with. Install these to load ml/out/stress_model_physio.joblib
+scikit-learn==1.9.1
+joblib==1.6.0
+numpy
+pandas
+# training only (features.py / train.py)
+neurokit2
+lightgbm
