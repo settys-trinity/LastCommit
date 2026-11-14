@@ -19,6 +19,7 @@ describe("baselineRows", () => {
     const wbc = baselineRows("C003").find((r) => r.type === "lab_wbc")!;
     expect(wbc.spreadIsFloor).toBe(true);
     expect(wbc.unit).toBe("×10³/µL");
+    expect(wbc.label).toBe("white_cells");
   });
 
   it("is empty for GUEST and unknown IDs", () => {
@@ -40,18 +41,32 @@ describe("baselineRows", () => {
 });
 
 describe("BaselinePanel", () => {
-  it("renders the title, values and OSDR sources for C003", () => {
+  it("renders in the terminal style (D18) with OSDR values and sources for C003", () => {
     const html = renderToStaticMarkup(<BaselinePanel crewId="C003" />);
-    expect(html).toContain("NASA OSDR Inspiration4 baseline");
-    expect(html).toContain("71.3 ± 8.14");
+    expect(html).toContain(">baseline<"); // Panel title, shown uppercase by the Panel
+    expect(html).toContain("[INFO]");
+    expect(html).toContain("NASA OSDR Inspiration4");
+    expect(html).toContain("71.3 ± 8.14 mg/dL");
+    expect(html).toContain("glucose ");
     expect(html).toContain("https://osdr.nasa.gov/bio/repo/data/studies/OSD-575");
     expect(html).toContain("https://osdr.nasa.gov/bio/repo/data/studies/OSD-569");
-    expect(html).toContain("not a");
+  });
+
+  it("marks out-of-range draws with a [WARN] text tag, not colour alone", () => {
+    const html = renderToStaticMarkup(<BaselinePanel crewId="C003" />);
+    const draw = html.indexOf("62.0"); // C003 glucose L-44, under 65
+    expect(draw).toBeGreaterThan(0);
+    expect(html.slice(draw, draw + 120)).toContain("[WARN]");
+  });
+
+  it("uses only theme colours, no rounded boxes or slate/sky palette", () => {
+    const html = renderToStaticMarkup(<BaselinePanel crewId="C003" />);
+    expect(html).not.toMatch(/rounded|slate-|sky-|<h2/);
   });
 
   it("explains there is no baseline for GUEST", () => {
     const html = renderToStaticMarkup(<BaselinePanel crewId="GUEST" />);
-    expect(html).toContain("No pre-flight baseline for GUEST");
-    expect(html).not.toContain("<table");
+    expect(html).toContain("no pre-flight baseline for GUEST");
+    expect(html).toContain("[ -- ]");
   });
 });

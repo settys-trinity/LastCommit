@@ -6,13 +6,13 @@ import knowledgeJson from "../../data/knowledge.json";
 const BASELINES = baselinesJson as unknown as Baselines;
 const SCORED = new Set((knowledgeJson as unknown as Knowledge).indicators.map((i) => i.type));
 
-// Scored marker first, then the rest. Labels for the screen; units as people read them.
+// Scored marker first, then the rest. Terminal-style keys (D18); units as people read them.
 const ORDER = ["lab_glucose", "lab_hemoglobin", "lab_wbc", "lab_calcium"];
 const LABEL: Record<string, string> = {
-  lab_glucose: "Glucose",
-  lab_hemoglobin: "Haemoglobin",
-  lab_wbc: "White blood cells",
-  lab_calcium: "Calcium",
+  lab_glucose: "glucose",
+  lab_hemoglobin: "haemoglobin",
+  lab_wbc: "white_cells",
+  lab_calcium: "calcium",
 };
 const UNIT: Record<string, string> = { "Thousand/uL": "×10³/µL" };
 
@@ -44,7 +44,7 @@ export function baselineRows(crewId: string): BaselineRow[] {
     const [lo, hi] = m.ref_range;
     return {
       type,
-      label: LABEL[type] ?? m.analyte.charAt(0) + m.analyte.slice(1).toLowerCase(),
+      label: LABEL[type] ?? m.analyte.toLowerCase().replace(/\s+/g, "_"),
       unit: UNIT[m.unit] ?? m.unit,
       draws: TIMEPOINTS.map((tp) => {
         const value = m.values[tp] ?? null;
