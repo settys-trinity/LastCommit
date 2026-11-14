@@ -96,13 +96,21 @@ Arduino Uno to laptop over USB serial at **115200 baud**. One line per message, 
 
 | Direction | Message | Meaning |
 |-----------|---------|---------|
-| App to Uno | `START` | Begin a STAND-REACT run. |
+| App to Uno | `START` | Begin a STAND-REACT run of 60 s (kept for backwards compatibility). |
+| App to Uno | `START:n` | Begin a run of `n` seconds, 5 to 120. The demo uses `START:20`. |
+| App to Uno | `TIER:n` | `n` = 0 all tier LEDs off, 1 green LED, 2 amber LED, 3 red LED (plus vibration, only if the module turns out to be a motor). No buzzer. |
+| App to Uno | `MSG:text` | OLED text, up to 32 characters (16 per line), e.g. `MSG:Rest+hydrate`. |
+| App to Uno | `PING` | Uno answers `{"t":"ready"}`. |
+| Uno to app | `{"t":"ready"}` | Uno booted, or answer to `PING`. |
+| Uno to app | `{"t":"start"}` | A run has started. |
 | Uno to app | `{"t":"rt","ms":312}` | One reaction time in ms. Becomes a `reaction_time` reading. |
 | Uno to app | `{"t":"sway","rms":0.041}` | Sway score at end of test. Becomes a `sway_rms` reading. |
-| App to Uno | `TIER:n` | `n` = 1 green LED, 2 amber LED, 3 red LED plus buzzer. |
-| App to Uno | `MSG:text` | LCD text, 16 characters per line, e.g. `MSG:Rest+hydrate`. |
+| Uno to app | `{"t":"done"}` | Always the last line of a run. |
+| Uno to app | `{"t":"button"}` | Station button pressed. The bridge starts a run for the crew set with `POST /arm`. |
+| Uno to app | `{"t":"air","raw":n}` | Gas sensor sample, 0 to 1023. The bridge turns it into a `cabin_air` stream message (see Stream envelope). |
+| Uno to app | `{"t":"err","msg":"acl"\|"oled"}` | Accelerometer or OLED not found at boot. A run still works; sway is left out without the accelerometer. |
 
-The sway `rms` value is in `g`, to match the `sway_rms` unit in the reading schema. The firmware must convert from m/s² if the IMU library reports that.
+The bridge ignores lines it does not know. The sway `rms` value is in `g`, to match the `sway_rms` unit in the reading schema. Full details: `firmware/README.md`.
 
 ## Safe wait
 
@@ -117,14 +125,18 @@ The mock bridge (`bridge/mock_server.py`) takes an optional `speed` query parame
 |--------|--------|--------------|------|
 | `solar_event` | One DONKI SEP event, exactly as DONKI returns it | `cached`: `true` when it comes from `data/donki_cache.json` | First message after connect |
 | `reading` | One `reading` object (section 1) | none | Then one per reading, in timestamp order; the mock loops after a 5 s pause |
+| `cabin_air` | `{"timestamp","value","unit":"adc_0_1023","source":"station"}` | none | Every 5 s from `bridge/serial_bridge.py` (gas sensor). Not sent by the mock bridge |
 
 Show `solar_event` messages with `cached: true` labelled "cached" on screen.
+
+`cabin_air` is an environment hazard, like DONKI, not a crew `reading`: it has no `crew_id` and does not go to the rules engine. The value is an **uncalibrated sensor index** (0 to 1023), not ppm. Show it only as change from the session's own baseline (for example the mean of the first minute), never as an absolute concentration.
 
 ### Examples
 
 ```json
 {"kind":"solar_event","data":{"sepID":"2024-05-09T13:59:00-SEP-001","eventTime":"2024-05-09T13:59Z","instruments":[{"displayName":"MODEL: REleASE:ACE/EPAM 15.8-39.8 MeV"}],"link":"https://ccmc.gsfc.nasa.gov/DONKI/view/SEP/30609/-1","linkedEvents":[{"activityID":"2024-05-09T08:45:00-FLR-001"}],"sentNotifications":[{"messageID":"20240509-AL-004","messageIssueTime":"2024-05-09T14:00Z","messageURL":"https://ccmc.gsfc.nasa.gov/DONKI/view/Alert/30611/1"}],"submissionTime":"2024-05-09T13:54Z","versionId":1},"cached":true}
 {"kind":"reading","data":{"crew_id":"C003","timestamp":"2026-11-13T07:30:00Z","type":"sleep_hours","value":4.5,"unit":"h","source":"replay"}}
+{"kind":"cabin_air","data":{"timestamp":"2026-11-15T11:42:05Z","value":312,"unit":"adc_0_1023","source":"station"}}
 ```
 
 ### TypeScript
@@ -132,7 +144,8 @@ Show `solar_event` messages with `cached: true` labelled "cached" on screen.
 ```ts
 export type StreamMessage =
   | { kind: "solar_event"; data: Record<string, unknown>; cached: boolean }
-  | { kind: "reading"; data: Reading };
+  | { kind: "reading"; data: Reading }
+  | { kind: "cabin_air"; data: { timestamp: string; value: number; unit: "adc_0_1023"; source: "station" } };
 ```
 
 ## Stress/mood check
