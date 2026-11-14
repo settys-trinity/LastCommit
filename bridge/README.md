@@ -40,4 +40,4 @@ It prints the first 4 messages.
 
 The real bridge (`bridge/serial_bridge.py`) does the same in `POST /scenario`, and `POST /stress` streams the feed live (see `firmware/README.md` section 6). Logic: `bridge/stress.py`, tests: `python bridge/test_stress.py`.
 
-For a live check-in typed into the app, `<StressMoodPanel>` (`web-components/`) works out the check from the stream itself.
+For a live check-in typed into the app, `<StressMoodPanel>` (`app/src/components/stress/`) works out the check from the stream itself.
