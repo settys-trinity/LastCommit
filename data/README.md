@@ -3,10 +3,16 @@
 - `test_donki.py`: checks DONKI FLR and SEP on api.nasa.gov, falling back to kauai.ccmc.gsfc.nasa.gov.
 - `test_donki_flr.py`: tries FLR variants in order to find one that works.
 - `cache_donki.py`: fetches SEP events from api.nasa.gov and writes `donki_cache.json`.
+- `donki_cache.json`: 14 cached DONKI SEP events for May 2024, with `cached`, `source_url` (no API key), `fetched_at` and `window`; the mock bridge streams the first one.
 - `scenario_mars_day143.json`: demo readings for crew C003, source `replay` (`docs/schemas.md` reading format). Mission day 143 is 2026-11-15; the three sleep readings fall on the mornings of days 141 to 143 (2026-11-13 to 2026-11-15).
 - `check_readings.py`: validates a readings file against the schema and sort order (`python data\check_readings.py [file]`).
 
-Both read `NASA_API_KEY` from `.env` in the repo root. Run with `.venv\Scripts\python.exe data\<script>.py`.
+The DONKI scripts read `NASA_API_KEY` from `.env` in the repo root. Run any script with `.venv\Scripts\python.exe data\<script>.py`.
+
+## Status
+
+- **Worked:** DONKI SEP on api.nasa.gov (cached in `donki_cache.json`), the Mars day 143 scenario (passes `check_readings.py`), and the mock stream in `bridge/`.
+- **Failed or unsourced:** DONKI FLR is unreachable (see FLR status); the scenario values are invented demo numbers, not measurements, and the sway unit `g` and lapse threshold are not yet confirmed (`docs/schemas.md` open questions).
 
 ## FLR status
 
