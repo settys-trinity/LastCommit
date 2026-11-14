@@ -1,5 +1,5 @@
 # One owner per path. Later lines win. Source: FARSIDE No-Clash Project Plan, section 5.
-# Daksh and Diksha: replace DAKSH_USERNAME / DIKSHA_USERNAME with real GitHub
+# Diksha: replace DIKSHA_USERNAME with her real GitHub
 # usernames (with a leading @) and remove the leading "# " on those lines.
 
 # Default: Om (integrator)
@@ -57,12 +57,12 @@
 /app/vercel.json                      @NandiniLashkari
 
 # Daksh: station and bridge
-# /firmware/                          DAKSH_USERNAME
-# /bridge/serial_bridge.py            DAKSH_USERNAME
-# /bridge/station.py                  DAKSH_USERNAME
-# /bridge/test_station.py             DAKSH_USERNAME
-# /bridge/README.md                   DAKSH_USERNAME
-# /bridge/requirements.txt            DAKSH_USERNAME
+/firmware/                          @dakshSingla1904
+/bridge/serial_bridge.py            @dakshSingla1904
+/bridge/station.py                  @dakshSingla1904
+/bridge/test_station.py             @dakshSingla1904
+/bridge/README.md                   @dakshSingla1904
+/bridge/requirements.txt            @dakshSingla1904
 
 # Diksha: pitch
 # /pitch/                             DIKSHA_USERNAME
