@@ -1,6 +1,6 @@
 {
   "meta": {
-    "version": "v0.2",
+    "version": "v0.3",
     "schema": "data/knowledge.schema.json (documented in docs/knowledge_schema.md)",
     "keyed_by": "Each indicator is keyed by its reading `type` from docs/schemas.md.",
     "source_rule": "Every threshold-bearing field has a source: a URL, UNSOURCED (could not source yet) or DESIGN_CHOICE (our decision, recorded here).",
@@ -10,7 +10,9 @@
       "z = (value - personal mean) / max(personal spread, min_spread). min_spread is a floor so 3 baseline runs cannot give a spread near zero (plan, fix 1).",
       "An indicator can reach red without z (z: null) where a clinical limit or a streak is the right trigger.",
       "Hazard tags use NASA HRP's five hazards. The mapping of each indicator to a hazard is our reading, not a NASA statement.",
-      "Baselines for non-lab types (sleep, mood, reaction time, lapses, sway) are built at run time from the astronaut's first runs. OSDR has no such data. Lab baselines come from data/baselines.json."
+      "Baselines for non-lab types (sleep, mood, reaction time, lapses, sway) are built at run time from the astronaut's first runs. OSDR has no such data. Lab baselines come from data/baselines.json.",
+      "Sleep red needs 3 nights in a row at 6 h or less, so one bad night stays amber; deficits from repeated short nights accumulate (Van Dongen et al. 2003, https://pubmed.ncbi.nlm.nih.gov/12683469/). The sleep spread floor of 1.0 h stops three similar nights from giving a near-zero spread.",
+      "Mood is our own 1 to 5 daily check-in item, not a validated instrument, so its normal range (4 to 5), amber (3 or less), red (2 or less on 3 days in a row) and spread floor (0.5) are our choices: one low day is amber, only a run of low days is red."
     ],
     "hazards_reference": "https://www.nasa.gov/hrp/hazards/",
     "decision_support_only": "Decision support, not diagnosis."
@@ -30,7 +32,7 @@
         "max": null,
         "source": "https://aasm.org/resources/pdf/adultsleepdurationconsensus.pdf"
       },
-      "min_spread": { "mode": "absolute", "value": 1.0, "cv_pct": null, "source": "UNSOURCED" },
+      "min_spread": { "mode": "absolute", "value": 1.0, "cv_pct": null, "source": "DESIGN_CHOICE" },
       "amber_limit": {
         "z": 2, "outside_normal": true,
         "below": null, "at_or_below": null, "above": null, "at_or_above": null,
@@ -42,17 +44,17 @@
         "z": null, "outside_normal": false,
         "below": null, "at_or_below": 6, "above": null, "at_or_above": null,
         "streak": 3,
-        "sources": { "at_or_below": "https://aasm.org/seven-or-more-hours-of-sleep-per-night-a-health-necessity-for-adults/", "streak": "UNSOURCED" },
-        "note": "AASM/SRS: 6 or fewer hours is inadequate. Red needs 3 nights in a row (the 3 is our choice) so one bad night stays amber."
+        "sources": { "at_or_below": "https://aasm.org/seven-or-more-hours-of-sleep-per-night-a-health-necessity-for-adults/", "streak": "DESIGN_CHOICE" },
+        "note": "AASM/SRS: 6 or fewer hours is inadequate. Red needs 3 nights in a row (DESIGN_CHOICE) so one bad night stays amber; deficits from repeated nights of 6 h or less accumulate (Van Dongen et al. 2003)."
       },
       "action": {
-        "amber": "Protect an 8 h sleep window tonight. Dim screens 1 h before, use eye mask and earplugs, no caffeine after midday.",
+        "amber": "Protect a 7 to 9 h sleep period tonight: dim, low-blue pre-sleep lighting, a cool and quiet sleep station, eye mask and earplugs.",
         "red": "Crew medical officer reviews workload. Move safety-critical tasks off the next shift and re-run STAND-REACT before them.",
-        "sources": { "amber": "UNSOURCED", "red": "UNSOURCED" }
+        "sources": { "amber": "https://www.nasa.gov/wp-content/uploads/2023/03/sleep-accomodations-technical-brief-ochmo.pdf", "red": "https://www.nasa.gov/wp-content/uploads/2023/03/sleep-accomodations-technical-brief-ochmo.pdf" }
       },
       "escalation_tier": { "amber": 1, "red": "router" },
       "params": {},
-      "notes": "Sleep need varies by person (AASM statement covers adults 18-60)."
+      "notes": "Sleep need varies by person (AASM statement covers adults 18-60). Actions follow NASA-STD-3001 Sleep Accommodations (OCHMO technical brief, Rev A 2021): 7-9 h sleep need, pre-sleep lighting, cool and quiet sleep area, limits on critical tasks and workday. The STAND-REACT re-test is our step."
     },
     {
       "type": "mood",
@@ -63,30 +65,30 @@
       "input": "checkin",
       "direction": "low_is_bad",
       "correlated_with": [],
-      "normal_range": { "min": 4, "max": 5, "source": "UNSOURCED" },
-      "min_spread": { "mode": "absolute", "value": 0.5, "cv_pct": null, "source": "UNSOURCED" },
+      "normal_range": { "min": 4, "max": 5, "source": "DESIGN_CHOICE" },
+      "min_spread": { "mode": "absolute", "value": 0.5, "cv_pct": null, "source": "DESIGN_CHOICE" },
       "amber_limit": {
         "z": 2, "outside_normal": false,
         "below": null, "at_or_below": 3, "above": null, "at_or_above": null,
         "streak": 1,
-        "sources": { "z": "DESIGN_CHOICE", "at_or_below": "UNSOURCED" },
+        "sources": { "z": "DESIGN_CHOICE", "at_or_below": "DESIGN_CHOICE" },
         "note": ""
       },
       "red_limit": {
         "z": null, "outside_normal": false,
         "below": null, "at_or_below": 2, "above": null, "at_or_above": null,
         "streak": 3,
-        "sources": { "at_or_below": "UNSOURCED", "streak": "UNSOURCED" },
+        "sources": { "at_or_below": "DESIGN_CHOICE", "streak": "DESIGN_CHOICE" },
         "note": "A single-day score never makes red: mood is self-reported and noisy."
       },
       "action": {
-        "amber": "Schedule private time and a call or message to family. Log one thing that went well today.",
-        "red": "Private conversation with the crew medical officer. Book a behavioural health session with ground at the next link window.",
-        "sources": { "amber": "UNSOURCED", "red": "UNSOURCED" }
+        "amber": "Take private off-duty time and call or video-message family at the next link window. Check in again tomorrow.",
+        "red": "Private conversation with the crew medical officer. Request a private psychological conference with the ground psychologist at the next link window.",
+        "sources": { "amber": "https://humanresearchroadmap.nasa.gov/evidence/reports/BMed.pdf", "red": "https://humanresearchroadmap.nasa.gov/evidence/reports/BMed.pdf" }
       },
       "escalation_tier": { "amber": 1, "red": "router" },
       "params": {},
-      "notes": "Compared with the stress classifier output (stress_label) to raise the mismatch flag. Check-in only: not a screening tool."
+      "notes": "Compared with the stress classifier output (stress_label) to raise the mismatch flag. Check-in only: not a screening tool. Actions follow ISS practice in the NASA HRP evidence report (Slack et al. 2016, p. 54): private family video conferences and private psychological conferences every 2 weeks."
     },
     {
       "type": "reaction_time_median",
@@ -223,13 +225,13 @@
       },
       "red_limit": {
         "z": null, "outside_normal": false,
-        "below": 54, "at_or_below": null, "above": null, "at_or_above": 250,
+        "below": 54, "at_or_below": null, "above": 250, "at_or_above": null,
         "streak": 1,
         "sources": {
           "below": "https://professional.diabetes.org/sites/dpro/files/2025-05/hypoglycemia-hcp-5-27-25.pdf",
-          "at_or_above": "UNSOURCED"
+          "above": "https://pmc.ncbi.nlm.nih.gov/articles/PMC2699725/"
         },
-        "note": "Red is clinical only, not z: with 3 baseline draws a z score would make 103 mg/dL red. Below 54 is ADA level 2 hypoglycaemia. 250 is a placeholder, not yet sourced."
+        "note": "Red is clinical only, not z: with 3 baseline draws a z score would make 103 mg/dL red. Below 54 is ADA level 2 hypoglycaemia. Above 250 is the plasma glucose criterion for DKA (Kitabchi et al. 2009, Diabetes Care 32:1335, Table 1: >250 mg/dl); DKA also needs acidosis and ketones, so this flags a review, not a diagnosis."
       },
       "action": {
         "amber": "Low: take 15 g fast carbohydrate and re-test in 15 min. High: hydrate, check the meal log, re-test fasting tomorrow and tell the crew medical officer.",
