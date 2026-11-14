@@ -2,7 +2,10 @@
 import time
 import unittest
 
-from station import LAPSE_MS, FakeUno, Run, clean_msg, parse_line
+import sys
+import types
+
+from station import LAPSE_MS, FakeUno, Run, cabin_air, clean_msg, parse_line
 
 TYPES_UNITS = {
     "reaction_time": "ms",
@@ -81,6 +84,65 @@ class FakeUnoTest(unittest.TestCase):
         self.assertIn("reaction_time_median", types)
         self.assertGreaterEqual(types.count("reaction_time"), 3)
         self.assertEqual(uno.sent, ["START:20"])
+
+
+class CabinAir(unittest.TestCase):
+    def test_message(self):
+        m = cabin_air(312)
+        self.assertEqual(m["kind"], "cabin_air")
+        self.assertEqual(m["data"]["value"], 312)
+        self.assertEqual(m["data"]["unit"], "adc_0_1023")
+
+
+def import_bridge():
+    """Import serial_bridge; stub its web libraries if they are not installed."""
+    try:
+        import fastapi  # noqa: F401
+    except ImportError:
+        class HTTPException(Exception):
+            def __init__(self, status_code, detail=""):
+                super().__init__(detail)
+                self.status_code = status_code
+
+        stub = lambda name, **attrs: sys.modules.setdefault(name, types.SimpleNamespace(**attrs))
+        stub("uvicorn")
+        stub("fastapi", FastAPI=object, HTTPException=HTTPException, WebSocket=object,
+             WebSocketDisconnect=Exception, Query=lambda *a, **k: None)
+        stub("fastapi.middleware")
+        stub("fastapi.middleware.cors", CORSMiddleware=object)
+        stub("pydantic", BaseModel=object, Field=lambda *a, **k: None)
+    import serial_bridge
+    return serial_bridge
+
+
+class BridgeLogic(unittest.TestCase):
+    def test_button_starts_armed_run_and_air_is_published(self):
+        sb = import_bridge()
+        bridge = sb.Bridge(fake=True)
+        bridge.open_serial()
+        bridge.ser.speed = 50
+        published = []
+        bridge.publish = published.append
+        bridge.armed = ("C004", 20)
+
+        bridge.ser.write(b"BUTTON\n")
+        deadline = time.monotonic() + 10
+        while time.monotonic() < deadline:
+            msg = parse_line(bridge.ser.readline().decode())
+            if msg:
+                bridge.on_station_msg(msg)
+            if bridge.last_run is not None:
+                break
+
+        self.assertIn("START:20", bridge.ser.sent)
+        self.assertIsNotNone(bridge.last_run)
+        self.assertIsNone(bridge.run)
+        kinds = [m["kind"] for m in published]
+        self.assertIn("cabin_air", kinds)
+        crews = {m["data"]["crew_id"] for m in published if m["kind"] == "reading"}
+        self.assertEqual(crews, {"C004"})
+        types_ = [m["data"]["type"] for m in published if m["kind"] == "reading"]
+        self.assertEqual(types_[-2:], ["reaction_time_median", "lapses"])
 
 
 if __name__ == "__main__":

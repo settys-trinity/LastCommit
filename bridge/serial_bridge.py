@@ -8,12 +8,17 @@ Run from the repo root:
 
 Endpoints (all JSON):
     GET  /health                       {"ok", "serial", "connected", "running"}
-    WS   /ws/stream                    solar_event first, then {"kind":"reading","data":{...}} per reading
+    WS   /ws/stream                    solar_event first, then {"kind":"reading","data":{...}} per reading,
+                                       and {"kind":"cabin_air","data":{...}} every 5 s (gas sensor)
     POST /start    {"crew_id":"C003","duration_s":20}   begin a run (duration 5 to 120 s, default 60)
+    POST /arm      {"crew_id":"C003","duration_s":20}   the station's button then starts a run for this crew
     POST /tier     {"n":2}             0 off, 1 green, 2 amber, 3 red plus buzzer
     POST /msg      {"text":"Rest+hydrate"}              LCD text, cut to 32 characters
     POST /replay                       re-send the last run's readings with source "replay"
-    POST /scenario                     send the Mars day 143 scenario readings once
+    POST /scenario                     send the Mars day 143 scenario readings once, with the saved stress feed merged in
+    POST /stress   {"crew_id":"C003","last_n":8,"interval_s":1.0,"mood":4}
+                                       stream the saved stress model output (held-out WESAD S17) live, one window
+                                       per interval_s, source "ml_saved"; mood (optional) adds a stress_mood_check
 """
 import argparse
 import asyncio
@@ -28,7 +33,8 @@ from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
-from station import CREW_IDS, FakeUno, Run, clean_msg, parse_line
+import stress
+from station import CREW_IDS, FakeUno, Run, cabin_air, clean_msg, parse_line
 
 DATA = Path(__file__).resolve().parent.parent / "data"
 DONKI_CACHE = DATA / "donki_cache.json"
@@ -50,6 +56,7 @@ class Bridge:
         self.clients = set()
         self.run = None
         self.last_run = None
+        self.armed = ("GUEST", 20)  # (crew_id, duration_s) the button starts; set by /start and /arm
         self.loop = None
         self.outbox = None
 
@@ -99,10 +106,20 @@ class Bridge:
             self.ser.write((line + "\n").encode("ascii"))
 
     # ---- app side (event loop) ----
+    def start_run(self, crew_id, duration_s):
+        self.send_serial("START" if duration_s == 60 else f"START:{duration_s}")
+        self.run = Run(crew_id)
+        self.armed = (crew_id, duration_s)
+
     def on_station_msg(self, msg):
         t = msg["t"]
-        if t in ("ready", "start", "err"):
+        if t in ("ready", "start", "err", "button"):
             print(f"[bridge] station: {json.dumps(msg)}")
+        if t == "air":
+            self.publish(cabin_air(msg.get("raw", 0)))
+        if t == "button" and self.run is None and self.connected:
+            self.start_run(*self.armed)
+            return
         if self.run is None:
             return
         for r in self.run.handle(msg):
@@ -136,6 +153,13 @@ class MsgBody(BaseModel):
     text: str
 
 
+class StressBody(BaseModel):
+    crew_id: str = "C003"
+    last_n: int = Field(8, ge=5, le=120)
+    interval_s: float = Field(1.0, ge=0, le=15)
+    mood: int | None = Field(None, ge=1, le=5)
+
+
 def make_app(bridge):
     @asynccontextmanager
     async def lifespan(app):
@@ -152,7 +176,8 @@ def make_app(bridge):
     @app.get("/health")
     def health():
         return {"ok": True, "serial": bridge.label, "connected": bridge.connected,
-                "running": bridge.run is not None}
+                "running": bridge.run is not None, "armed": bridge.armed[0],
+                "stress_feed": stress.available()}
 
     @app.websocket("/ws/stream")
     async def stream(ws: WebSocket):
@@ -176,9 +201,15 @@ def make_app(bridge):
             stale = time.monotonic() - bridge.run.started > 130  # longest run plus margin
             if not stale:
                 raise HTTPException(409, "a run is already in progress")
-        bridge.send_serial("START" if body.duration_s == 60 else f"START:{body.duration_s}")
-        bridge.run = Run(body.crew_id)
+        bridge.start_run(body.crew_id, body.duration_s)
         return {"ok": True, "crew_id": body.crew_id, "duration_s": body.duration_s}
+
+    @app.post("/arm")
+    def arm(body: StartBody):
+        if body.crew_id not in CREW_IDS:
+            raise HTTPException(400, f"crew_id must be one of {sorted(CREW_IDS)}")
+        bridge.armed = (body.crew_id, body.duration_s)
+        return {"ok": True, "armed": body.crew_id, "duration_s": body.duration_s}
 
     @app.post("/tier")
     def tier(body: TierBody):
@@ -201,10 +232,21 @@ def make_app(bridge):
 
     @app.post("/scenario")
     def scenario():
-        readings = load(SCENARIO)
+        readings = stress.with_stress(load(SCENARIO))
         for r in readings:
             bridge.publish({"kind": "reading", "data": r})
         return {"ok": True, "count": len(readings)}
+
+    @app.post("/stress")
+    async def stress_feed(body: StressBody):
+        if body.crew_id not in CREW_IDS:
+            raise HTTPException(400, f"crew_id must be one of {sorted(CREW_IDS)}")
+        if not stress.available():
+            raise HTTPException(503, "ml/out/demo_predictions_physio.json not found")
+        asyncio.create_task(stress.replay_stress(bridge.publish, body.crew_id, body.last_n,
+                                                 body.interval_s, body.mood))
+        return {"ok": True, "crew_id": body.crew_id, "windows": body.last_n,
+                "seconds": round(body.last_n * body.interval_s, 1)}
 
     return app
 

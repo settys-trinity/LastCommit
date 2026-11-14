@@ -1,12 +1,16 @@
 // Test 2: I2C scanner.
-// Expect: "Found 0x68" (MPU6050 IMU) and "Found 0x27" or "Found 0x3F" (LCD adapter).
-// Nothing found: check SDA -> A4, SCL -> A5, VCC -> 5V and GND on both modules.
+// Expect: "Found 0x3C" (OLED) and "Found 0x1D" or "Found 0x53" (PmodACL).
+// Nothing found: check SDA -> A4, SCL -> A5, and that the OLED and PmodACL are on 3.3V and GND.
 
 #include <Wire.h>
 
 void setup() {
   Serial.begin(115200);
   Wire.begin();
+  Wire.setWireTimeout(25000, true);
+  // PmodACL is a 3.3 V part: switch off the Uno's 5 V pull-ups (the OLED board pulls up to 3.3 V).
+  digitalWrite(SDA, LOW);
+  digitalWrite(SCL, LOW);
   Serial.println(F("Test 2: I2C scanner"));
 }
 
@@ -18,8 +22,8 @@ void loop() {
       Serial.print(F("Found 0x"));
       if (addr < 16) Serial.print('0');
       Serial.print(addr, HEX);
-      if (addr == 0x68) Serial.print(F("  <- IMU (MPU6050)"));
-      if (addr == 0x27 || addr == 0x3F) Serial.print(F("  <- LCD adapter"));
+      if (addr == 0x3C || addr == 0x3D) Serial.print(F("  <- OLED"));
+      if (addr == 0x1D || addr == 0x53) Serial.print(F("  <- PmodACL accelerometer"));
       Serial.println();
       found++;
     }
