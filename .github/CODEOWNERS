@@ -53,8 +53,6 @@
 /app/src/components/mission/          @NandiniLashkari
 /app/src/components/outbox/           @NandiniLashkari
 /app/src/components/stress/           @NandiniLashkari
-/web-components/                      @NandiniLashkari
-/app/vercel.json                      @NandiniLashkari
 
 # Daksh: station and bridge
 /firmware/                          @dakshSingla1904
