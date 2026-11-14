@@ -1,6 +1,15 @@
 [
+  {"crew_id": "C003", "timestamp": "2026-11-12T11:40:20Z", "type": "sway_rms", "value": 0.049, "unit": "g", "source": "replay"},
+  {"crew_id": "C003", "timestamp": "2026-11-12T11:40:20Z", "type": "reaction_time_median", "value": 340, "unit": "ms", "source": "replay"},
+  {"crew_id": "C003", "timestamp": "2026-11-12T11:40:20Z", "type": "lapses", "value": 1, "unit": "count", "source": "replay"},
   {"crew_id": "C003", "timestamp": "2026-11-13T07:30:00Z", "type": "sleep_hours", "value": 4.5, "unit": "h", "source": "replay"},
+  {"crew_id": "C003", "timestamp": "2026-11-13T11:40:20Z", "type": "sway_rms", "value": 0.052, "unit": "g", "source": "replay"},
+  {"crew_id": "C003", "timestamp": "2026-11-13T11:40:20Z", "type": "reaction_time_median", "value": 350, "unit": "ms", "source": "replay"},
+  {"crew_id": "C003", "timestamp": "2026-11-13T11:40:20Z", "type": "lapses", "value": 0, "unit": "count", "source": "replay"},
   {"crew_id": "C003", "timestamp": "2026-11-14T07:30:00Z", "type": "sleep_hours", "value": 5.0, "unit": "h", "source": "replay"},
+  {"crew_id": "C003", "timestamp": "2026-11-14T11:40:20Z", "type": "sway_rms", "value": 0.05, "unit": "g", "source": "replay"},
+  {"crew_id": "C003", "timestamp": "2026-11-14T11:40:20Z", "type": "reaction_time_median", "value": 345, "unit": "ms", "source": "replay"},
+  {"crew_id": "C003", "timestamp": "2026-11-14T11:40:20Z", "type": "lapses", "value": 1, "unit": "count", "source": "replay"},
   {"crew_id": "C003", "timestamp": "2026-11-15T07:30:00Z", "type": "sleep_hours", "value": 4.0, "unit": "h", "source": "replay"},
   {"crew_id": "C003", "timestamp": "2026-11-15T07:31:00Z", "type": "mood", "value": 4, "unit": "score_1_5", "source": "replay"},
   {"crew_id": "C003", "timestamp": "2026-11-15T11:42:03Z", "type": "reaction_time", "value": 340, "unit": "ms", "source": "replay"},
@@ -8,5 +17,7 @@
   {"crew_id": "C003", "timestamp": "2026-11-15T11:42:11Z", "type": "reaction_time", "value": 410, "unit": "ms", "source": "replay"},
   {"crew_id": "C003", "timestamp": "2026-11-15T11:42:15Z", "type": "reaction_time", "value": 520, "unit": "ms", "source": "replay"},
   {"crew_id": "C003", "timestamp": "2026-11-15T11:42:19Z", "type": "reaction_time", "value": 380, "unit": "ms", "source": "replay"},
-  {"crew_id": "C003", "timestamp": "2026-11-15T11:42:20Z", "type": "sway_rms", "value": 0.062, "unit": "g", "source": "replay"}
+  {"crew_id": "C003", "timestamp": "2026-11-15T11:42:20Z", "type": "sway_rms", "value": 0.062, "unit": "g", "source": "replay"},
+  {"crew_id": "C003", "timestamp": "2026-11-15T11:42:20Z", "type": "reaction_time_median", "value": 380, "unit": "ms", "source": "replay"},
+  {"crew_id": "C003", "timestamp": "2026-11-15T11:42:20Z", "type": "lapses", "value": 3, "unit": "count", "source": "replay"}
 ]
