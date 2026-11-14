@@ -5,6 +5,9 @@
 - `cache_donki.py`: fetches SEP events from api.nasa.gov and writes `donki_cache.json`.
 - `donki_cache.json`: 14 cached DONKI SEP events for May 2024, with `cached`, `source_url` (no API key), `fetched_at` and `window`; the mock bridge streams the first one.
 - `scenario_mars_day143.json`: demo readings for crew C003, source `replay` (`docs/schemas.md` reading format). Mission day 143 is 2026-11-15; the three sleep readings fall on the mornings of days 141 to 143 (2026-11-13 to 2026-11-15).
+- `raw/LSDS-7_Complete_Blood_Count_CBC.upload_SUBMITTED.csv`: Inspiration4 complete blood count from NASA OSDR study OSD-569 (anonymised crew IDs C001 to C004, 7 timepoints each: L-92, L-44, L-3, R+1, R+45, R+82, R+194).
+- `build_baselines.py`: turns the CBC file into `baselines.json` (pre-flight = `L-` dates). OSDR's crew IDs are kept; sex is not stored.
+- `baselines.json`: per crew ID and marker, pre-flight `mean`, `sd` (3+ samples, else `null` with `use_reference_range: true`), `n_preflight`, `unit`, `reference_range` and `source_url`.
 - `check_readings.py`: validates a readings file against the schema and sort order (`python data\check_readings.py [file]`).
 
 The DONKI scripts read `NASA_API_KEY` from `.env` in the repo root. Run any script with `.venv\Scripts\python.exe data\<script>.py`.
