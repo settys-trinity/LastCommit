@@ -59,6 +59,7 @@ float swayMean = 0, swayM2 = 0;
 
 char lineBuf[40];
 uint8_t lineLen = 0;
+char lastMsg[33] = "";  // last MSG text, shown again when a run ends (the app re-sends only on change)
 
 // ---------- I2C helpers ----------
 bool present(uint8_t addr) {
@@ -118,6 +119,8 @@ void oledLines(const char *a, const char *b) {
 }
 
 void showMsg(const char *text) {
+  strncpy(lastMsg, text, 32);
+  lastMsg[32] = '\0';
   char l1[17], l2[17];
   size_t len = strlen(text);
   strncpy(l1, text, 16);
@@ -165,7 +168,7 @@ void startTest(int seconds) {
   if (state != IDLE) return;
   if (seconds < 5) seconds = 5;
   if (seconds > 120) seconds = 120;
-  setTier(0);
+  // Keep the tier LEDs as they are: the app only re-sends TIER when the tier changes (C7).
   swayN = 0;
   swayMean = 0;
   swayM2 = 0;
@@ -202,7 +205,13 @@ void finishTest() {
   }
   sendAir();
   Serial.println(F("{\"t\":\"done\"}"));
-  oledLines("Test done", "Wait for result");
+  if (lastMsg[0]) {
+    char saved[33];
+    strncpy(saved, lastMsg, 33);
+    showMsg(saved);  // the app's current message; it updates again if the tier changes
+  } else {
+    oledLines("Test done", "Wait for result");
+  }
 }
 
 // ---------- Serial ----------
