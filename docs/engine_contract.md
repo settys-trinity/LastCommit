@@ -80,6 +80,16 @@ Mars demo (round trip 44 min), crew C003, third short night (4 h). Values for `z
 
 The same readings on the ISS (`round_trip_s: 0.5`) give `tier: 3` and `acts: "flight_surgeon"`.
 
+## Functions (C5)
+
+Three functions, three owners, one folder: `app/src/engine/`. The signatures are frozen; the bodies belong to their owners. The app imports only `evaluate`.
+
+| Function | File | Owner |
+|----------|------|-------|
+| `evaluate(readings: Reading[], crewId: string, missionId: string): EngineResult` | `index.ts` | Shreya |
+| `score(readings: Reading[], crewId: string): { readings: IndicatorResult[]; body_systems: BodySystemResult[]; worst: Worst \| null }` | `score.ts` (rules in `rules.ts`) | Ansh |
+| `route(worst: Worst \| null, missionId: string): Triage` | `triage.ts` (missions in `delay.ts`) | Om |
+
 ## TypeScript
 
 ```ts
@@ -87,6 +97,7 @@ export type Status = "green" | "amber" | "red";
 
 export interface IndicatorResult { indicator: string; z: number | null; status: Status }
 export interface BodySystemResult { system: string; status: Status }
+export interface Worst { indicator: string; status: Status; z: number | null; reason: string; action: string }
 
 export interface Triage {
   tier: 0 | 1 | 2 | 3;
@@ -106,7 +117,20 @@ export interface EngineResult {
 }
 ```
 
-## Open questions
+## Tier to station (C7)
 
-- Tier 0 and `acts: "none"` for an all-green result are our choice. Team to confirm.
-- How `engine_result` travels to the app (a new stream `kind`, or computed in the app) is not decided.
+Decided in D2 and D12. The app computes the result with `evaluate()` in the browser and, whenever the tier changes, sends the tier number unchanged and one fixed message (Shreya's `useStationSync`). It sends nothing in replay mode. The bridge never runs the engine.
+
+| Tier | Finding | `acts` | `POST /tier` | LED | `POST /msg` line 1 / line 2 | Earth outbox |
+|------|---------|--------|--------------|-----|------------------------------|--------------|
+| 0 | All green | `none` | `{"n":0}` | Off | `ALL CLEAR` | Nothing |
+| 1 | Amber | `crew` | `{"n":1}` | Green | `SELF-CARE` / `FOLLOW APP STEPS` | Logged |
+| 2 | Red, Earth too far or no link | `crew_medical_officer` | `{"n":2}` | Amber | `ACT NOW` / `CREW MED OFFICER` | Sent. Crew does not wait |
+| 3 | Red, Earth in reach | `flight_surgeon` | `{"n":3}` | Red | `MESSAGE EARTH` / `FLIGHT SURGEON` | Sent. Crew waits for the reply |
+
+The app pads line 1 to 16 characters so line 2 starts on the second OLED row. Tier 3 is the red LED only: the vibration module is a sensor, not a motor (`docs/decisions.md`).
+
+## Settled questions
+
+- Tier 0 with `acts: "none"` for an all-green result stays (D12).
+- The engine result is computed in the app with `evaluate()`, not sent on the stream (D12).
