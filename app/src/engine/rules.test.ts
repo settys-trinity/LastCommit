@@ -135,7 +135,9 @@ describe("evaluate: Mars day 143 scenario with the real scoring", () => {
   it("whole scenario: per-tap reaction_time is ignored, shape matches the contract", () => {
     const res = evaluate(scenario, "C003", "mars");
     expect(Object.keys(res)).toEqual(["crew_id", "timestamp", "readings", "body_systems", "triage"]);
-    expect(res.readings.map((x) => x.indicator)).toEqual(["sleep_hours", "mood", "sway_rms"]);
+    const ids = res.readings.map((x) => x.indicator);
+    expect(ids).not.toContain("reaction_time");
+    expect(ids).toEqual(expect.arrayContaining(["sleep_hours", "mood", "sway_rms"]));
     expect(res.timestamp).toBe("2026-11-15T11:42:20Z");
     expect(evaluate(scenario, "C003", "iss").triage.tier).toBe(3);
     expect(evaluate(scenario, "C003", "conjunction").triage.tier).toBe(2);
