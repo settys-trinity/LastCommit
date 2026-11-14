@@ -1,1 +1,2 @@
 data/raw/*.csv -text
+*.sh text eol=lf
