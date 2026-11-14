@@ -1,7 +1,6 @@
-// FARSIDE stress/mood mismatch check for the engine (TypeScript copy of ml/stress_feed.py check_mismatch).
-// Use it in the app when a new mood check-in or stress_prob reading arrives.
-// One more indicator for the rules engine: it NEVER sets a triage tier on its own.
-// Thresholds are DESIGN_CHOICE values; keep them in sync with ml/stress_feed.py.
+// Stress/mood mismatch check. Owner: Nandini. Same rules and results as ml/stress_feed.py.
+// A flag on the stress panel only: it never changes the triage tier (plan decision D13).
+// Thresholds are DESIGN_CHOICE.
 
 export type StressMoodResult =
   | "hidden_stress"
@@ -10,9 +9,9 @@ export type StressMoodResult =
   | "uncertain"
   | "no_data";
 
-export const WINDOW_COUNT = 5;   // last 5 windows, about 2 minutes
-export const STRESSED_AT = 0.6;  // mean p_stress >= 0.6 -> stressed
-export const CALM_AT = 0.4;      // mean p_stress <= 0.4 -> calm
+export const WINDOW_COUNT = 5;   // last 5 windows, about 2 minutes (windows slide 15 s)
+export const STRESSED_AT = 0.6;  // mean stress_prob >= 0.6 -> stressed
+export const CALM_AT = 0.4;      // mean stress_prob <= 0.4 -> calm
 export const MOOD_FINE_AT = 4;   // mood 4-5 -> "I'm fine"
 export const MOOD_LOW_AT = 2;    // mood 1-2 -> "I feel bad"
 
@@ -28,13 +27,13 @@ export const STRESS_MOOD_MESSAGES: Record<StressMoodResult, string> = {
 
 export interface StressMoodCheck {
   result: StressMoodResult;
-  flag: boolean;               // true -> show the flag on the brain & behaviour panel (amber)
-  stressLevel: number | null;  // mean p_stress over the last WINDOW_COUNT windows
+  flag: boolean;               // true -> amber MISMATCH on the stress panel
+  stressLevel: number | null;  // mean stress_prob over the last WINDOW_COUNT windows
   mood: number | null;
   message: string;
 }
 
-/** mood: 1-5 or null. stressProbs: recent stress_prob reading values, oldest first. */
+/** mood: 1-5 or null. stressProbs: recent stress_prob values, oldest first. */
 export function checkStressMood(mood: number | null, stressProbs: number[]): StressMoodCheck {
   const recent = stressProbs.slice(-WINDOW_COUNT);
   let result: StressMoodResult;
