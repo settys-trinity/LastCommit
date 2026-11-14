@@ -14,7 +14,10 @@ export interface Reading {
 
 export type StreamMessage =
   | { kind: "solar_event"; data: Record<string, unknown>; cached: boolean }
-  | { kind: "reading"; data: Reading };
+  | { kind: "reading"; data: Reading }
+  | { kind: "cabin_air"; data: { timestamp: string; value: number; unit: "adc_0_1023"; source: "station" } };
+
+export type CabinAirSample = Extract<StreamMessage, { kind: "cabin_air" }>["data"];
 
 export type Status = "green" | "amber" | "red";
 

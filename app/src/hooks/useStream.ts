@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { Reading, StreamMessage } from "../types";
+import type { CabinAirSample, Reading, StreamMessage } from "../types";
 import scenario from "../data/scenario_mars_day143.json";
 
-const BRIDGE = "localhost:8000";
-const WS_URL = `ws://${BRIDGE}/ws/stream`;
-const HTTP_URL = `http://${BRIDGE}`;
+export const BRIDGE_URL: string = import.meta.env.VITE_BRIDGE_URL || "http://localhost:8000";
+const WS_URL = `${BRIDGE_URL.replace(/^http/, "ws")}/ws/stream`; // http -> ws, https -> wss
+const CABIN_AIR_MAX = 120;
 const CONNECT_TIMEOUT_MS = 3000;
 const RECONNECT_MS = 3000;
 const REPLAY_GAP_MS = 2000;
@@ -17,6 +17,7 @@ export function useStream() {
   const [mode, setMode] = useState<StreamMode>("live");
   const [readingsByCrew, setReadingsByCrew] = useState<Record<string, Reading[]>>({});
   const [solarEvent, setSolarEvent] = useState<SolarEvent | null>(null);
+  const [cabinAir, setCabinAir] = useState<CabinAirSample[]>([]);
   const modeRef = useRef<StreamMode>("live");
   const playback = useRef<number[]>([]);
 
@@ -53,6 +54,11 @@ export function useStream() {
         }
         if (msg.kind === "solar_event") setSolarEvent({ data: msg.data, cached: msg.cached });
         else if (msg.kind === "reading") addReading(msg.data);
+        else if (msg.kind === "cabin_air") {
+          const sample = msg.data;
+          setCabinAir((prev) => [...prev, sample].slice(-CABIN_AIR_MAX));
+        }
+        // Unknown kinds are ignored (docs/schemas.md: the app ignores kinds it does not know).
       };
       ws.onclose = () => {
         window.clearTimeout(connectTimer);
@@ -78,7 +84,7 @@ export function useStream() {
 
   const loadScenario = useCallback(async () => {
     if (modeRef.current === "live") {
-      const res = await fetch(`${HTTP_URL}/scenario`, { method: "POST" });
+      const res = await fetch(`${BRIDGE_URL}/scenario`, { method: "POST" });
       if (!res.ok) throw new Error(`POST /scenario failed: ${res.status}`);
       return;
     }
@@ -95,5 +101,5 @@ export function useStream() {
 
   useEffect(() => stopPlayback, []);
 
-  return { mode, readingsByCrew, solarEvent, loadScenario, resetReadings };
+  return { mode, readingsByCrew, solarEvent, cabinAir, loadScenario, resetReadings };
 }
