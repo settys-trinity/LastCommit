@@ -7,13 +7,13 @@ Run from the repo root:
     python bridge/serial_bridge.py --fake          # no hardware: simulated station
 
 Endpoints (all JSON):
-    GET  /health                       {"ok", "serial", "connected", "running"}
+    GET  /health                       {"ok", "serial", "connected", "running", "armed", "stress_feed"}
     WS   /ws/stream                    solar_event first, then {"kind":"reading","data":{...}} per reading,
                                        and {"kind":"cabin_air","data":{...}} every 5 s (gas sensor)
     POST /start    {"crew_id":"C003","duration_s":20}   begin a run (duration 5 to 120 s, default 60)
     POST /arm      {"crew_id":"C003","duration_s":20}   the station's button then starts a run for this crew
-    POST /tier     {"n":2}             0 off, 1 green, 2 amber, 3 red plus buzzer
-    POST /msg      {"text":"Rest+hydrate"}              LCD text, cut to 32 characters
+    POST /tier     {"n":2}             0 off, 1 green, 2 amber, 3 red (+ vibration motor if fitted)
+    POST /msg      {"text":"Rest+hydrate"}              OLED text, cut to 32 characters
     POST /replay                       re-send the last run's readings with source "replay"
     POST /scenario                     send the Mars day 143 scenario readings once, with the saved stress feed merged in
     POST /stress   {"crew_id":"C003","last_n":8,"interval_s":1.0,"mood":4}
