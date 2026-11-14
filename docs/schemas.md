@@ -87,47 +87,7 @@ export interface Reading {
 
 ## 2. `knowledge.json`
 
-The thresholds the rules engine uses. A JSON array, one object per indicator. Indicators are keyed by the reading `type` (section 1).
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `hazard` | string | Spaceflight hazard the indicator belongs to. |
-| `indicator` | string | A reading `type` from section 1, e.g. `sleep_hours`. |
-| `unit` | string | Same unit as the reading type. |
-| `normal_range` | [number, number] | `[low, high]` normal values. |
-| `minimum_spread` | number | Floor for the personal spread in the z-score, in `unit`. The spread is never allowed below this. |
-| `amber_limit` | number | \|z\| at or above which the indicator is amber. |
-| `red_limit` | number | \|z\| at or above which the indicator is red. |
-| `action` | string | Step-by-step crew instruction shown on the triage card. |
-| `escalation_tier` | integer 1 to 3 | Tier this indicator escalates to when red (see the plan tier table). |
-| `source_url` | string | URL backing the thresholds, or the string `"UNSOURCED"`. |
-
-Rules:
-
-- Score: `z = (value - personal mean) / max(personal spread, minimum_spread)`, per person and per indicator.
-- Amber at `|z| >= 2` and red at `|z| >= 3`. These are design choices, not clinical limits, and are recorded as such.
-- Every threshold must carry a `source_url` or the string `"UNSOURCED"`. Show `UNSOURCED` values as such on the sources slide.
-
-Example row:
-
-```json
-[
-  {
-    "hazard": "sleep loss and fatigue",
-    "indicator": "sleep_hours",
-    "unit": "h",
-    "normal_range": [7, 9],
-    "minimum_spread": 0.5,
-    "amber_limit": 2,
-    "red_limit": 3,
-    "action": "Rest and hydrate. Schedule a full sleep period before the next task.",
-    "escalation_tier": 1,
-    "source_url": "UNSOURCED"
-  }
-]
-```
-
-The example values for `normal_range`, `minimum_spread`, `action` and `escalation_tier` are placeholders until Part 3 sources them.
+The thresholds the rules engine uses. File: `data/knowledge.json`. Full spec: [`docs/knowledge_schema.md`](knowledge_schema.md). Machine-readable schema: `data/knowledge.schema.json`. TypeScript types: `data/knowledge.types.ts`. Run `python data/validate.py` after any edit.
 
 ## 3. Serial format
 

@@ -1,0 +1,91 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "FARSIDE knowledge.json",
+  "type": "object",
+  "required": ["meta", "indicators"],
+  "properties": {
+    "meta": { "type": "object", "required": ["version", "source_rule", "status_rule", "design_choices"] },
+    "indicators": { "type": "array", "minItems": 1, "items": { "$ref": "#/definitions/indicator" } }
+  },
+  "definitions": {
+    "source": {
+      "type": "string",
+      "anyOf": [
+        { "pattern": "^https?://" },
+        { "enum": ["UNSOURCED", "DESIGN_CHOICE"] }
+      ]
+    },
+    "nullableNumber": { "type": ["number", "null"] },
+    "limit": {
+      "type": "object",
+      "required": ["z", "outside_normal", "below", "at_or_below", "above", "at_or_above", "streak", "sources", "note"],
+      "additionalProperties": false,
+      "properties": {
+        "z": { "$ref": "#/definitions/nullableNumber" },
+        "outside_normal": { "type": "boolean" },
+        "below": { "$ref": "#/definitions/nullableNumber" },
+        "at_or_below": { "$ref": "#/definitions/nullableNumber" },
+        "above": { "$ref": "#/definitions/nullableNumber" },
+        "at_or_above": { "$ref": "#/definitions/nullableNumber" },
+        "streak": { "type": "integer", "minimum": 1 },
+        "sources": {
+          "type": "object",
+          "propertyNames": { "enum": ["z", "below", "at_or_below", "above", "at_or_above", "streak"] },
+          "additionalProperties": { "$ref": "#/definitions/source" }
+        },
+        "note": { "type": "string" }
+      }
+    },
+    "indicator": {
+      "type": "object",
+      "required": ["type", "indicator", "body_system", "hazards", "unit", "input", "direction", "correlated_with",
+                   "normal_range", "min_spread", "amber_limit", "red_limit", "action", "escalation_tier", "params", "notes"],
+      "additionalProperties": false,
+      "properties": {
+        "type": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
+        "indicator": { "type": "string" },
+        "body_system": { "type": "string" },
+        "hazards": {
+          "type": "array", "minItems": 1,
+          "items": { "enum": ["space_radiation", "isolation_confinement", "distance_from_earth", "gravity_fields", "hostile_closed_environments"] }
+        },
+        "unit": { "type": "string" },
+        "input": { "enum": ["station", "checkin", "osdr", "ml"] },
+        "direction": { "enum": ["low_is_bad", "high_is_bad", "both"] },
+        "correlated_with": { "type": "array", "items": { "type": "string" } },
+        "normal_range": {
+          "type": "object", "required": ["min", "max", "source"], "additionalProperties": false,
+          "properties": { "min": { "$ref": "#/definitions/nullableNumber" }, "max": { "$ref": "#/definitions/nullableNumber" }, "source": { "$ref": "#/definitions/source" } }
+        },
+        "min_spread": {
+          "type": "object", "required": ["mode", "value", "cv_pct", "source"], "additionalProperties": false,
+          "properties": {
+            "mode": { "enum": ["absolute", "cv_pct"] },
+            "value": { "$ref": "#/definitions/nullableNumber" },
+            "cv_pct": { "$ref": "#/definitions/nullableNumber" },
+            "source": { "$ref": "#/definitions/source" }
+          }
+        },
+        "amber_limit": { "$ref": "#/definitions/limit" },
+        "red_limit": { "$ref": "#/definitions/limit" },
+        "action": {
+          "type": "object", "required": ["amber", "red", "sources"], "additionalProperties": false,
+          "properties": {
+            "amber": { "type": "string", "minLength": 1 },
+            "red": { "type": "string", "minLength": 1 },
+            "sources": {
+              "type": "object", "required": ["amber", "red"], "additionalProperties": false,
+              "properties": { "amber": { "$ref": "#/definitions/source" }, "red": { "$ref": "#/definitions/source" } }
+            }
+          }
+        },
+        "escalation_tier": {
+          "type": "object", "required": ["amber", "red"], "additionalProperties": false,
+          "properties": { "amber": { "enum": [1] }, "red": { "enum": ["router"] } }
+        },
+        "params": { "type": "object" },
+        "notes": { "type": "string" }
+      }
+    }
+  }
+}

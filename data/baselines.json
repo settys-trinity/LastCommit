@@ -1,881 +1,399 @@
 {
-  "C001": {
-    "ABSOLUTE BASOPHILS": {
-      "mean": 56.3333,
-      "sd": 11.8462,
-      "n_preflight": 3,
-      "unit": "cells/uL",
-      "reference_range": [
-        0.0,
-        200.0
-      ],
-      "source_url": "https://osdr.nasa.gov/geode-py/ws/studies/OSD-569/download?source=datamanager&file=LSDS-7_Complete_Blood_Count_CBC.upload_SUBMITTED.csv"
+  "meta": {
+    "description": "Per-crew pre-flight baselines from Inspiration4 clinical labs. Method demo only: 4 people, 3 pre-flight draws each. Not a medical finding.",
+    "crew_ids": "OSDR anonymised IDs. Never show astronaut names.",
+    "licence": "OSDR Inspiration4 studies are CC0-1.0 per the study pages (check the page before the sources slide).",
+    "baseline_window": [
+      "L-92",
+      "L-44",
+      "L-3"
+    ],
+    "spread_rule": "spread = max(sample SD of the pre-flight draws, CVI% x personal mean). SD uses n-1 on 3 points, so it is a rough estimate.",
+    "marker_keys": "Reading types from docs/schemas.md (lab_<analyte>).",
+    "files": {
+      "CMP": "full OSDR file: OSD-575 / LSDS-8_Comprehensive_Metabolic_Panel_CMP.upload_SUBMITTED.csv",
+      "CBC": "full OSDR file: OSD-569 / LSDS-7_Complete_Blood_Count_CBC.upload_SUBMITTED.csv"
     },
-    "ABSOLUTE EOSINOPHILS": {
-      "mean": 208.0,
-      "sd": 49.1223,
-      "n_preflight": 3,
-      "unit": "cells/uL",
-      "reference_range": [
-        15.0,
-        500.0
-      ],
-      "source_url": "https://osdr.nasa.gov/geode-py/ws/studies/OSD-569/download?source=datamanager&file=LSDS-7_Complete_Blood_Count_CBC.upload_SUBMITTED.csv"
+    "study_pages": [
+      "https://osdr.nasa.gov/bio/repo/data/studies/OSD-575",
+      "https://osdr.nasa.gov/bio/repo/data/studies/OSD-569"
+    ],
+    "cvi_source": "https://mail.westgard.com/biodatabase1.htm (2014 edition: glucose 5.6, calcium 2.1, leukocytes 11.4, haemoglobin 2.85)",
+    "verified_against_osdr": {
+      "date": "2026-11-14",
+      "method": "All 48 rows in data/raw/*_preflight_extract.csv compared with the rows served by osdr.nasa.gov (in-browser fetch): 48/48 identical.",
+      "source_file_sha256": {
+        "LSDS-8_Comprehensive_Metabolic_Panel_CMP.upload_SUBMITTED.csv": "dab247eb794edab59aaaa683c85fd1f2dbf4ae3684872739338e10ead4192a0c",
+        "LSDS-7_Complete_Blood_Count_CBC.upload_SUBMITTED.csv": "10a878b009eb2ea11a13fe92ad698098858639e8ed02f5ee849431313b9457d3"
+      }
     },
-    "ABSOLUTE LYMPHOCYTES": {
-      "mean": 2255.6667,
-      "sd": 404.1996,
-      "n_preflight": 3,
-      "unit": "cells/uL",
-      "reference_range": [
-        850.0,
-        3900.0
-      ],
-      "source_url": "https://osdr.nasa.gov/geode-py/ws/studies/OSD-569/download?source=datamanager&file=LSDS-7_Complete_Blood_Count_CBC.upload_SUBMITTED.csv"
-    },
-    "ABSOLUTE MONOCYTES": {
-      "mean": 475.0,
-      "sd": 81.1665,
-      "n_preflight": 3,
-      "unit": "cells/uL",
-      "reference_range": [
-        200.0,
-        950.0
-      ],
-      "source_url": "https://osdr.nasa.gov/geode-py/ws/studies/OSD-569/download?source=datamanager&file=LSDS-7_Complete_Blood_Count_CBC.upload_SUBMITTED.csv"
-    },
-    "ABSOLUTE NEUTROPHILS": {
-      "mean": 2972.3333,
-      "sd": 610.9045,
-      "n_preflight": 3,
-      "unit": "cells/uL",
-      "reference_range": [
-        1500.0,
-        7800.0
-      ],
-      "source_url": "https://osdr.nasa.gov/geode-py/ws/studies/OSD-569/download?source=datamanager&file=LSDS-7_Complete_Blood_Count_CBC.upload_SUBMITTED.csv"
-    },
-    "BASOPHILS": {
-      "mean": 0.9667,
-      "sd": 0.3055,
-      "n_preflight": 3,
-      "unit": "%",
-      "reference_range": [
-        0.0,
-        2.0
-      ],
-      "source_url": "https://osdr.nasa.gov/geode-py/ws/studies/OSD-569/download?source=datamanager&file=LSDS-7_Complete_Blood_Count_CBC.upload_SUBMITTED.csv"
-    },
-    "EOSINOPHILS": {
-      "mean": 3.6,
-      "sd": 1.253,
-      "n_preflight": 3,
-      "unit": "%",
-      "reference_range": [
-        0.0,
-        8.0
-      ],
-      "source_url": "https://osdr.nasa.gov/geode-py/ws/studies/OSD-569/download?source=datamanager&file=LSDS-7_Complete_Blood_Count_CBC.upload_SUBMITTED.csv"
-    },
-    "HEMATOCRIT": {
-      "mean": 44.0333,
-      "sd": 1.3614,
-      "n_preflight": 3,
-      "unit": "%",
-      "reference_range": [
-        38.5,
-        50.0
-      ],
-      "source_url": "https://osdr.nasa.gov/geode-py/ws/studies/OSD-569/download?source=datamanager&file=LSDS-7_Complete_Blood_Count_CBC.upload_SUBMITTED.csv"
-    },
-    "HEMOGLOBIN": {
-      "mean": 14.5667,
-      "sd": 0.4163,
-      "n_preflight": 3,
-      "unit": "g/dL",
-      "reference_range": [
-        13.2,
-        17.1
-      ],
-      "source_url": "https://osdr.nasa.gov/geode-py/ws/studies/OSD-569/download?source=datamanager&file=LSDS-7_Complete_Blood_Count_CBC.upload_SUBMITTED.csv"
-    },
-    "LYMPHOCYTES": {
-      "mean": 37.8,
-      "sd": 3.8588,
-      "n_preflight": 3,
-      "unit": "%",
-      "reference_range": [
-        15.0,
-        49.0
-      ],
-      "source_url": "https://osdr.nasa.gov/geode-py/ws/studies/OSD-569/download?source=datamanager&file=LSDS-7_Complete_Blood_Count_CBC.upload_SUBMITTED.csv"
-    },
-    "MCH": {
-      "mean": 30.9333,
-      "sd": 0.3215,
-      "n_preflight": 3,
-      "unit": "pg",
-      "reference_range": [
-        27.0,
-        33.0
-      ],
-      "source_url": "https://osdr.nasa.gov/geode-py/ws/studies/OSD-569/download?source=datamanager&file=LSDS-7_Complete_Blood_Count_CBC.upload_SUBMITTED.csv"
-    },
-    "MCHC": {
-      "mean": 33.0667,
-      "sd": 0.1155,
-      "n_preflight": 3,
-      "unit": "g/dL",
-      "reference_range": [
-        32.0,
-        36.0
-      ],
-      "source_url": "https://osdr.nasa.gov/geode-py/ws/studies/OSD-569/download?source=datamanager&file=LSDS-7_Complete_Blood_Count_CBC.upload_SUBMITTED.csv"
-    },
-    "MCV": {
-      "mean": 93.5667,
-      "sd": 1.159,
-      "n_preflight": 3,
-      "unit": "fL",
-      "reference_range": [
-        80.0,
-        100.0
-      ],
-      "source_url": "https://osdr.nasa.gov/geode-py/ws/studies/OSD-569/download?source=datamanager&file=LSDS-7_Complete_Blood_Count_CBC.upload_SUBMITTED.csv"
-    },
-    "MONOCYTES": {
-      "mean": 7.9667,
-      "sd": 0.9018,
-      "n_preflight": 3,
-      "unit": "%",
-      "reference_range": [
-        0.0,
-        13.0
-      ],
-      "source_url": "https://osdr.nasa.gov/geode-py/ws/studies/OSD-569/download?source=datamanager&file=LSDS-7_Complete_Blood_Count_CBC.upload_SUBMITTED.csv"
-    },
-    "MPV": {
-      "mean": 10.6,
-      "sd": 0.3,
-      "n_preflight": 3,
-      "unit": "fL",
-      "reference_range": [
-        7.5,
-        12.5
-      ],
-      "source_url": "https://osdr.nasa.gov/geode-py/ws/studies/OSD-569/download?source=datamanager&file=LSDS-7_Complete_Blood_Count_CBC.upload_SUBMITTED.csv"
-    },
-    "NEUTROPHILS": {
-      "mean": 49.6667,
-      "sd": 5.6199,
-      "n_preflight": 3,
-      "unit": "%",
-      "reference_range": [
-        38.0,
-        80.0
-      ],
-      "source_url": "https://osdr.nasa.gov/geode-py/ws/studies/OSD-569/download?source=datamanager&file=LSDS-7_Complete_Blood_Count_CBC.upload_SUBMITTED.csv"
-    },
-    "PLATELET COUNT": {
-      "mean": 245.3333,
-      "sd": 11.1505,
-      "n_preflight": 3,
-      "unit": "Thousand/uL",
-      "reference_range": [
-        140.0,
-        400.0
-      ],
-      "source_url": "https://osdr.nasa.gov/geode-py/ws/studies/OSD-569/download?source=datamanager&file=LSDS-7_Complete_Blood_Count_CBC.upload_SUBMITTED.csv"
-    },
-    "RDW": {
-      "mean": 12.7333,
-      "sd": 0.2309,
-      "n_preflight": 3,
-      "unit": "%",
-      "reference_range": [
-        11.0,
-        15.0
-      ],
-      "source_url": "https://osdr.nasa.gov/geode-py/ws/studies/OSD-569/download?source=datamanager&file=LSDS-7_Complete_Blood_Count_CBC.upload_SUBMITTED.csv"
-    },
-    "RED BLOOD CELL COUNT": {
-      "mean": 4.7067,
-      "sd": 0.1358,
-      "n_preflight": 3,
-      "unit": "Million/uL",
-      "reference_range": [
-        4.2,
-        5.8
-      ],
-      "source_url": "https://osdr.nasa.gov/geode-py/ws/studies/OSD-569/download?source=datamanager&file=LSDS-7_Complete_Blood_Count_CBC.upload_SUBMITTED.csv"
-    },
-    "WHITE BLOOD CELL COUNT": {
-      "mean": 5.9667,
-      "sd": 0.8963,
-      "n_preflight": 3,
-      "unit": "Thousand/uL",
-      "reference_range": [
-        3.8,
-        10.8
-      ],
-      "source_url": "https://osdr.nasa.gov/geode-py/ws/studies/OSD-569/download?source=datamanager&file=LSDS-7_Complete_Blood_Count_CBC.upload_SUBMITTED.csv"
-    }
+    "data_issues": [
+      "OSD-569 C003 L-92: CBC columns shifted from MCHC onward; those values are excluded (WBC and haemoglobin sit before the shift).",
+      "OSD-569 C003: the CBC file lists male reference ranges for this female crew member. Reference ranges are shown as in the file.",
+      "OSD-575 R+45: glucose is 36-44 mg/dL for 3 of 4 crew at the same visit. Not used for baselines. Unexplained: check the OSDR sample metadata before showing it as a spaceflight effect.",
+      "Pre-flight glucose varies a lot for C004 (100, 83, 56 mg/dL) and C003 (77, 62, 75), so these baselines are wide. C001 and C002 are tighter."
+    ]
   },
-  "C002": {
-    "ABSOLUTE BASOPHILS": {
-      "mean": 31.3333,
-      "sd": 2.0817,
-      "n_preflight": 3,
-      "unit": "cells/uL",
-      "reference_range": [
-        0.0,
-        200.0
-      ],
-      "source_url": "https://osdr.nasa.gov/geode-py/ws/studies/OSD-569/download?source=datamanager&file=LSDS-7_Complete_Blood_Count_CBC.upload_SUBMITTED.csv"
+  "crew": {
+    "C001": {
+      "crew_id": "C001",
+      "sex": "M",
+      "markers": {
+        "lab_calcium": {
+          "analyte": "CALCIUM",
+          "unit": "mg/dL",
+          "values": {
+            "L-92": 9.7,
+            "L-44": 10.0,
+            "L-3": 9.6
+          },
+          "n": 3,
+          "mean": 9.767,
+          "sd": 0.208,
+          "cvi_pct": 2.1,
+          "min_spread": 0.205,
+          "spread": 0.208,
+          "spread_is_floor": false,
+          "ref_range": [
+            8.6,
+            10.3
+          ],
+          "source": "NASA OSDR OSD-575"
+        },
+        "lab_glucose": {
+          "analyte": "GLUCOSE",
+          "unit": "mg/dL",
+          "values": {
+            "L-92": 83.0,
+            "L-44": 80.0,
+            "L-3": 69.0
+          },
+          "n": 3,
+          "mean": 77.333,
+          "sd": 7.371,
+          "cvi_pct": 5.6,
+          "min_spread": 4.331,
+          "spread": 7.371,
+          "spread_is_floor": false,
+          "ref_range": [
+            65.0,
+            99.0
+          ],
+          "source": "NASA OSDR OSD-575"
+        },
+        "lab_hemoglobin": {
+          "analyte": "HEMOGLOBIN",
+          "unit": "g/dL",
+          "values": {
+            "L-92": 14.1,
+            "L-44": 14.9,
+            "L-3": 14.7
+          },
+          "n": 3,
+          "mean": 14.567,
+          "sd": 0.416,
+          "cvi_pct": 2.85,
+          "min_spread": 0.415,
+          "spread": 0.416,
+          "spread_is_floor": false,
+          "ref_range": [
+            13.2,
+            17.1
+          ],
+          "source": "NASA OSDR OSD-569"
+        },
+        "lab_wbc": {
+          "analyte": "WHITE BLOOD CELL COUNT",
+          "unit": "Thousand/uL",
+          "values": {
+            "L-92": 5.4,
+            "L-44": 5.5,
+            "L-3": 7.0
+          },
+          "n": 3,
+          "mean": 5.967,
+          "sd": 0.896,
+          "cvi_pct": 11.4,
+          "min_spread": 0.68,
+          "spread": 0.896,
+          "spread_is_floor": false,
+          "ref_range": [
+            3.8,
+            10.8
+          ],
+          "source": "NASA OSDR OSD-569"
+        }
+      }
     },
-    "ABSOLUTE EOSINOPHILS": {
-      "mean": 214.0,
-      "sd": 64.5523,
-      "n_preflight": 3,
-      "unit": "cells/uL",
-      "reference_range": [
-        15.0,
-        500.0
-      ],
-      "source_url": "https://osdr.nasa.gov/geode-py/ws/studies/OSD-569/download?source=datamanager&file=LSDS-7_Complete_Blood_Count_CBC.upload_SUBMITTED.csv"
+    "C002": {
+      "crew_id": "C002",
+      "sex": "F",
+      "markers": {
+        "lab_calcium": {
+          "analyte": "CALCIUM",
+          "unit": "mg/dL",
+          "values": {
+            "L-92": 10.2,
+            "L-44": 9.7,
+            "L-3": 9.3
+          },
+          "n": 3,
+          "mean": 9.733,
+          "sd": 0.451,
+          "cvi_pct": 2.1,
+          "min_spread": 0.204,
+          "spread": 0.451,
+          "spread_is_floor": false,
+          "ref_range": [
+            8.6,
+            10.4
+          ],
+          "source": "NASA OSDR OSD-575"
+        },
+        "lab_glucose": {
+          "analyte": "GLUCOSE",
+          "unit": "mg/dL",
+          "values": {
+            "L-92": 69.0,
+            "L-44": 72.0,
+            "L-3": 78.0
+          },
+          "n": 3,
+          "mean": 73.0,
+          "sd": 4.583,
+          "cvi_pct": 5.6,
+          "min_spread": 4.088,
+          "spread": 4.583,
+          "spread_is_floor": false,
+          "ref_range": [
+            65.0,
+            99.0
+          ],
+          "source": "NASA OSDR OSD-575"
+        },
+        "lab_hemoglobin": {
+          "analyte": "HEMOGLOBIN",
+          "unit": "g/dL",
+          "values": {
+            "L-92": 13.2,
+            "L-44": 12.8,
+            "L-3": 11.5
+          },
+          "n": 3,
+          "mean": 12.5,
+          "sd": 0.889,
+          "cvi_pct": 2.85,
+          "min_spread": 0.356,
+          "spread": 0.889,
+          "spread_is_floor": false,
+          "ref_range": [
+            11.7,
+            15.5
+          ],
+          "source": "NASA OSDR OSD-569"
+        },
+        "lab_wbc": {
+          "analyte": "WHITE BLOOD CELL COUNT",
+          "unit": "Thousand/uL",
+          "values": {
+            "L-92": 6.5,
+            "L-44": 5.4,
+            "L-3": 7.2
+          },
+          "n": 3,
+          "mean": 6.367,
+          "sd": 0.907,
+          "cvi_pct": 11.4,
+          "min_spread": 0.726,
+          "spread": 0.907,
+          "spread_is_floor": false,
+          "ref_range": [
+            3.8,
+            10.8
+          ],
+          "source": "NASA OSDR OSD-569"
+        }
+      }
     },
-    "ABSOLUTE LYMPHOCYTES": {
-      "mean": 2324.6667,
-      "sd": 479.7857,
-      "n_preflight": 3,
-      "unit": "cells/uL",
-      "reference_range": [
-        850.0,
-        3900.0
-      ],
-      "source_url": "https://osdr.nasa.gov/geode-py/ws/studies/OSD-569/download?source=datamanager&file=LSDS-7_Complete_Blood_Count_CBC.upload_SUBMITTED.csv"
+    "C003": {
+      "crew_id": "C003",
+      "sex": "F",
+      "markers": {
+        "lab_calcium": {
+          "analyte": "CALCIUM",
+          "unit": "mg/dL",
+          "values": {
+            "L-92": 9.3,
+            "L-44": 10.3,
+            "L-3": 9.5
+          },
+          "n": 3,
+          "mean": 9.7,
+          "sd": 0.529,
+          "cvi_pct": 2.1,
+          "min_spread": 0.204,
+          "spread": 0.529,
+          "spread_is_floor": false,
+          "ref_range": [
+            8.6,
+            10.3
+          ],
+          "source": "NASA OSDR OSD-575"
+        },
+        "lab_glucose": {
+          "analyte": "GLUCOSE",
+          "unit": "mg/dL",
+          "values": {
+            "L-92": 77.0,
+            "L-44": 62.0,
+            "L-3": 75.0
+          },
+          "n": 3,
+          "mean": 71.333,
+          "sd": 8.145,
+          "cvi_pct": 5.6,
+          "min_spread": 3.995,
+          "spread": 8.145,
+          "spread_is_floor": false,
+          "ref_range": [
+            65.0,
+            99.0
+          ],
+          "source": "NASA OSDR OSD-575"
+        },
+        "lab_hemoglobin": {
+          "analyte": "HEMOGLOBIN",
+          "unit": "g/dL",
+          "values": {
+            "L-92": 13.2,
+            "L-44": 14.4,
+            "L-3": 13.3
+          },
+          "n": 3,
+          "mean": 13.633,
+          "sd": 0.666,
+          "cvi_pct": 2.85,
+          "min_spread": 0.389,
+          "spread": 0.666,
+          "spread_is_floor": false,
+          "ref_range": [
+            13.2,
+            17.1
+          ],
+          "source": "NASA OSDR OSD-569"
+        },
+        "lab_wbc": {
+          "analyte": "WHITE BLOOD CELL COUNT",
+          "unit": "Thousand/uL",
+          "values": {
+            "L-92": 9.6,
+            "L-44": 9.3,
+            "L-3": 9.8
+          },
+          "n": 3,
+          "mean": 9.567,
+          "sd": 0.252,
+          "cvi_pct": 11.4,
+          "min_spread": 1.091,
+          "spread": 1.091,
+          "spread_is_floor": true,
+          "ref_range": [
+            3.8,
+            10.8
+          ],
+          "source": "NASA OSDR OSD-569"
+        }
+      }
     },
-    "ABSOLUTE MONOCYTES": {
-      "mean": 370.6667,
-      "sd": 72.2311,
-      "n_preflight": 3,
-      "unit": "cells/uL",
-      "reference_range": [
-        200.0,
-        950.0
-      ],
-      "source_url": "https://osdr.nasa.gov/geode-py/ws/studies/OSD-569/download?source=datamanager&file=LSDS-7_Complete_Blood_Count_CBC.upload_SUBMITTED.csv"
-    },
-    "ABSOLUTE NEUTROPHILS": {
-      "mean": 3426.3333,
-      "sd": 479.2049,
-      "n_preflight": 3,
-      "unit": "cells/uL",
-      "reference_range": [
-        1500.0,
-        7800.0
-      ],
-      "source_url": "https://osdr.nasa.gov/geode-py/ws/studies/OSD-569/download?source=datamanager&file=LSDS-7_Complete_Blood_Count_CBC.upload_SUBMITTED.csv"
-    },
-    "BASOPHILS": {
-      "mean": 0.5,
-      "sd": 0.1,
-      "n_preflight": 3,
-      "unit": "%",
-      "reference_range": [
-        0.0,
-        2.0
-      ],
-      "source_url": "https://osdr.nasa.gov/geode-py/ws/studies/OSD-569/download?source=datamanager&file=LSDS-7_Complete_Blood_Count_CBC.upload_SUBMITTED.csv"
-    },
-    "EOSINOPHILS": {
-      "mean": 3.4333,
-      "sd": 1.1719,
-      "n_preflight": 3,
-      "unit": "%",
-      "reference_range": [
-        0.0,
-        8.0
-      ],
-      "source_url": "https://osdr.nasa.gov/geode-py/ws/studies/OSD-569/download?source=datamanager&file=LSDS-7_Complete_Blood_Count_CBC.upload_SUBMITTED.csv"
-    },
-    "HEMATOCRIT": {
-      "mean": 38.1667,
-      "sd": 2.4705,
-      "n_preflight": 3,
-      "unit": "%",
-      "reference_range": [
-        35.0,
-        45.0
-      ],
-      "source_url": "https://osdr.nasa.gov/geode-py/ws/studies/OSD-569/download?source=datamanager&file=LSDS-7_Complete_Blood_Count_CBC.upload_SUBMITTED.csv"
-    },
-    "HEMOGLOBIN": {
-      "mean": 12.5,
-      "sd": 0.8888,
-      "n_preflight": 3,
-      "unit": "g/dL",
-      "reference_range": [
-        11.7,
-        15.5
-      ],
-      "source_url": "https://osdr.nasa.gov/geode-py/ws/studies/OSD-569/download?source=datamanager&file=LSDS-7_Complete_Blood_Count_CBC.upload_SUBMITTED.csv"
-    },
-    "LYMPHOCYTES": {
-      "mean": 36.4,
-      "sd": 3.6592,
-      "n_preflight": 3,
-      "unit": "%",
-      "reference_range": [
-        15.0,
-        49.0
-      ],
-      "source_url": "https://osdr.nasa.gov/geode-py/ws/studies/OSD-569/download?source=datamanager&file=LSDS-7_Complete_Blood_Count_CBC.upload_SUBMITTED.csv"
-    },
-    "MCH": {
-      "mean": 31.2667,
-      "sd": 1.193,
-      "n_preflight": 3,
-      "unit": "pg",
-      "reference_range": [
-        27.0,
-        33.0
-      ],
-      "source_url": "https://osdr.nasa.gov/geode-py/ws/studies/OSD-569/download?source=datamanager&file=LSDS-7_Complete_Blood_Count_CBC.upload_SUBMITTED.csv"
-    },
-    "MCV": {
-      "mean": 95.4333,
-      "sd": 1.5948,
-      "n_preflight": 3,
-      "unit": "fL",
-      "reference_range": [
-        80.0,
-        100.0
-      ],
-      "source_url": "https://osdr.nasa.gov/geode-py/ws/studies/OSD-569/download?source=datamanager&file=LSDS-7_Complete_Blood_Count_CBC.upload_SUBMITTED.csv"
-    },
-    "MONOCYTES": {
-      "mean": 5.8,
-      "sd": 0.3464,
-      "n_preflight": 3,
-      "unit": "%",
-      "reference_range": [
-        0.0,
-        13.0
-      ],
-      "source_url": "https://osdr.nasa.gov/geode-py/ws/studies/OSD-569/download?source=datamanager&file=LSDS-7_Complete_Blood_Count_CBC.upload_SUBMITTED.csv"
-    },
-    "MPV": {
-      "mean": 10.6,
-      "sd": 0.4359,
-      "n_preflight": 3,
-      "unit": "fL",
-      "reference_range": [
-        7.5,
-        12.5
-      ],
-      "source_url": "https://osdr.nasa.gov/geode-py/ws/studies/OSD-569/download?source=datamanager&file=LSDS-7_Complete_Blood_Count_CBC.upload_SUBMITTED.csv"
-    },
-    "NEUTROPHILS": {
-      "mean": 53.8667,
-      "sd": 2.8589,
-      "n_preflight": 3,
-      "unit": "%",
-      "reference_range": [
-        38.0,
-        80.0
-      ],
-      "source_url": "https://osdr.nasa.gov/geode-py/ws/studies/OSD-569/download?source=datamanager&file=LSDS-7_Complete_Blood_Count_CBC.upload_SUBMITTED.csv"
-    },
-    "PLATELET COUNT": {
-      "mean": 237.0,
-      "sd": 6.9282,
-      "n_preflight": 3,
-      "unit": "Thousand/uL",
-      "reference_range": [
-        140.0,
-        400.0
-      ],
-      "source_url": "https://osdr.nasa.gov/geode-py/ws/studies/OSD-569/download?source=datamanager&file=LSDS-7_Complete_Blood_Count_CBC.upload_SUBMITTED.csv"
-    },
-    "RDW": {
-      "mean": 12.4667,
-      "sd": 0.3215,
-      "n_preflight": 3,
-      "unit": "%",
-      "reference_range": [
-        11.0,
-        15.0
-      ],
-      "source_url": "https://osdr.nasa.gov/geode-py/ws/studies/OSD-569/download?source=datamanager&file=LSDS-7_Complete_Blood_Count_CBC.upload_SUBMITTED.csv"
-    },
-    "RED BLOOD CELL COUNT": {
-      "mean": 4.0033,
-      "sd": 0.3262,
-      "n_preflight": 3,
-      "unit": "Million/uL",
-      "reference_range": [
-        3.8,
-        5.1
-      ],
-      "source_url": "https://osdr.nasa.gov/geode-py/ws/studies/OSD-569/download?source=datamanager&file=LSDS-7_Complete_Blood_Count_CBC.upload_SUBMITTED.csv"
-    },
-    "WHITE BLOOD CELL COUNT": {
-      "mean": 6.3667,
-      "sd": 0.9074,
-      "n_preflight": 3,
-      "unit": "Thousand/uL",
-      "reference_range": [
-        3.8,
-        10.8
-      ],
-      "source_url": "https://osdr.nasa.gov/geode-py/ws/studies/OSD-569/download?source=datamanager&file=LSDS-7_Complete_Blood_Count_CBC.upload_SUBMITTED.csv"
-    }
-  },
-  "C003": {
-    "ABSOLUTE BASOPHILS": {
-      "mean": 73.6667,
-      "sd": 44.4672,
-      "n_preflight": 3,
-      "unit": "cells/uL",
-      "reference_range": [
-        0.0,
-        200.0
-      ],
-      "source_url": "https://osdr.nasa.gov/geode-py/ws/studies/OSD-569/download?source=datamanager&file=LSDS-7_Complete_Blood_Count_CBC.upload_SUBMITTED.csv"
-    },
-    "ABSOLUTE EOSINOPHILS": {
-      "mean": 277.3333,
-      "sd": 292.3172,
-      "n_preflight": 3,
-      "unit": "cells/uL",
-      "reference_range": [
-        15.0,
-        500.0
-      ],
-      "source_url": "https://osdr.nasa.gov/geode-py/ws/studies/OSD-569/download?source=datamanager&file=LSDS-7_Complete_Blood_Count_CBC.upload_SUBMITTED.csv"
-    },
-    "ABSOLUTE LYMPHOCYTES": {
-      "mean": 4021.6667,
-      "sd": 2487.1764,
-      "n_preflight": 3,
-      "unit": "cells/uL",
-      "reference_range": [
-        850.0,
-        3900.0
-      ],
-      "source_url": "https://osdr.nasa.gov/geode-py/ws/studies/OSD-569/download?source=datamanager&file=LSDS-7_Complete_Blood_Count_CBC.upload_SUBMITTED.csv"
-    },
-    "ABSOLUTE MONOCYTES": {
-      "mean": 1114.6667,
-      "sd": 765.2492,
-      "n_preflight": 3,
-      "unit": "cells/uL",
-      "reference_range": [
-        200.0,
-        950.0
-      ],
-      "source_url": "https://osdr.nasa.gov/geode-py/ws/studies/OSD-569/download?source=datamanager&file=LSDS-7_Complete_Blood_Count_CBC.upload_SUBMITTED.csv"
-    },
-    "ABSOLUTE NEUTROPHILS": {
-      "mean": 4070.0333,
-      "sd": 3529.4699,
-      "n_preflight": 3,
-      "unit": "cells/uL",
-      "reference_range": [
-        1500.0,
-        7800.0
-      ],
-      "source_url": "https://osdr.nasa.gov/geode-py/ws/studies/OSD-569/download?source=datamanager&file=LSDS-7_Complete_Blood_Count_CBC.upload_SUBMITTED.csv"
-    },
-    "BASOPHILS": {
-      "mean": 0.4667,
-      "sd": 0.0577,
-      "n_preflight": 3,
-      "unit": "%",
-      "reference_range": [
-        0.0,
-        2.0
-      ],
-      "source_url": "https://osdr.nasa.gov/geode-py/ws/studies/OSD-569/download?source=datamanager&file=LSDS-7_Complete_Blood_Count_CBC.upload_SUBMITTED.csv"
-    },
-    "EOSINOPHILS": {
-      "mean": 1.2,
-      "sd": 0.2646,
-      "n_preflight": 3,
-      "unit": "%",
-      "reference_range": [
-        0.0,
-        8.0
-      ],
-      "source_url": "https://osdr.nasa.gov/geode-py/ws/studies/OSD-569/download?source=datamanager&file=LSDS-7_Complete_Blood_Count_CBC.upload_SUBMITTED.csv"
-    },
-    "HEMATOCRIT": {
-      "mean": 41.6333,
-      "sd": 0.9504,
-      "n_preflight": 3,
-      "unit": "%",
-      "reference_range": [
-        38.5,
-        50.0
-      ],
-      "source_url": "https://osdr.nasa.gov/geode-py/ws/studies/OSD-569/download?source=datamanager&file=LSDS-7_Complete_Blood_Count_CBC.upload_SUBMITTED.csv"
-    },
-    "HEMOGLOBIN": {
-      "mean": 13.6333,
-      "sd": 0.6658,
-      "n_preflight": 3,
-      "unit": "g/dL",
-      "reference_range": [
-        13.2,
-        17.1
-      ],
-      "source_url": "https://osdr.nasa.gov/geode-py/ws/studies/OSD-569/download?source=datamanager&file=LSDS-7_Complete_Blood_Count_CBC.upload_SUBMITTED.csv"
-    },
-    "LYMPHOCYTES": {
-      "mean": 25.1333,
-      "sd": 6.172,
-      "n_preflight": 3,
-      "unit": "%",
-      "reference_range": [
-        15.0,
-        49.0
-      ],
-      "source_url": "https://osdr.nasa.gov/geode-py/ws/studies/OSD-569/download?source=datamanager&file=LSDS-7_Complete_Blood_Count_CBC.upload_SUBMITTED.csv"
-    },
-    "MCH": {
-      "mean": 30.4,
-      "sd": null,
-      "n_preflight": 2,
-      "unit": "pg",
-      "reference_range": [
-        27.0,
-        33.0
-      ],
-      "source_url": "https://osdr.nasa.gov/geode-py/ws/studies/OSD-569/download?source=datamanager&file=LSDS-7_Complete_Blood_Count_CBC.upload_SUBMITTED.csv",
-      "use_reference_range": true
-    },
-    "MCHC": {
-      "mean": 31.8,
-      "sd": 2.1071,
-      "n_preflight": 3,
-      "unit": "g/dL",
-      "reference_range": [
-        32.0,
-        36.0
-      ],
-      "source_url": "https://osdr.nasa.gov/geode-py/ws/studies/OSD-569/download?source=datamanager&file=LSDS-7_Complete_Blood_Count_CBC.upload_SUBMITTED.csv"
-    },
-    "MCV": {
-      "mean": 91.9667,
-      "sd": 0.5859,
-      "n_preflight": 3,
-      "unit": "fL",
-      "reference_range": [
-        80.0,
-        100.0
-      ],
-      "source_url": "https://osdr.nasa.gov/geode-py/ws/studies/OSD-569/download?source=datamanager&file=LSDS-7_Complete_Blood_Count_CBC.upload_SUBMITTED.csv"
-    },
-    "MONOCYTES": {
-      "mean": 6.8333,
-      "sd": 0.4509,
-      "n_preflight": 3,
-      "unit": "%",
-      "reference_range": [
-        0.0,
-        13.0
-      ],
-      "source_url": "https://osdr.nasa.gov/geode-py/ws/studies/OSD-569/download?source=datamanager&file=LSDS-7_Complete_Blood_Count_CBC.upload_SUBMITTED.csv"
-    },
-    "MPV": {
-      "mean": 117.0333,
-      "sd": 184.4347,
-      "n_preflight": 3,
-      "unit": "fL",
-      "reference_range": [
-        7.5,
-        12.5
-      ],
-      "source_url": "https://osdr.nasa.gov/geode-py/ws/studies/OSD-569/download?source=datamanager&file=LSDS-7_Complete_Blood_Count_CBC.upload_SUBMITTED.csv"
-    },
-    "NEUTROPHILS": {
-      "mean": 66.3667,
-      "sd": 6.3885,
-      "n_preflight": 3,
-      "unit": "%",
-      "reference_range": [
-        38.0,
-        80.0
-      ],
-      "source_url": "https://osdr.nasa.gov/geode-py/ws/studies/OSD-569/download?source=datamanager&file=LSDS-7_Complete_Blood_Count_CBC.upload_SUBMITTED.csv"
-    },
-    "PLATELET COUNT": {
-      "mean": 241.6333,
-      "sd": 198.3941,
-      "n_preflight": 3,
-      "unit": "Thousand/uL",
-      "reference_range": [
-        140.0,
-        400.0
-      ],
-      "source_url": "https://osdr.nasa.gov/geode-py/ws/studies/OSD-569/download?source=datamanager&file=LSDS-7_Complete_Blood_Count_CBC.upload_SUBMITTED.csv"
-    },
-    "RDW": {
-      "mean": 19.3667,
-      "sd": 11.2926,
-      "n_preflight": 3,
-      "unit": "%",
-      "reference_range": [
-        11.0,
-        15.0
-      ],
-      "source_url": "https://osdr.nasa.gov/geode-py/ws/studies/OSD-569/download?source=datamanager&file=LSDS-7_Complete_Blood_Count_CBC.upload_SUBMITTED.csv"
-    },
-    "RED BLOOD CELL COUNT": {
-      "mean": 4.5267,
-      "sd": 0.0833,
-      "n_preflight": 3,
-      "unit": "Million/uL",
-      "reference_range": [
-        4.2,
-        5.8
-      ],
-      "source_url": "https://osdr.nasa.gov/geode-py/ws/studies/OSD-569/download?source=datamanager&file=LSDS-7_Complete_Blood_Count_CBC.upload_SUBMITTED.csv"
-    },
-    "WHITE BLOOD CELL COUNT": {
-      "mean": 9.5667,
-      "sd": 0.2517,
-      "n_preflight": 3,
-      "unit": "Thousand/uL",
-      "reference_range": [
-        3.8,
-        10.8
-      ],
-      "source_url": "https://osdr.nasa.gov/geode-py/ws/studies/OSD-569/download?source=datamanager&file=LSDS-7_Complete_Blood_Count_CBC.upload_SUBMITTED.csv"
-    }
-  },
-  "C004": {
-    "ABSOLUTE BASOPHILS": {
-      "mean": 85.0,
-      "sd": 9.1652,
-      "n_preflight": 3,
-      "unit": "cells/uL",
-      "reference_range": [
-        0.0,
-        200.0
-      ],
-      "source_url": "https://osdr.nasa.gov/geode-py/ws/studies/OSD-569/download?source=datamanager&file=LSDS-7_Complete_Blood_Count_CBC.upload_SUBMITTED.csv"
-    },
-    "ABSOLUTE EOSINOPHILS": {
-      "mean": 216.3333,
-      "sd": 53.4072,
-      "n_preflight": 3,
-      "unit": "cells/uL",
-      "reference_range": [
-        15.0,
-        500.0
-      ],
-      "source_url": "https://osdr.nasa.gov/geode-py/ws/studies/OSD-569/download?source=datamanager&file=LSDS-7_Complete_Blood_Count_CBC.upload_SUBMITTED.csv"
-    },
-    "ABSOLUTE LYMPHOCYTES": {
-      "mean": 2115.3333,
-      "sd": 725.4201,
-      "n_preflight": 3,
-      "unit": "cells/uL",
-      "reference_range": [
-        850.0,
-        3900.0
-      ],
-      "source_url": "https://osdr.nasa.gov/geode-py/ws/studies/OSD-569/download?source=datamanager&file=LSDS-7_Complete_Blood_Count_CBC.upload_SUBMITTED.csv"
-    },
-    "ABSOLUTE MONOCYTES": {
-      "mean": 889.0,
-      "sd": 68.5055,
-      "n_preflight": 3,
-      "unit": "cells/uL",
-      "reference_range": [
-        200.0,
-        950.0
-      ],
-      "source_url": "https://osdr.nasa.gov/geode-py/ws/studies/OSD-569/download?source=datamanager&file=LSDS-7_Complete_Blood_Count_CBC.upload_SUBMITTED.csv"
-    },
-    "ABSOLUTE NEUTROPHILS": {
-      "mean": 4927.6667,
-      "sd": 1316.9633,
-      "n_preflight": 3,
-      "unit": "cells/uL",
-      "reference_range": [
-        1500.0,
-        7800.0
-      ],
-      "source_url": "https://osdr.nasa.gov/geode-py/ws/studies/OSD-569/download?source=datamanager&file=LSDS-7_Complete_Blood_Count_CBC.upload_SUBMITTED.csv"
-    },
-    "BASOPHILS": {
-      "mean": 1.0667,
-      "sd": 0.2082,
-      "n_preflight": 3,
-      "unit": "%",
-      "reference_range": [
-        0.0,
-        2.0
-      ],
-      "source_url": "https://osdr.nasa.gov/geode-py/ws/studies/OSD-569/download?source=datamanager&file=LSDS-7_Complete_Blood_Count_CBC.upload_SUBMITTED.csv"
-    },
-    "EOSINOPHILS": {
-      "mean": 2.6333,
-      "sd": 0.0577,
-      "n_preflight": 3,
-      "unit": "%",
-      "reference_range": [
-        0.0,
-        8.0
-      ],
-      "source_url": "https://osdr.nasa.gov/geode-py/ws/studies/OSD-569/download?source=datamanager&file=LSDS-7_Complete_Blood_Count_CBC.upload_SUBMITTED.csv"
-    },
-    "HEMATOCRIT": {
-      "mean": 49.3667,
-      "sd": 0.5508,
-      "n_preflight": 3,
-      "unit": "%",
-      "reference_range": [
-        38.5,
-        50.0
-      ],
-      "source_url": "https://osdr.nasa.gov/geode-py/ws/studies/OSD-569/download?source=datamanager&file=LSDS-7_Complete_Blood_Count_CBC.upload_SUBMITTED.csv"
-    },
-    "HEMOGLOBIN": {
-      "mean": 16.8,
-      "sd": 0.2,
-      "n_preflight": 3,
-      "unit": "g/dL",
-      "reference_range": [
-        13.2,
-        17.1
-      ],
-      "source_url": "https://osdr.nasa.gov/geode-py/ws/studies/OSD-569/download?source=datamanager&file=LSDS-7_Complete_Blood_Count_CBC.upload_SUBMITTED.csv"
-    },
-    "LYMPHOCYTES": {
-      "mean": 25.4,
-      "sd": 2.3065,
-      "n_preflight": 3,
-      "unit": "%",
-      "reference_range": [
-        15.0,
-        49.0
-      ],
-      "source_url": "https://osdr.nasa.gov/geode-py/ws/studies/OSD-569/download?source=datamanager&file=LSDS-7_Complete_Blood_Count_CBC.upload_SUBMITTED.csv"
-    },
-    "MCH": {
-      "mean": 30.45,
-      "sd": null,
-      "n_preflight": 2,
-      "unit": "pg",
-      "reference_range": [
-        27.0,
-        33.0
-      ],
-      "source_url": "https://osdr.nasa.gov/geode-py/ws/studies/OSD-569/download?source=datamanager&file=LSDS-7_Complete_Blood_Count_CBC.upload_SUBMITTED.csv",
-      "use_reference_range": true
-    },
-    "MCHC": {
-      "mean": 34.0333,
-      "sd": 0.7371,
-      "n_preflight": 3,
-      "unit": "g/dL",
-      "reference_range": [
-        32.0,
-        36.0
-      ],
-      "source_url": "https://osdr.nasa.gov/geode-py/ws/studies/OSD-569/download?source=datamanager&file=LSDS-7_Complete_Blood_Count_CBC.upload_SUBMITTED.csv"
-    },
-    "MCV": {
-      "mean": 90.0333,
-      "sd": 0.5859,
-      "n_preflight": 3,
-      "unit": "fL",
-      "reference_range": [
-        80.0,
-        100.0
-      ],
-      "source_url": "https://osdr.nasa.gov/geode-py/ws/studies/OSD-569/download?source=datamanager&file=LSDS-7_Complete_Blood_Count_CBC.upload_SUBMITTED.csv"
-    },
-    "MONOCYTES": {
-      "mean": 11.1333,
-      "sd": 1.9553,
-      "n_preflight": 3,
-      "unit": "%",
-      "reference_range": [
-        0.0,
-        13.0
-      ],
-      "source_url": "https://osdr.nasa.gov/geode-py/ws/studies/OSD-569/download?source=datamanager&file=LSDS-7_Complete_Blood_Count_CBC.upload_SUBMITTED.csv"
-    },
-    "MPV": {
-      "mean": 9.8333,
-      "sd": 0.3055,
-      "n_preflight": 3,
-      "unit": "fL",
-      "reference_range": [
-        7.5,
-        12.5
-      ],
-      "source_url": "https://osdr.nasa.gov/geode-py/ws/studies/OSD-569/download?source=datamanager&file=LSDS-7_Complete_Blood_Count_CBC.upload_SUBMITTED.csv"
-    },
-    "NEUTROPHILS": {
-      "mean": 59.7667,
-      "sd": 2.0551,
-      "n_preflight": 3,
-      "unit": "%",
-      "reference_range": [
-        38.0,
-        80.0
-      ],
-      "source_url": "https://osdr.nasa.gov/geode-py/ws/studies/OSD-569/download?source=datamanager&file=LSDS-7_Complete_Blood_Count_CBC.upload_SUBMITTED.csv"
-    },
-    "PLATELET COUNT": {
-      "mean": 253.6667,
-      "sd": 36.2951,
-      "n_preflight": 3,
-      "unit": "Thousand/uL",
-      "reference_range": [
-        140.0,
-        400.0
-      ],
-      "source_url": "https://osdr.nasa.gov/geode-py/ws/studies/OSD-569/download?source=datamanager&file=LSDS-7_Complete_Blood_Count_CBC.upload_SUBMITTED.csv"
-    },
-    "RDW": {
-      "mean": 12.8333,
-      "sd": 0.4163,
-      "n_preflight": 3,
-      "unit": "%",
-      "reference_range": [
-        11.0,
-        15.0
-      ],
-      "source_url": "https://osdr.nasa.gov/geode-py/ws/studies/OSD-569/download?source=datamanager&file=LSDS-7_Complete_Blood_Count_CBC.upload_SUBMITTED.csv"
-    },
-    "RED BLOOD CELL COUNT": {
-      "mean": 5.4833,
-      "sd": 0.085,
-      "n_preflight": 3,
-      "unit": "Million/uL",
-      "reference_range": [
-        4.2,
-        5.8
-      ],
-      "source_url": "https://osdr.nasa.gov/geode-py/ws/studies/OSD-569/download?source=datamanager&file=LSDS-7_Complete_Blood_Count_CBC.upload_SUBMITTED.csv"
-    },
-    "WHITE BLOOD CELL COUNT": {
-      "mean": 8.2333,
-      "sd": 2.1502,
-      "n_preflight": 3,
-      "unit": "Thousand/uL",
-      "reference_range": [
-        3.8,
-        10.8
-      ],
-      "source_url": "https://osdr.nasa.gov/geode-py/ws/studies/OSD-569/download?source=datamanager&file=LSDS-7_Complete_Blood_Count_CBC.upload_SUBMITTED.csv"
+    "C004": {
+      "crew_id": "C004",
+      "sex": "M",
+      "markers": {
+        "lab_calcium": {
+          "analyte": "CALCIUM",
+          "unit": "mg/dL",
+          "values": {
+            "L-92": 10.0,
+            "L-44": 10.1,
+            "L-3": 10.2
+          },
+          "n": 3,
+          "mean": 10.1,
+          "sd": 0.1,
+          "cvi_pct": 2.1,
+          "min_spread": 0.212,
+          "spread": 0.212,
+          "spread_is_floor": true,
+          "ref_range": [
+            8.6,
+            10.3
+          ],
+          "source": "NASA OSDR OSD-575"
+        },
+        "lab_glucose": {
+          "analyte": "GLUCOSE",
+          "unit": "mg/dL",
+          "values": {
+            "L-92": 100.0,
+            "L-44": 83.0,
+            "L-3": 56.0
+          },
+          "n": 3,
+          "mean": 79.667,
+          "sd": 22.189,
+          "cvi_pct": 5.6,
+          "min_spread": 4.461,
+          "spread": 22.189,
+          "spread_is_floor": false,
+          "ref_range": [
+            65.0,
+            99.0
+          ],
+          "source": "NASA OSDR OSD-575"
+        },
+        "lab_hemoglobin": {
+          "analyte": "HEMOGLOBIN",
+          "unit": "g/dL",
+          "values": {
+            "L-92": 17.0,
+            "L-44": 16.6,
+            "L-3": 16.8
+          },
+          "n": 3,
+          "mean": 16.8,
+          "sd": 0.2,
+          "cvi_pct": 2.85,
+          "min_spread": 0.479,
+          "spread": 0.479,
+          "spread_is_floor": true,
+          "ref_range": [
+            13.2,
+            17.1
+          ],
+          "source": "NASA OSDR OSD-569"
+        },
+        "lab_wbc": {
+          "analyte": "WHITE BLOOD CELL COUNT",
+          "unit": "Thousand/uL",
+          "values": {
+            "L-92": 7.7,
+            "L-44": 6.4,
+            "L-3": 10.6
+          },
+          "n": 3,
+          "mean": 8.233,
+          "sd": 2.15,
+          "cvi_pct": 11.4,
+          "min_spread": 0.939,
+          "spread": 2.15,
+          "spread_is_floor": false,
+          "ref_range": [
+            3.8,
+            10.8
+          ],
+          "source": "NASA OSDR OSD-569"
+        }
+      }
     }
   }
 }

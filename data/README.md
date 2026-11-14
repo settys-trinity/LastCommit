@@ -5,9 +5,14 @@
 - `cache_donki.py`: fetches SEP events from api.nasa.gov and writes `donki_cache.json`.
 - `donki_cache.json`: 14 cached DONKI SEP events for May 2024, with `cached`, `source_url` (no API key), `fetched_at` and `window`; the mock bridge streams the first one.
 - `scenario_mars_day143.json`: demo readings for crew C003, source `replay` (`docs/schemas.md` reading format). Mission day 143 is 2026-11-15; the three sleep readings fall on the mornings of days 141 to 143 (2026-11-13 to 2026-11-15).
-- `raw/LSDS-7_Complete_Blood_Count_CBC.upload_SUBMITTED.csv`: Inspiration4 complete blood count from NASA OSDR study OSD-569 (anonymised crew IDs C001 to C004, 7 timepoints each: L-92, L-44, L-3, R+1, R+45, R+82, R+194).
-- `build_baselines.py`: turns the CBC file into `baselines.json` (pre-flight = `L-` dates). OSDR's crew IDs are kept; sex is not stored.
-- `baselines.json`: per crew ID and marker, pre-flight `mean`, `sd` (3+ samples, else `null` with `use_reference_range: true`), `n_preflight`, `unit`, `reference_range` and `source_url`.
+- `raw/`: Inspiration4 complete blood count (OSD-569, `LSDS-7_*`) and comprehensive metabolic panel (OSD-575, `LSDS-8_*`), full OSDR files plus `*_preflight_extract.csv` (anonymised crew IDs C001 to C004).
+- `fetch_osdr.py`: downloads the full OSDR files into `raw/`.
+- `build_baselines.py`: builds `baselines.json` and `osdr_readings.json` from the pre-flight draws (L-92, L-44, L-3). Spread = max(SD, CVI% x mean).
+- `baselines.json`: per crew ID and lab reading type (`lab_glucose`, `lab_calcium`, `lab_hemoglobin`, `lab_wbc`): `mean`, `sd`, `spread`, `ref_range`, `source`. Format in `docs/knowledge_schema.md`.
+- `osdr_readings.json`: the same draws as `reading` objects (`source: "osdr"`).
+- `knowledge.json`: thresholds, actions and body systems per indicator (`docs/knowledge_schema.md`); schema in `knowledge.schema.json`, types in `knowledge.types.ts`.
+- `validate.py`: checks `knowledge.json` and lists every UNSOURCED value (`python dataalidate.py`).
+- `score_reference.py`: tested reference implementation of the scoring rules.
 - `check_readings.py`: validates a readings file against the schema and sort order (`python data\check_readings.py [file]`).
 
 The DONKI scripts read `NASA_API_KEY` from `.env` in the repo root. Run any script with `.venv\Scripts\python.exe data\<script>.py`.

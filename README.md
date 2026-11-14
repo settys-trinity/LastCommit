@@ -9,12 +9,15 @@ Built for HackAthlone 2026 (NASA Space Apps Challenge). This repo holds Part 1a 
 | Area | Status | Where |
 |------|--------|-------|
 | `reading` schema | Done | `docs/schemas.md` section 1 |
-| `knowledge.json` schema | Done, example values UNSOURCED | `docs/schemas.md` section 2 |
+| `knowledge.json` v0.2 | Done, 6 indicators, some values UNSOURCED | `data/knowledge.json`, `docs/knowledge_schema.md` |
+| Engine output contract | Done | `docs/engine_contract.md` |
 | Serial format (Arduino to laptop) | Done | `docs/schemas.md` section 3 |
 | WebSocket stream envelope | Done | `docs/schemas.md`, "Stream envelope" |
 | NASA DONKI solar particle events (SEP) | Cached, 14 events for May 2024 | `data/donki_cache.json` |
 | NASA DONKI solar flares (FLR) | Unreachable, dropped | `data/README.md`, "FLR status" |
-| NASA OSDR Inspiration4 blood count baselines | Done, 4 crew, 79 markers | `data/baselines.json` |
+| NASA OSDR Inspiration4 lab baselines (CBC + CMP) | Done, 4 crew, 4 markers | `data/baselines.json` |
+| Stress model (WESAD, physio-only) | Done, LOSO 91.6% | `ml/` |
+| Mission delay table | Done, some rows SECONDARY | `docs/delay_table.md` |
 | Mars day 143 demo scenario | Done, 10 readings for C003 | `data/scenario_mars_day143.json` |
 | Mock bridge (WebSocket) | Done | `bridge/mock_server.py` |
 | Decisions | Mars "crew acts now" shows the amber LED (Tier 2) | `docs/decisions.md` |
@@ -24,14 +27,20 @@ Built for HackAthlone 2026 (NASA Space Apps Challenge). This repo holds Part 1a 
 ```
 docs/
   schemas.md        reading, knowledge.json, serial format, safe wait, stream envelope
+  knowledge_schema.md  knowledge.json fields and scoring rules
+  engine_contract.md   JSON the rules engine returns
+  delay_table.md    one-way and round-trip delay per mission
   decisions.md      decisions the team has made
 data/
   README.md         one line per file, FLR status, cached event, status
-  raw/              raw NASA OSDR download (Inspiration4 CBC, OSD-569)
-  baselines.json    pre-flight mean and SD per crew ID and blood marker
+  raw/              NASA OSDR Inspiration4 CBC (OSD-569) and CMP (OSD-575), full files and pre-flight extracts
+  baselines.json    pre-flight mean and spread per crew ID and lab reading type
+  knowledge.json    thresholds and actions per indicator
   donki_cache.json  cached DONKI SEP events
   scenario_mars_day143.json   demo readings
   *.py              fetch, build and check scripts
+ml/
+  train.py, predict.py   WESAD stress model; outputs in ml/out/
 bridge/
   README.md         how to run the mock bridge
   mock_server.py    FastAPI server: /health and /ws/stream
@@ -71,13 +80,13 @@ NASA_API_KEY=your_key_here
 ## Data sources
 
 - **NASA DONKI** (solar particle events): https://api.nasa.gov/DONKI/SEP. Shown on screen as "cached".
-- **NASA OSDR Inspiration4** (complete blood count, study OSD-569): https://osdr.nasa.gov/geode-py/ws/studies/OSD-569/download?source=datamanager&file=LSDS-7_Complete_Blood_Count_CBC.upload_SUBMITTED.csv. Uses OSDR's anonymised crew IDs C001 to C004; no names are stored.
+- **NASA OSDR Inspiration4** (complete blood count, study OSD-569): https://osdr.nasa.gov/geode-py/ws/studies/OSD-569/download?source=datamanager&file=LSDS-7_Complete_Blood_Count_CBC.upload_SUBMITTED.csv. Comprehensive metabolic panel, study OSD-575: https://osdr.nasa.gov/bio/repo/data/studies/OSD-575. Uses OSDR's anonymised crew IDs C001 to C004; no names are stored.
 
 ## Open items
 
 - Placeholders still UNSOURCED: `knowledge.json` example values, the 10 minute safe wait (Tier 2 vs Tier 3), the lapse threshold.
 - Owners for Parts 1a, 1b, 2 and 3 are not assigned yet.
-- Still to build: `knowledge.json` v1, the rules engine, the triage router, the app, the firmware and the stress model.
+- Still to build: the rules engine, the triage router and the app. Firmware is on the `hardware/station` branch.
 
 ## Workflow
 
