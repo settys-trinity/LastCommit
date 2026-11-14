@@ -27,7 +27,7 @@ before the rules engine sees it.
 |--------|--------------|--------|-------------|-------|
 | `reaction_time` | number | `ms` | STAND-REACT, per tap | From serial `{"t":"rt","ms":312}`. |
 | `reaction_time_median` | number | `ms` | STAND-REACT, end of test | Median of the run's `reaction_time` readings. |
-| `lapses` | number | `count` | STAND-REACT, end of test | Taps slower than the lapse threshold. Threshold still open (Part 3, PVT source). |
+| `lapses` | number | `count` | STAND-REACT, end of test | Taps slower than 355 ms (D7): the 3-minute PVT-B lapse threshold, Basner, Mollicone & Dinges 2011 (https://pmc.ncbi.nlm.nih.gov/articles/PMC3197786). Same value as `LAPSE_MS` in `bridge/station.py` and `params.lapse_threshold_ms` in `data/knowledge.json`. |
 | `sway_rms` | number | `g` | STAND-REACT, end of test | From serial `{"t":"sway","rms":0.041}`. RMS of acceleration magnitude minus gravity, ~100 Hz. Firmware sends `g` (section 3). |
 | `sleep_hours` | number | `h` | Daily check-in | |
 | `mood` | number | `score_1_5` | Daily check-in | Integer 1 to 5. |
@@ -37,7 +37,7 @@ before the rules engine sees it.
 | `bp_diastolic` | number | `mmHg` | Daily check-in (proposed) | Typed in. Team to confirm. |
 | `stress_prob` | number | `prob_0_1` | Stress classifier | Probability the 60 s window is stress. Replayed held-out WESAD subject, not the person on stage. |
 | `stress_label` | string | `""` | Stress classifier | `baseline` or `stress`. One more indicator for the engine; never sets a tier on its own. |
-| `stress_mood_check` | string | `""` | Stress/mood check (`ml/stress_feed.py`, `web-components/stressMoodCheck.ts`) | `hidden_stress`, `low_mood_no_stress`, `consistent`, `uncertain` or `no_data`. The first two are a flag on the brain and behaviour panel. Never sets a tier on its own. See [Stress/mood check](#stressmood-check). |
+| `stress_mood_check` | string | `""` | Stress/mood check (`ml/stress_feed.py`, `app/src/components/stress/stressMoodCheck.ts`) | `hidden_stress`, `low_mood_no_stress`, `consistent`, `uncertain` or `no_data`. The first two are a flag on the brain and behaviour panel. Never sets a tier on its own. See [Stress/mood check](#stressmood-check). |
 | `lab_<analyte>` | number | per analyte, as in OSDR | Inspiration4 labs | e.g. `lab_hemoglobin` in `g/dL`. Feeds `baselines.json`. |
 
 New types are added here first, then in `knowledge.json` (which keys indicators by `type`).
@@ -81,10 +81,10 @@ export interface Reading {
 }
 ```
 
-### Open questions
+### Settled questions
 
-- Lapse threshold value and source (Part 3).
-- Whether typed heart rate and blood pressure are in scope (proposed, team to confirm).
+- Lapse threshold: 355 ms (D7, `docs/decisions.md`).
+- Typed heart rate and blood pressure are out of scope (No-Clash plan, "Not building").
 
 ## 2. `knowledge.json`
 
@@ -98,7 +98,7 @@ Arduino Uno to laptop over USB serial at **115200 baud**. One line per message, 
 |-----------|---------|---------|
 | App to Uno | `START` | Begin a STAND-REACT run of 60 s (kept for backwards compatibility). |
 | App to Uno | `START:n` | Begin a run of `n` seconds, 5 to 120. The demo uses `START:20`. |
-| App to Uno | `TIER:n` | `n` = 0 all tier LEDs off, 1 green LED, 2 amber LED, 3 red LED (plus vibration, only if the module turns out to be a motor). No buzzer. |
+| App to Uno | `TIER:n` | `n` = 0 all tier LEDs off, 1 green LED (crew self-care), 2 amber LED (crew medical officer acts now), 3 red LED (message Earth). The app sends the engine tier unchanged (D2, `docs/engine_contract.md` "Tier to station"). No buzzer and no vibration: the vibration module is a sensor. |
 | App to Uno | `MSG:text` | OLED text, up to 32 characters (16 per line), e.g. `MSG:Rest+hydrate`. |
 | App to Uno | `PING` | Uno answers `{"t":"ready"}`. |
 | Uno to app | `{"t":"ready"}` | Uno booted, or answer to `PING`. |
@@ -114,7 +114,7 @@ The bridge ignores lines it does not know. The sway `rms` value is in `g`, to ma
 
 ## Safe wait
 
-The round-trip delay that splits Tier 2 (crew medical officer acts now) from Tier 3 (flight surgeon on Earth) is a **10 minute placeholder, marked UNSOURCED**. Round trip is twice the one-way delay. Part 3 owns finding a source.
+The round-trip delay that splits Tier 2 (crew medical officer acts now) from Tier 3 (flight surgeon on Earth) is **600 s, a DESIGN_CHOICE** (`SAFE_WAIT_S` in `app/src/engine/delay.ts`), informed by NASA's notional figure in NASA/TM-20250003885. Round trip is twice the one-way delay. Evidence and wording for the stage: `docs/delay_table.md` (Ansh).
 
 ## Stream envelope
 
@@ -150,7 +150,7 @@ export type StreamMessage =
 
 ## Stress/mood check
 
-Compares the stress model with the daily mood check-in. Same logic in Python (`ml/stress_feed.py`, used for the replay file) and TypeScript (`web-components/stressMoodCheck.ts`, for the engine when a live check-in arrives).
+Compares the stress model with the daily mood check-in. Same logic in Python (`ml/stress_feed.py`, used for the replay file) and TypeScript (`app/src/components/stress/stressMoodCheck.ts`, for the stress panel when a live check-in arrives). It is a flag only and never sets a tier (D13).
 
 - Stress level = mean `stress_prob` over the last 5 windows (about 2 minutes).
 - Stressed at >= 0.6, calm at <= 0.4, in between is `uncertain` (no flag).
