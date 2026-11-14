@@ -83,3 +83,30 @@ export interface Reading {
 - Sway unit: `g` or `m/s^2`? Must match what the firmware sends.
 - Lapse threshold value and source (Part 3).
 - Whether typed heart rate and blood pressure are in scope (proposed, team to confirm).
+
+## Stream envelope
+
+Every WebSocket message from the bridge (`ws://<host>:8000/ws/stream`) is one JSON object with a `kind` field that says how to read `data`.
+The mock bridge (`bridge/mock_server.py`) takes an optional `speed` query parameter (default `1.0`) that divides the 2 s gap between readings.
+
+| `kind` | `data` | Other fields | When |
+|--------|--------|--------------|------|
+| `solar_event` | One DONKI SEP event, exactly as DONKI returns it | `cached`: `true` when it comes from `data/donki_cache.json` | First message after connect |
+| `reading` | One `reading` object (section 1) | none | Then one per reading, in timestamp order; the mock loops after a 5 s pause |
+
+Show `solar_event` messages with `cached: true` labelled "cached" on screen.
+
+### Examples
+
+```json
+{"kind":"solar_event","data":{"sepID":"2024-05-09T13:59:00-SEP-001","eventTime":"2024-05-09T13:59Z","instruments":[{"displayName":"MODEL: REleASE:ACE/EPAM 15.8-39.8 MeV"}],"link":"https://ccmc.gsfc.nasa.gov/DONKI/view/SEP/30609/-1","linkedEvents":[{"activityID":"2024-05-09T08:45:00-FLR-001"}],"sentNotifications":[{"messageID":"20240509-AL-004","messageIssueTime":"2024-05-09T14:00Z","messageURL":"https://ccmc.gsfc.nasa.gov/DONKI/view/Alert/30611/1"}],"submissionTime":"2024-05-09T13:54Z","versionId":1},"cached":true}
+{"kind":"reading","data":{"crew_id":"C003","timestamp":"2026-11-13T07:30:00Z","type":"sleep_hours","value":4.5,"unit":"h","source":"replay"}}
+```
+
+### TypeScript
+
+```ts
+export type StreamMessage =
+  | { kind: "solar_event"; data: Record<string, unknown>; cached: boolean }
+  | { kind: "reading"; data: Reading };
+```
