@@ -225,3 +225,6 @@ __pycache__/
 .venv/
 node_modules/
 FakeHackathon.clan
+WESAD/
+ml/out/features.csv
+*.zip

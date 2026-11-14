@@ -1,0 +1,1088 @@
+{
+  "subject": "S17",
+  "note": "Held-out WESAD subject, never in training. Replayed as a simulated Bio-Monitor feed.",
+  "loso_mean_accuracy": 0.916,
+  "loso_mean_f1": 0.856,
+  "windows": [
+    {
+      "t_start_s": 92.2,
+      "t_end_s": 152.2,
+      "true_label": "baseline",
+      "p_stress": 0.877,
+      "predicted": "stress",
+      "hr_mean": 74.4,
+      "resp_rate": 6.0
+    },
+    {
+      "t_start_s": 107.2,
+      "t_end_s": 167.2,
+      "true_label": "baseline",
+      "p_stress": 0.042,
+      "predicted": "baseline",
+      "hr_mean": 69.3,
+      "resp_rate": 14.0
+    },
+    {
+      "t_start_s": 122.2,
+      "t_end_s": 182.2,
+      "true_label": "baseline",
+      "p_stress": 0.006,
+      "predicted": "baseline",
+      "hr_mean": 65.2,
+      "resp_rate": 18.0
+    },
+    {
+      "t_start_s": 137.2,
+      "t_end_s": 197.2,
+      "true_label": "baseline",
+      "p_stress": 0.002,
+      "predicted": "baseline",
+      "hr_mean": 66.2,
+      "resp_rate": 18.0
+    },
+    {
+      "t_start_s": 152.2,
+      "t_end_s": 212.2,
+      "true_label": "baseline",
+      "p_stress": 0.002,
+      "predicted": "baseline",
+      "hr_mean": 67.0,
+      "resp_rate": 18.0
+    },
+    {
+      "t_start_s": 167.2,
+      "t_end_s": 227.2,
+      "true_label": "baseline",
+      "p_stress": 0.007,
+      "predicted": "baseline",
+      "hr_mean": 66.0,
+      "resp_rate": 18.0
+    },
+    {
+      "t_start_s": 182.2,
+      "t_end_s": 242.2,
+      "true_label": "baseline",
+      "p_stress": 0.007,
+      "predicted": "baseline",
+      "hr_mean": 67.2,
+      "resp_rate": 16.0
+    },
+    {
+      "t_start_s": 197.2,
+      "t_end_s": 257.2,
+      "true_label": "baseline",
+      "p_stress": 0.002,
+      "predicted": "baseline",
+      "hr_mean": 65.0,
+      "resp_rate": 16.0
+    },
+    {
+      "t_start_s": 212.2,
+      "t_end_s": 272.2,
+      "true_label": "baseline",
+      "p_stress": 0.0,
+      "predicted": "baseline",
+      "hr_mean": 63.2,
+      "resp_rate": 18.0
+    },
+    {
+      "t_start_s": 227.2,
+      "t_end_s": 287.2,
+      "true_label": "baseline",
+      "p_stress": 0.0,
+      "predicted": "baseline",
+      "hr_mean": 63.0,
+      "resp_rate": 18.0
+    },
+    {
+      "t_start_s": 242.2,
+      "t_end_s": 302.2,
+      "true_label": "baseline",
+      "p_stress": 0.0,
+      "predicted": "baseline",
+      "hr_mean": 62.2,
+      "resp_rate": 18.0
+    },
+    {
+      "t_start_s": 257.2,
+      "t_end_s": 317.2,
+      "true_label": "baseline",
+      "p_stress": 0.005,
+      "predicted": "baseline",
+      "hr_mean": 61.4,
+      "resp_rate": 18.0
+    },
+    {
+      "t_start_s": 272.2,
+      "t_end_s": 332.2,
+      "true_label": "baseline",
+      "p_stress": 0.01,
+      "predicted": "baseline",
+      "hr_mean": 61.7,
+      "resp_rate": 18.0
+    },
+    {
+      "t_start_s": 287.2,
+      "t_end_s": 347.2,
+      "true_label": "baseline",
+      "p_stress": 0.0,
+      "predicted": "baseline",
+      "hr_mean": 63.0,
+      "resp_rate": 18.0
+    },
+    {
+      "t_start_s": 302.2,
+      "t_end_s": 362.2,
+      "true_label": "baseline",
+      "p_stress": 0.0,
+      "predicted": "baseline",
+      "hr_mean": 62.6,
+      "resp_rate": 18.0
+    },
+    {
+      "t_start_s": 317.2,
+      "t_end_s": 377.2,
+      "true_label": "baseline",
+      "p_stress": 0.0,
+      "predicted": "baseline",
+      "hr_mean": 62.3,
+      "resp_rate": 16.0
+    },
+    {
+      "t_start_s": 332.2,
+      "t_end_s": 392.2,
+      "true_label": "baseline",
+      "p_stress": 0.025,
+      "predicted": "baseline",
+      "hr_mean": 63.8,
+      "resp_rate": 20.0
+    },
+    {
+      "t_start_s": 347.2,
+      "t_end_s": 407.2,
+      "true_label": "baseline",
+      "p_stress": 0.364,
+      "predicted": "baseline",
+      "hr_mean": 62.8,
+      "resp_rate": 6.0
+    },
+    {
+      "t_start_s": 362.2,
+      "t_end_s": 422.2,
+      "true_label": "baseline",
+      "p_stress": 0.531,
+      "predicted": "stress",
+      "hr_mean": 63.5,
+      "resp_rate": 6.0
+    },
+    {
+      "t_start_s": 377.2,
+      "t_end_s": 437.2,
+      "true_label": "baseline",
+      "p_stress": 0.568,
+      "predicted": "stress",
+      "hr_mean": 65.6,
+      "resp_rate": 6.0
+    },
+    {
+      "t_start_s": 392.2,
+      "t_end_s": 452.2,
+      "true_label": "baseline",
+      "p_stress": 0.009,
+      "predicted": "baseline",
+      "hr_mean": 66.2,
+      "resp_rate": 18.0
+    },
+    {
+      "t_start_s": 407.2,
+      "t_end_s": 467.2,
+      "true_label": "baseline",
+      "p_stress": 0.019,
+      "predicted": "baseline",
+      "hr_mean": 66.6,
+      "resp_rate": 18.0
+    },
+    {
+      "t_start_s": 422.2,
+      "t_end_s": 482.2,
+      "true_label": "baseline",
+      "p_stress": 0.003,
+      "predicted": "baseline",
+      "hr_mean": 66.7,
+      "resp_rate": 18.0
+    },
+    {
+      "t_start_s": 437.2,
+      "t_end_s": 497.2,
+      "true_label": "baseline",
+      "p_stress": 0.0,
+      "predicted": "baseline",
+      "hr_mean": 66.1,
+      "resp_rate": 18.0
+    },
+    {
+      "t_start_s": 452.2,
+      "t_end_s": 512.2,
+      "true_label": "baseline",
+      "p_stress": 0.0,
+      "predicted": "baseline",
+      "hr_mean": 64.4,
+      "resp_rate": 18.0
+    },
+    {
+      "t_start_s": 467.2,
+      "t_end_s": 527.2,
+      "true_label": "baseline",
+      "p_stress": 0.0,
+      "predicted": "baseline",
+      "hr_mean": 65.8,
+      "resp_rate": 18.0
+    },
+    {
+      "t_start_s": 482.2,
+      "t_end_s": 542.2,
+      "true_label": "baseline",
+      "p_stress": 0.004,
+      "predicted": "baseline",
+      "hr_mean": 66.4,
+      "resp_rate": 18.0
+    },
+    {
+      "t_start_s": 497.2,
+      "t_end_s": 557.2,
+      "true_label": "baseline",
+      "p_stress": 0.012,
+      "predicted": "baseline",
+      "hr_mean": 65.9,
+      "resp_rate": 16.0
+    },
+    {
+      "t_start_s": 512.2,
+      "t_end_s": 572.2,
+      "true_label": "baseline",
+      "p_stress": 0.116,
+      "predicted": "baseline",
+      "hr_mean": 66.2,
+      "resp_rate": 14.0
+    },
+    {
+      "t_start_s": 527.2,
+      "t_end_s": 587.2,
+      "true_label": "baseline",
+      "p_stress": 0.029,
+      "predicted": "baseline",
+      "hr_mean": 65.9,
+      "resp_rate": 16.0
+    },
+    {
+      "t_start_s": 542.2,
+      "t_end_s": 602.2,
+      "true_label": "baseline",
+      "p_stress": 0.016,
+      "predicted": "baseline",
+      "hr_mean": 66.0,
+      "resp_rate": 18.0
+    },
+    {
+      "t_start_s": 557.2,
+      "t_end_s": 617.2,
+      "true_label": "baseline",
+      "p_stress": 0.007,
+      "predicted": "baseline",
+      "hr_mean": 68.1,
+      "resp_rate": 20.0
+    },
+    {
+      "t_start_s": 572.2,
+      "t_end_s": 632.2,
+      "true_label": "baseline",
+      "p_stress": 0.001,
+      "predicted": "baseline",
+      "hr_mean": 68.9,
+      "resp_rate": 20.0
+    },
+    {
+      "t_start_s": 587.2,
+      "t_end_s": 647.2,
+      "true_label": "baseline",
+      "p_stress": 0.027,
+      "predicted": "baseline",
+      "hr_mean": 69.0,
+      "resp_rate": 20.0
+    },
+    {
+      "t_start_s": 602.2,
+      "t_end_s": 662.2,
+      "true_label": "baseline",
+      "p_stress": 0.312,
+      "predicted": "baseline",
+      "hr_mean": 69.9,
+      "resp_rate": 18.0
+    },
+    {
+      "t_start_s": 617.2,
+      "t_end_s": 677.2,
+      "true_label": "baseline",
+      "p_stress": 0.0,
+      "predicted": "baseline",
+      "hr_mean": 67.8,
+      "resp_rate": 18.0
+    },
+    {
+      "t_start_s": 632.2,
+      "t_end_s": 692.2,
+      "true_label": "baseline",
+      "p_stress": 0.003,
+      "predicted": "baseline",
+      "hr_mean": 66.6,
+      "resp_rate": 18.0
+    },
+    {
+      "t_start_s": 647.2,
+      "t_end_s": 707.2,
+      "true_label": "baseline",
+      "p_stress": 0.003,
+      "predicted": "baseline",
+      "hr_mean": 67.1,
+      "resp_rate": 18.0
+    },
+    {
+      "t_start_s": 662.2,
+      "t_end_s": 722.2,
+      "true_label": "baseline",
+      "p_stress": 0.012,
+      "predicted": "baseline",
+      "hr_mean": 65.6,
+      "resp_rate": 18.0
+    },
+    {
+      "t_start_s": 677.2,
+      "t_end_s": 737.2,
+      "true_label": "baseline",
+      "p_stress": 0.512,
+      "predicted": "stress",
+      "hr_mean": 64.5,
+      "resp_rate": 6.0
+    },
+    {
+      "t_start_s": 692.2,
+      "t_end_s": 752.2,
+      "true_label": "baseline",
+      "p_stress": 0.588,
+      "predicted": "stress",
+      "hr_mean": 64.7,
+      "resp_rate": 6.0
+    },
+    {
+      "t_start_s": 707.2,
+      "t_end_s": 767.2,
+      "true_label": "baseline",
+      "p_stress": 0.655,
+      "predicted": "stress",
+      "hr_mean": 63.9,
+      "resp_rate": 6.0
+    },
+    {
+      "t_start_s": 722.2,
+      "t_end_s": 782.2,
+      "true_label": "baseline",
+      "p_stress": 0.0,
+      "predicted": "baseline",
+      "hr_mean": 62.4,
+      "resp_rate": 18.0
+    },
+    {
+      "t_start_s": 737.2,
+      "t_end_s": 797.2,
+      "true_label": "baseline",
+      "p_stress": 0.0,
+      "predicted": "baseline",
+      "hr_mean": 62.9,
+      "resp_rate": 18.0
+    },
+    {
+      "t_start_s": 752.2,
+      "t_end_s": 812.2,
+      "true_label": "baseline",
+      "p_stress": 0.0,
+      "predicted": "baseline",
+      "hr_mean": 61.7,
+      "resp_rate": 18.0
+    },
+    {
+      "t_start_s": 767.2,
+      "t_end_s": 827.2,
+      "true_label": "baseline",
+      "p_stress": 0.0,
+      "predicted": "baseline",
+      "hr_mean": 62.5,
+      "resp_rate": 18.0
+    },
+    {
+      "t_start_s": 782.2,
+      "t_end_s": 842.2,
+      "true_label": "baseline",
+      "p_stress": 0.002,
+      "predicted": "baseline",
+      "hr_mean": 62.3,
+      "resp_rate": 18.0
+    },
+    {
+      "t_start_s": 797.2,
+      "t_end_s": 857.2,
+      "true_label": "baseline",
+      "p_stress": 0.004,
+      "predicted": "baseline",
+      "hr_mean": 61.2,
+      "resp_rate": 18.0
+    },
+    {
+      "t_start_s": 812.2,
+      "t_end_s": 872.2,
+      "true_label": "baseline",
+      "p_stress": 0.002,
+      "predicted": "baseline",
+      "hr_mean": 60.6,
+      "resp_rate": 18.0
+    },
+    {
+      "t_start_s": 827.2,
+      "t_end_s": 887.2,
+      "true_label": "baseline",
+      "p_stress": 0.0,
+      "predicted": "baseline",
+      "hr_mean": 58.5,
+      "resp_rate": 18.0
+    },
+    {
+      "t_start_s": 842.2,
+      "t_end_s": 902.2,
+      "true_label": "baseline",
+      "p_stress": 0.043,
+      "predicted": "baseline",
+      "hr_mean": 65.9,
+      "resp_rate": 16.0
+    },
+    {
+      "t_start_s": 857.2,
+      "t_end_s": 917.2,
+      "true_label": "baseline",
+      "p_stress": 0.023,
+      "predicted": "baseline",
+      "hr_mean": 67.6,
+      "resp_rate": 8.0
+    },
+    {
+      "t_start_s": 872.2,
+      "t_end_s": 932.2,
+      "true_label": "baseline",
+      "p_stress": 0.155,
+      "predicted": "baseline",
+      "hr_mean": 68.5,
+      "resp_rate": 8.0
+    },
+    {
+      "t_start_s": 887.2,
+      "t_end_s": 947.2,
+      "true_label": "baseline",
+      "p_stress": 0.501,
+      "predicted": "stress",
+      "hr_mean": 67.8,
+      "resp_rate": 8.0
+    },
+    {
+      "t_start_s": 902.2,
+      "t_end_s": 962.2,
+      "true_label": "baseline",
+      "p_stress": 0.02,
+      "predicted": "baseline",
+      "hr_mean": 59.8,
+      "resp_rate": 18.0
+    },
+    {
+      "t_start_s": 917.2,
+      "t_end_s": 977.2,
+      "true_label": "baseline",
+      "p_stress": 0.017,
+      "predicted": "baseline",
+      "hr_mean": 59.7,
+      "resp_rate": 18.0
+    },
+    {
+      "t_start_s": 932.2,
+      "t_end_s": 992.2,
+      "true_label": "baseline",
+      "p_stress": 0.002,
+      "predicted": "baseline",
+      "hr_mean": 59.6,
+      "resp_rate": 18.0
+    },
+    {
+      "t_start_s": 947.2,
+      "t_end_s": 1007.2,
+      "true_label": "baseline",
+      "p_stress": 0.001,
+      "predicted": "baseline",
+      "hr_mean": 63.1,
+      "resp_rate": 16.0
+    },
+    {
+      "t_start_s": 962.2,
+      "t_end_s": 1022.2,
+      "true_label": "baseline",
+      "p_stress": 0.013,
+      "predicted": "baseline",
+      "hr_mean": 66.0,
+      "resp_rate": 16.0
+    },
+    {
+      "t_start_s": 977.2,
+      "t_end_s": 1037.2,
+      "true_label": "baseline",
+      "p_stress": 0.0,
+      "predicted": "baseline",
+      "hr_mean": 66.8,
+      "resp_rate": 20.0
+    },
+    {
+      "t_start_s": 992.2,
+      "t_end_s": 1052.2,
+      "true_label": "baseline",
+      "p_stress": 0.0,
+      "predicted": "baseline",
+      "hr_mean": 68.4,
+      "resp_rate": 20.0
+    },
+    {
+      "t_start_s": 1007.2,
+      "t_end_s": 1067.2,
+      "true_label": "baseline",
+      "p_stress": 0.0,
+      "predicted": "baseline",
+      "hr_mean": 67.1,
+      "resp_rate": 20.0
+    },
+    {
+      "t_start_s": 1022.2,
+      "t_end_s": 1082.2,
+      "true_label": "baseline",
+      "p_stress": 0.0,
+      "predicted": "baseline",
+      "hr_mean": 67.8,
+      "resp_rate": 20.0
+    },
+    {
+      "t_start_s": 1037.2,
+      "t_end_s": 1097.2,
+      "true_label": "baseline",
+      "p_stress": 0.01,
+      "predicted": "baseline",
+      "hr_mean": 68.8,
+      "resp_rate": 18.0
+    },
+    {
+      "t_start_s": 1052.2,
+      "t_end_s": 1112.2,
+      "true_label": "baseline",
+      "p_stress": 0.0,
+      "predicted": "baseline",
+      "hr_mean": 69.4,
+      "resp_rate": 20.0
+    },
+    {
+      "t_start_s": 1067.2,
+      "t_end_s": 1127.2,
+      "true_label": "baseline",
+      "p_stress": 0.0,
+      "predicted": "baseline",
+      "hr_mean": 69.8,
+      "resp_rate": 20.0
+    },
+    {
+      "t_start_s": 1082.2,
+      "t_end_s": 1142.2,
+      "true_label": "baseline",
+      "p_stress": 0.04,
+      "predicted": "baseline",
+      "hr_mean": 69.6,
+      "resp_rate": 18.0
+    },
+    {
+      "t_start_s": 1097.2,
+      "t_end_s": 1157.2,
+      "true_label": "baseline",
+      "p_stress": 0.187,
+      "predicted": "baseline",
+      "hr_mean": 66.2,
+      "resp_rate": 8.0
+    },
+    {
+      "t_start_s": 1112.2,
+      "t_end_s": 1172.2,
+      "true_label": "baseline",
+      "p_stress": 0.432,
+      "predicted": "baseline",
+      "hr_mean": 64.3,
+      "resp_rate": 8.0
+    },
+    {
+      "t_start_s": 1127.2,
+      "t_end_s": 1187.2,
+      "true_label": "baseline",
+      "p_stress": 0.148,
+      "predicted": "baseline",
+      "hr_mean": 72.4,
+      "resp_rate": 14.0
+    },
+    {
+      "t_start_s": 1142.2,
+      "t_end_s": 1202.2,
+      "true_label": "baseline",
+      "p_stress": 0.319,
+      "predicted": "baseline",
+      "hr_mean": 74.4,
+      "resp_rate": 12.0
+    },
+    {
+      "t_start_s": 1157.2,
+      "t_end_s": 1217.2,
+      "true_label": "baseline",
+      "p_stress": 0.931,
+      "predicted": "stress",
+      "hr_mean": 80.3,
+      "resp_rate": 12.0
+    },
+    {
+      "t_start_s": 1172.2,
+      "t_end_s": 1232.2,
+      "true_label": "baseline",
+      "p_stress": 0.937,
+      "predicted": "stress",
+      "hr_mean": 80.5,
+      "resp_rate": 8.0
+    },
+    {
+      "t_start_s": 1187.2,
+      "t_end_s": 1247.2,
+      "true_label": "baseline",
+      "p_stress": 0.137,
+      "predicted": "baseline",
+      "hr_mean": 75.6,
+      "resp_rate": 8.0
+    },
+    {
+      "t_start_s": 1202.2,
+      "t_end_s": 1262.2,
+      "true_label": "baseline",
+      "p_stress": 0.135,
+      "predicted": "baseline",
+      "hr_mean": 73.0,
+      "resp_rate": 8.0
+    },
+    {
+      "t_start_s": 3512.2,
+      "t_end_s": 3572.2,
+      "true_label": "stress",
+      "p_stress": 1.0,
+      "predicted": "stress",
+      "hr_mean": 116.7,
+      "resp_rate": 6.0
+    },
+    {
+      "t_start_s": 3527.2,
+      "t_end_s": 3587.2,
+      "true_label": "stress",
+      "p_stress": 1.0,
+      "predicted": "stress",
+      "hr_mean": 109.6,
+      "resp_rate": 6.0
+    },
+    {
+      "t_start_s": 3542.2,
+      "t_end_s": 3602.2,
+      "true_label": "stress",
+      "p_stress": 1.0,
+      "predicted": "stress",
+      "hr_mean": 105.7,
+      "resp_rate": 6.0
+    },
+    {
+      "t_start_s": 3557.2,
+      "t_end_s": 3617.2,
+      "true_label": "stress",
+      "p_stress": 0.978,
+      "predicted": "stress",
+      "hr_mean": 104.2,
+      "resp_rate": 8.0
+    },
+    {
+      "t_start_s": 3572.2,
+      "t_end_s": 3632.2,
+      "true_label": "stress",
+      "p_stress": 0.994,
+      "predicted": "stress",
+      "hr_mean": 103.9,
+      "resp_rate": 10.0
+    },
+    {
+      "t_start_s": 3587.2,
+      "t_end_s": 3647.2,
+      "true_label": "stress",
+      "p_stress": 0.99,
+      "predicted": "stress",
+      "hr_mean": 107.2,
+      "resp_rate": 10.0
+    },
+    {
+      "t_start_s": 3602.2,
+      "t_end_s": 3662.2,
+      "true_label": "stress",
+      "p_stress": 0.985,
+      "predicted": "stress",
+      "hr_mean": 108.3,
+      "resp_rate": 6.0
+    },
+    {
+      "t_start_s": 3617.2,
+      "t_end_s": 3677.2,
+      "true_label": "stress",
+      "p_stress": 1.0,
+      "predicted": "stress",
+      "hr_mean": 108.0,
+      "resp_rate": 10.0
+    },
+    {
+      "t_start_s": 3632.2,
+      "t_end_s": 3692.2,
+      "true_label": "stress",
+      "p_stress": 0.999,
+      "predicted": "stress",
+      "hr_mean": 108.4,
+      "resp_rate": 16.0
+    },
+    {
+      "t_start_s": 3647.2,
+      "t_end_s": 3707.2,
+      "true_label": "stress",
+      "p_stress": 0.999,
+      "predicted": "stress",
+      "hr_mean": 107.5,
+      "resp_rate": 16.0
+    },
+    {
+      "t_start_s": 3662.2,
+      "t_end_s": 3722.2,
+      "true_label": "stress",
+      "p_stress": 0.997,
+      "predicted": "stress",
+      "hr_mean": 105.4,
+      "resp_rate": 14.0
+    },
+    {
+      "t_start_s": 3677.2,
+      "t_end_s": 3737.2,
+      "true_label": "stress",
+      "p_stress": 0.992,
+      "predicted": "stress",
+      "hr_mean": 107.8,
+      "resp_rate": 14.0
+    },
+    {
+      "t_start_s": 3692.2,
+      "t_end_s": 3752.2,
+      "true_label": "stress",
+      "p_stress": 1.0,
+      "predicted": "stress",
+      "hr_mean": 104.8,
+      "resp_rate": 6.0
+    },
+    {
+      "t_start_s": 3707.2,
+      "t_end_s": 3767.2,
+      "true_label": "stress",
+      "p_stress": 1.0,
+      "predicted": "stress",
+      "hr_mean": 101.9,
+      "resp_rate": 6.0
+    },
+    {
+      "t_start_s": 3722.2,
+      "t_end_s": 3782.2,
+      "true_label": "stress",
+      "p_stress": 1.0,
+      "predicted": "stress",
+      "hr_mean": 99.2,
+      "resp_rate": 6.0
+    },
+    {
+      "t_start_s": 3737.2,
+      "t_end_s": 3797.2,
+      "true_label": "stress",
+      "p_stress": 0.995,
+      "predicted": "stress",
+      "hr_mean": 98.1,
+      "resp_rate": 22.0
+    },
+    {
+      "t_start_s": 3752.2,
+      "t_end_s": 3812.2,
+      "true_label": "stress",
+      "p_stress": 1.0,
+      "predicted": "stress",
+      "hr_mean": 101.2,
+      "resp_rate": 6.0
+    },
+    {
+      "t_start_s": 3767.2,
+      "t_end_s": 3827.2,
+      "true_label": "stress",
+      "p_stress": 0.999,
+      "predicted": "stress",
+      "hr_mean": 104.3,
+      "resp_rate": 12.0
+    },
+    {
+      "t_start_s": 3782.2,
+      "t_end_s": 3842.2,
+      "true_label": "stress",
+      "p_stress": 1.0,
+      "predicted": "stress",
+      "hr_mean": 107.1,
+      "resp_rate": 6.0
+    },
+    {
+      "t_start_s": 3797.2,
+      "t_end_s": 3857.2,
+      "true_label": "stress",
+      "p_stress": 1.0,
+      "predicted": "stress",
+      "hr_mean": 105.3,
+      "resp_rate": 8.0
+    },
+    {
+      "t_start_s": 3812.2,
+      "t_end_s": 3872.2,
+      "true_label": "stress",
+      "p_stress": 0.995,
+      "predicted": "stress",
+      "hr_mean": 99.1,
+      "resp_rate": 18.0
+    },
+    {
+      "t_start_s": 3827.2,
+      "t_end_s": 3887.2,
+      "true_label": "stress",
+      "p_stress": 0.995,
+      "predicted": "stress",
+      "hr_mean": 92.0,
+      "resp_rate": 18.0
+    },
+    {
+      "t_start_s": 3842.2,
+      "t_end_s": 3902.2,
+      "true_label": "stress",
+      "p_stress": 0.995,
+      "predicted": "stress",
+      "hr_mean": 92.3,
+      "resp_rate": 18.0
+    },
+    {
+      "t_start_s": 3857.2,
+      "t_end_s": 3917.2,
+      "true_label": "stress",
+      "p_stress": 0.993,
+      "predicted": "stress",
+      "hr_mean": 97.2,
+      "resp_rate": 18.0
+    },
+    {
+      "t_start_s": 3872.2,
+      "t_end_s": 3932.2,
+      "true_label": "stress",
+      "p_stress": 0.993,
+      "predicted": "stress",
+      "hr_mean": 106.9,
+      "resp_rate": 18.0
+    },
+    {
+      "t_start_s": 3887.2,
+      "t_end_s": 3947.2,
+      "true_label": "stress",
+      "p_stress": 0.994,
+      "predicted": "stress",
+      "hr_mean": 119.8,
+      "resp_rate": 18.0
+    },
+    {
+      "t_start_s": 3902.2,
+      "t_end_s": 3962.2,
+      "true_label": "stress",
+      "p_stress": 0.994,
+      "predicted": "stress",
+      "hr_mean": 128.1,
+      "resp_rate": 16.0
+    },
+    {
+      "t_start_s": 3917.2,
+      "t_end_s": 3977.2,
+      "true_label": "stress",
+      "p_stress": 0.998,
+      "predicted": "stress",
+      "hr_mean": 133.7,
+      "resp_rate": 16.0
+    },
+    {
+      "t_start_s": 3932.2,
+      "t_end_s": 3992.2,
+      "true_label": "stress",
+      "p_stress": 0.993,
+      "predicted": "stress",
+      "hr_mean": 133.1,
+      "resp_rate": 14.0
+    },
+    {
+      "t_start_s": 3947.2,
+      "t_end_s": 4007.2,
+      "true_label": "stress",
+      "p_stress": 1.0,
+      "predicted": "stress",
+      "hr_mean": 128.5,
+      "resp_rate": 12.0
+    },
+    {
+      "t_start_s": 3962.2,
+      "t_end_s": 4022.2,
+      "true_label": "stress",
+      "p_stress": 0.997,
+      "predicted": "stress",
+      "hr_mean": 117.2,
+      "resp_rate": 12.0
+    },
+    {
+      "t_start_s": 3977.2,
+      "t_end_s": 4037.2,
+      "true_label": "stress",
+      "p_stress": 0.985,
+      "predicted": "stress",
+      "hr_mean": 109.0,
+      "resp_rate": 12.0
+    },
+    {
+      "t_start_s": 3992.2,
+      "t_end_s": 4052.2,
+      "true_label": "stress",
+      "p_stress": 0.985,
+      "predicted": "stress",
+      "hr_mean": 108.9,
+      "resp_rate": 10.0
+    },
+    {
+      "t_start_s": 4007.2,
+      "t_end_s": 4067.2,
+      "true_label": "stress",
+      "p_stress": 1.0,
+      "predicted": "stress",
+      "hr_mean": 112.3,
+      "resp_rate": 6.0
+    },
+    {
+      "t_start_s": 4022.2,
+      "t_end_s": 4082.2,
+      "true_label": "stress",
+      "p_stress": 1.0,
+      "predicted": "stress",
+      "hr_mean": 120.5,
+      "resp_rate": 6.0
+    },
+    {
+      "t_start_s": 4037.2,
+      "t_end_s": 4097.2,
+      "true_label": "stress",
+      "p_stress": 1.0,
+      "predicted": "stress",
+      "hr_mean": 127.3,
+      "resp_rate": 6.0
+    },
+    {
+      "t_start_s": 4052.2,
+      "t_end_s": 4112.2,
+      "true_label": "stress",
+      "p_stress": 0.994,
+      "predicted": "stress",
+      "hr_mean": 130.0,
+      "resp_rate": 18.0
+    },
+    {
+      "t_start_s": 4067.2,
+      "t_end_s": 4127.2,
+      "true_label": "stress",
+      "p_stress": 0.994,
+      "predicted": "stress",
+      "hr_mean": 131.5,
+      "resp_rate": 18.0
+    },
+    {
+      "t_start_s": 4082.2,
+      "t_end_s": 4142.2,
+      "true_label": "stress",
+      "p_stress": 0.994,
+      "predicted": "stress",
+      "hr_mean": 133.1,
+      "resp_rate": 18.0
+    },
+    {
+      "t_start_s": 4097.2,
+      "t_end_s": 4157.2,
+      "true_label": "stress",
+      "p_stress": 1.0,
+      "predicted": "stress",
+      "hr_mean": 133.9,
+      "resp_rate": 10.0
+    },
+    {
+      "t_start_s": 4112.2,
+      "t_end_s": 4172.2,
+      "true_label": "stress",
+      "p_stress": 1.0,
+      "predicted": "stress",
+      "hr_mean": 131.2,
+      "resp_rate": 10.0
+    },
+    {
+      "t_start_s": 4127.2,
+      "t_end_s": 4187.2,
+      "true_label": "stress",
+      "p_stress": 1.0,
+      "predicted": "stress",
+      "hr_mean": 126.8,
+      "resp_rate": 8.0
+    },
+    {
+      "t_start_s": 4142.2,
+      "t_end_s": 4202.2,
+      "true_label": "stress",
+      "p_stress": 1.0,
+      "predicted": "stress",
+      "hr_mean": 122.7,
+      "resp_rate": 8.0
+    },
+    {
+      "t_start_s": 4157.2,
+      "t_end_s": 4217.2,
+      "true_label": "stress",
+      "p_stress": 1.0,
+      "predicted": "stress",
+      "hr_mean": 116.2,
+      "resp_rate": 8.0
+    },
+    {
+      "t_start_s": 4172.2,
+      "t_end_s": 4232.2,
+      "true_label": "stress",
+      "p_stress": 1.0,
+      "predicted": "stress",
+      "hr_mean": 116.5,
+      "resp_rate": 8.0
+    }
+  ]
+}
