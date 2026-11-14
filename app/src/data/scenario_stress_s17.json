@@ -131,7 +131,7 @@
   "crew_id": "C003",
   "timestamp": "2026-11-15T11:41:03Z",
   "type": "stress_mood_check",
-  "value": "consistent",
+  "value": "hidden_stress",
   "unit": "",
   "source": "ml_saved"
  }
