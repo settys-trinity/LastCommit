@@ -5,7 +5,10 @@ import { getMission, MISSIONS, type MissionId } from "./engine/delay";
 import { KeyValue, Panel, StatusTag, type TagStatus } from "./components/term";
 import { TopBar } from "./components/shell/TopBar";
 import { formatRoundTrip } from "./components/shell/format";
-import { StaticAstronaut } from "./components/astronaut/StaticAstronaut";
+import { BodyMap } from "./components/bodymap/BodyMap";
+import { SolarBanner } from "./components/solar/SolarBanner";
+import { CabinAirPanel } from "./components/cabin/CabinAirPanel";
+import { BaselinePanel } from "./components/baseline/BaselinePanel";
 
 const TIER_STATUS: Record<0 | 1 | 2 | 3, TagStatus> = { 0: "ok", 1: "warn", 2: "warn", 3: "fail" };
 
@@ -29,7 +32,6 @@ export default function App() {
     () => evaluate(readingsByCrew[crewId] ?? [], crewId, missionId),
     [readingsByCrew, crewId, missionId],
   );
-  void cabinAir; // CABIN AIR panel arrives in S5
 
   // Live mode only: the station button starts a run for this crew.
   useEffect(() => {
@@ -85,16 +87,7 @@ export default function App() {
       />
 
       <div className="border-b border-line px-2 whitespace-pre-wrap">
-        {solarEvent ? (
-          <>
-            <StatusTag status="info" /> solar_event {String(solarEvent.data.sepID)}
-            {solarEvent.cached && <span className="text-dim"> (cached)</span>}
-          </>
-        ) : (
-          <>
-            <StatusTag status="off" /> no solar event
-          </>
-        )}
+        <SolarBanner solarEvent={solarEvent} />
         {warning && (
           <div>
             <StatusTag status="warn" /> {warning}
@@ -104,7 +97,7 @@ export default function App() {
 
       <main className="grid flex-1 grid-cols-1 gap-3 p-2 lg:grid-cols-[1fr_1.2fr_1fr]">
         <div className="flex flex-col gap-3">
-          <Panel title="baseline"><Waiting /></Panel>
+          <BaselinePanel crewId={crewId} />
           <Panel title="stand-react"><Waiting /></Panel>
         </div>
         <div className="flex flex-col gap-3">
@@ -120,14 +113,10 @@ export default function App() {
           <Panel title="station"><Waiting /></Panel>
         </div>
         <div className="flex flex-col gap-3">
-          <Panel title="body">
-            <div className="overflow-x-auto text-[9px]">
-              <StaticAstronaut />
-            </div>
-          </Panel>
+          <BodyMap result={result} />
           <Panel title="stress / mood"><Waiting /></Panel>
           <Panel title="earth outbox"><Waiting /></Panel>
-          <Panel title="cabin air"><Waiting /></Panel>
+          <CabinAirPanel samples={cabinAir} />
         </div>
       </main>
 

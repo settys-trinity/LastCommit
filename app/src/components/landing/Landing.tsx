@@ -1,6 +1,8 @@
 import { useEffect } from "react";
 import { Prompt, TypeLines } from "../term";
-import { StaticAstronaut } from "../astronaut/StaticAstronaut";
+import { LazyAstronaut } from "../astronaut/LazyAstronaut";
+
+const ALL_OK = { brain_behaviour: "green", neurovestibular: "green", metabolism: "green" } as const;
 import { COPY } from "./copy";
 
 // Public landing page rendered as a terminal session. Enter opens /demo.
@@ -37,7 +39,7 @@ export function Landing() {
         </div>
       </div>
       <aside className="shrink-0 overflow-x-auto text-[11px] sm:text-sm">
-        <StaticAstronaut />
+        <LazyAstronaut systems={ALL_OK} height={420} />
       </aside>
     </main>
   );
