@@ -1,0 +1,386 @@
+[
+ {
+  "crew_id": "C001",
+  "timestamp": "2021-06-16T00:00:00Z",
+  "type": "lab_calcium",
+  "value": 9.7,
+  "unit": "mg/dL",
+  "source": "osdr"
+ },
+ {
+  "crew_id": "C001",
+  "timestamp": "2021-06-16T00:00:00Z",
+  "type": "lab_glucose",
+  "value": 83.0,
+  "unit": "mg/dL",
+  "source": "osdr"
+ },
+ {
+  "crew_id": "C001",
+  "timestamp": "2021-06-16T00:00:00Z",
+  "type": "lab_hemoglobin",
+  "value": 14.1,
+  "unit": "g/dL",
+  "source": "osdr"
+ },
+ {
+  "crew_id": "C001",
+  "timestamp": "2021-06-16T00:00:00Z",
+  "type": "lab_wbc",
+  "value": 5.4,
+  "unit": "Thousand/uL",
+  "source": "osdr"
+ },
+ {
+  "crew_id": "C001",
+  "timestamp": "2021-08-03T00:00:00Z",
+  "type": "lab_calcium",
+  "value": 10.0,
+  "unit": "mg/dL",
+  "source": "osdr"
+ },
+ {
+  "crew_id": "C001",
+  "timestamp": "2021-08-03T00:00:00Z",
+  "type": "lab_glucose",
+  "value": 80.0,
+  "unit": "mg/dL",
+  "source": "osdr"
+ },
+ {
+  "crew_id": "C001",
+  "timestamp": "2021-08-03T00:00:00Z",
+  "type": "lab_hemoglobin",
+  "value": 14.9,
+  "unit": "g/dL",
+  "source": "osdr"
+ },
+ {
+  "crew_id": "C001",
+  "timestamp": "2021-08-03T00:00:00Z",
+  "type": "lab_wbc",
+  "value": 5.5,
+  "unit": "Thousand/uL",
+  "source": "osdr"
+ },
+ {
+  "crew_id": "C001",
+  "timestamp": "2021-09-13T00:00:00Z",
+  "type": "lab_calcium",
+  "value": 9.6,
+  "unit": "mg/dL",
+  "source": "osdr"
+ },
+ {
+  "crew_id": "C001",
+  "timestamp": "2021-09-13T00:00:00Z",
+  "type": "lab_glucose",
+  "value": 69.0,
+  "unit": "mg/dL",
+  "source": "osdr"
+ },
+ {
+  "crew_id": "C001",
+  "timestamp": "2021-09-13T00:00:00Z",
+  "type": "lab_hemoglobin",
+  "value": 14.7,
+  "unit": "g/dL",
+  "source": "osdr"
+ },
+ {
+  "crew_id": "C001",
+  "timestamp": "2021-09-13T00:00:00Z",
+  "type": "lab_wbc",
+  "value": 7.0,
+  "unit": "Thousand/uL",
+  "source": "osdr"
+ },
+ {
+  "crew_id": "C002",
+  "timestamp": "2021-06-16T00:00:00Z",
+  "type": "lab_calcium",
+  "value": 10.2,
+  "unit": "mg/dL",
+  "source": "osdr"
+ },
+ {
+  "crew_id": "C002",
+  "timestamp": "2021-06-16T00:00:00Z",
+  "type": "lab_glucose",
+  "value": 69.0,
+  "unit": "mg/dL",
+  "source": "osdr"
+ },
+ {
+  "crew_id": "C002",
+  "timestamp": "2021-06-16T00:00:00Z",
+  "type": "lab_hemoglobin",
+  "value": 13.2,
+  "unit": "g/dL",
+  "source": "osdr"
+ },
+ {
+  "crew_id": "C002",
+  "timestamp": "2021-06-16T00:00:00Z",
+  "type": "lab_wbc",
+  "value": 6.5,
+  "unit": "Thousand/uL",
+  "source": "osdr"
+ },
+ {
+  "crew_id": "C002",
+  "timestamp": "2021-08-03T00:00:00Z",
+  "type": "lab_calcium",
+  "value": 9.7,
+  "unit": "mg/dL",
+  "source": "osdr"
+ },
+ {
+  "crew_id": "C002",
+  "timestamp": "2021-08-03T00:00:00Z",
+  "type": "lab_glucose",
+  "value": 72.0,
+  "unit": "mg/dL",
+  "source": "osdr"
+ },
+ {
+  "crew_id": "C002",
+  "timestamp": "2021-08-03T00:00:00Z",
+  "type": "lab_hemoglobin",
+  "value": 12.8,
+  "unit": "g/dL",
+  "source": "osdr"
+ },
+ {
+  "crew_id": "C002",
+  "timestamp": "2021-08-03T00:00:00Z",
+  "type": "lab_wbc",
+  "value": 5.4,
+  "unit": "Thousand/uL",
+  "source": "osdr"
+ },
+ {
+  "crew_id": "C002",
+  "timestamp": "2021-09-13T00:00:00Z",
+  "type": "lab_calcium",
+  "value": 9.3,
+  "unit": "mg/dL",
+  "source": "osdr"
+ },
+ {
+  "crew_id": "C002",
+  "timestamp": "2021-09-13T00:00:00Z",
+  "type": "lab_glucose",
+  "value": 78.0,
+  "unit": "mg/dL",
+  "source": "osdr"
+ },
+ {
+  "crew_id": "C002",
+  "timestamp": "2021-09-13T00:00:00Z",
+  "type": "lab_hemoglobin",
+  "value": 11.5,
+  "unit": "g/dL",
+  "source": "osdr"
+ },
+ {
+  "crew_id": "C002",
+  "timestamp": "2021-09-13T00:00:00Z",
+  "type": "lab_wbc",
+  "value": 7.2,
+  "unit": "Thousand/uL",
+  "source": "osdr"
+ },
+ {
+  "crew_id": "C003",
+  "timestamp": "2021-06-16T00:00:00Z",
+  "type": "lab_calcium",
+  "value": 9.3,
+  "unit": "mg/dL",
+  "source": "osdr"
+ },
+ {
+  "crew_id": "C003",
+  "timestamp": "2021-06-16T00:00:00Z",
+  "type": "lab_glucose",
+  "value": 77.0,
+  "unit": "mg/dL",
+  "source": "osdr"
+ },
+ {
+  "crew_id": "C003",
+  "timestamp": "2021-06-16T00:00:00Z",
+  "type": "lab_hemoglobin",
+  "value": 13.2,
+  "unit": "g/dL",
+  "source": "osdr"
+ },
+ {
+  "crew_id": "C003",
+  "timestamp": "2021-06-16T00:00:00Z",
+  "type": "lab_wbc",
+  "value": 9.6,
+  "unit": "Thousand/uL",
+  "source": "osdr"
+ },
+ {
+  "crew_id": "C003",
+  "timestamp": "2021-08-03T00:00:00Z",
+  "type": "lab_calcium",
+  "value": 10.3,
+  "unit": "mg/dL",
+  "source": "osdr"
+ },
+ {
+  "crew_id": "C003",
+  "timestamp": "2021-08-03T00:00:00Z",
+  "type": "lab_glucose",
+  "value": 62.0,
+  "unit": "mg/dL",
+  "source": "osdr"
+ },
+ {
+  "crew_id": "C003",
+  "timestamp": "2021-08-03T00:00:00Z",
+  "type": "lab_hemoglobin",
+  "value": 14.4,
+  "unit": "g/dL",
+  "source": "osdr"
+ },
+ {
+  "crew_id": "C003",
+  "timestamp": "2021-08-03T00:00:00Z",
+  "type": "lab_wbc",
+  "value": 9.3,
+  "unit": "Thousand/uL",
+  "source": "osdr"
+ },
+ {
+  "crew_id": "C003",
+  "timestamp": "2021-09-13T00:00:00Z",
+  "type": "lab_calcium",
+  "value": 9.5,
+  "unit": "mg/dL",
+  "source": "osdr"
+ },
+ {
+  "crew_id": "C003",
+  "timestamp": "2021-09-13T00:00:00Z",
+  "type": "lab_glucose",
+  "value": 75.0,
+  "unit": "mg/dL",
+  "source": "osdr"
+ },
+ {
+  "crew_id": "C003",
+  "timestamp": "2021-09-13T00:00:00Z",
+  "type": "lab_hemoglobin",
+  "value": 13.3,
+  "unit": "g/dL",
+  "source": "osdr"
+ },
+ {
+  "crew_id": "C003",
+  "timestamp": "2021-09-13T00:00:00Z",
+  "type": "lab_wbc",
+  "value": 9.8,
+  "unit": "Thousand/uL",
+  "source": "osdr"
+ },
+ {
+  "crew_id": "C004",
+  "timestamp": "2021-06-16T00:00:00Z",
+  "type": "lab_calcium",
+  "value": 10.0,
+  "unit": "mg/dL",
+  "source": "osdr"
+ },
+ {
+  "crew_id": "C004",
+  "timestamp": "2021-06-16T00:00:00Z",
+  "type": "lab_glucose",
+  "value": 100.0,
+  "unit": "mg/dL",
+  "source": "osdr"
+ },
+ {
+  "crew_id": "C004",
+  "timestamp": "2021-06-16T00:00:00Z",
+  "type": "lab_hemoglobin",
+  "value": 17.0,
+  "unit": "g/dL",
+  "source": "osdr"
+ },
+ {
+  "crew_id": "C004",
+  "timestamp": "2021-06-16T00:00:00Z",
+  "type": "lab_wbc",
+  "value": 7.7,
+  "unit": "Thousand/uL",
+  "source": "osdr"
+ },
+ {
+  "crew_id": "C004",
+  "timestamp": "2021-08-03T00:00:00Z",
+  "type": "lab_calcium",
+  "value": 10.1,
+  "unit": "mg/dL",
+  "source": "osdr"
+ },
+ {
+  "crew_id": "C004",
+  "timestamp": "2021-08-03T00:00:00Z",
+  "type": "lab_glucose",
+  "value": 83.0,
+  "unit": "mg/dL",
+  "source": "osdr"
+ },
+ {
+  "crew_id": "C004",
+  "timestamp": "2021-08-03T00:00:00Z",
+  "type": "lab_hemoglobin",
+  "value": 16.6,
+  "unit": "g/dL",
+  "source": "osdr"
+ },
+ {
+  "crew_id": "C004",
+  "timestamp": "2021-08-03T00:00:00Z",
+  "type": "lab_wbc",
+  "value": 6.4,
+  "unit": "Thousand/uL",
+  "source": "osdr"
+ },
+ {
+  "crew_id": "C004",
+  "timestamp": "2021-09-13T00:00:00Z",
+  "type": "lab_calcium",
+  "value": 10.2,
+  "unit": "mg/dL",
+  "source": "osdr"
+ },
+ {
+  "crew_id": "C004",
+  "timestamp": "2021-09-13T00:00:00Z",
+  "type": "lab_glucose",
+  "value": 56.0,
+  "unit": "mg/dL",
+  "source": "osdr"
+ },
+ {
+  "crew_id": "C004",
+  "timestamp": "2021-09-13T00:00:00Z",
+  "type": "lab_hemoglobin",
+  "value": 16.8,
+  "unit": "g/dL",
+  "source": "osdr"
+ },
+ {
+  "crew_id": "C004",
+  "timestamp": "2021-09-13T00:00:00Z",
+  "type": "lab_wbc",
+  "value": 10.6,
+  "unit": "Thousand/uL",
+  "source": "osdr"
+ }
+]
