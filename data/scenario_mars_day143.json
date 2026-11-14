@@ -1,0 +1,12 @@
+[
+  {"crew_id": "C003", "timestamp": "2026-11-15T07:30:00Z", "type": "sleep_hours", "value": 4.5, "unit": "h", "source": "checkin"},
+  {"crew_id": "C003", "timestamp": "2026-11-15T07:30:10Z", "type": "sleep_hours", "value": 5.0, "unit": "h", "source": "checkin"},
+  {"crew_id": "C003", "timestamp": "2026-11-15T07:30:20Z", "type": "sleep_hours", "value": 4.0, "unit": "h", "source": "checkin"},
+  {"crew_id": "C003", "timestamp": "2026-11-15T07:31:00Z", "type": "mood", "value": 2, "unit": "score_1_5", "source": "checkin"},
+  {"crew_id": "C003", "timestamp": "2026-11-15T11:42:03Z", "type": "reaction_time", "value": 340, "unit": "ms", "source": "station"},
+  {"crew_id": "C003", "timestamp": "2026-11-15T11:42:07Z", "type": "reaction_time", "value": 355, "unit": "ms", "source": "station"},
+  {"crew_id": "C003", "timestamp": "2026-11-15T11:42:11Z", "type": "reaction_time", "value": 410, "unit": "ms", "source": "station"},
+  {"crew_id": "C003", "timestamp": "2026-11-15T11:42:15Z", "type": "reaction_time", "value": 520, "unit": "ms", "source": "station"},
+  {"crew_id": "C003", "timestamp": "2026-11-15T11:42:19Z", "type": "reaction_time", "value": 380, "unit": "ms", "source": "station"},
+  {"crew_id": "C003", "timestamp": "2026-11-15T11:42:20Z", "type": "sway_rms", "value": 0.062, "unit": "g", "source": "station"}
+]

@@ -3,6 +3,8 @@
 - `test_donki.py`: checks DONKI FLR and SEP on api.nasa.gov, falling back to kauai.ccmc.gsfc.nasa.gov.
 - `test_donki_flr.py`: tries FLR variants in order to find one that works.
 - `cache_donki.py`: fetches SEP events from api.nasa.gov and writes `donki_cache.json`.
+- `scenario_mars_day143.json`: demo readings for crew C003 on mission day 143 (`docs/schemas.md` reading format).
+- `check_readings.py`: validates a readings file against the schema and sort order (`python data\check_readings.py [file]`).
 
 Both read `NASA_API_KEY` from `.env` in the repo root. Run with `.venv\Scripts\python.exe data\<script>.py`.
 
