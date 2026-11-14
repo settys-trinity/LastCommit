@@ -139,7 +139,7 @@ The arrival of `lapses` means the run is over.
 
 - **Reaction time:** `millis()` from the moment `TAP!` is on screen to the touch pad's rising edge. Under 100 ms is an anticipation and ignored. No touch within 2 s is sent as 2000 ms. The prompt never appears while a finger is already on the pad.
 - **Touch module delay:** capacitive touch modules add a fixed delay of their own (tens of ms). Every run has the same delay, and FARSIDE compares each person with their own baseline, so it cancels out. Say so if a judge asks.
-- **Lapses:** taps slower than 500 ms, the common PVT lapse cut-off. **UNSOURCED** here: Part 3 to cite it (`LAPSE_MS` in `bridge/station.py`).
+- **Lapses:** taps slower than 355 ms, the lapse threshold of the 3-minute brief PVT (PVT-B), [Basner, Mollicone & Dinges 2011](https://pmc.ncbi.nlm.nih.gov/articles/PMC3197786). Set by `LAPSE_MS` in `bridge/station.py`; must equal `params.lapse_threshold_ms` in `data/knowledge.json` (decision D7).
 - **Sway:** acceleration magnitude in g at 100 Hz. The value sent is the RMS of (magnitude − the run's mean magnitude). The mean is the gravity estimate, which also cancels sensor offset.
 
 ## Additions to the serial format (to copy into docs/schemas.md section 3)

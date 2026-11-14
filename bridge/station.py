@@ -14,9 +14,11 @@ from datetime import datetime, timezone
 
 CREW_IDS = {"C001", "C002", "C003", "C004", "GUEST"}
 
-# A reaction slower than this counts as a lapse. 500 ms is the usual PVT lapse cut-off,
-# but it is still UNSOURCED in this repo: Part 3 to cite the PVT paper, then keep or change.
-LAPSE_MS = 500
+# A reaction slower than this counts as a lapse. 355 ms is the lapse threshold of the
+# 3-minute brief PVT (PVT-B): Basner, Mollicone & Dinges (2011), Acta Astronautica 69:949-959,
+# https://pmc.ncbi.nlm.nih.gov/articles/PMC3197786 . Decision D7: must equal
+# params.lapse_threshold_ms in data/knowledge.json.
+LAPSE_MS = 355
 
 MSG_MAX = 32  # LCD is 16 x 2
 
