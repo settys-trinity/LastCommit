@@ -124,9 +124,14 @@ for panel, extract in (("LSDS-8_Comprehensive_Metabolic_Panel_CMP.upload_SUBMITT
     if not full.exists():
         warnings.append(f"{panel} not downloaded: using the verified extract. Run data/fetch_osdr.py to check against the full file.")
         continue
-    got = hashlib.sha256(full.read_bytes()).hexdigest()
-    if got != sha[panel]:
-        warnings.append(f"{panel}: checksum differs from the one recorded on 2026-11-14 (NASA may have updated the file).")
+    # NASA serves these files with CRLF line endings. Git stored them with LF before
+    # .gitattributes marked data/raw/*.csv as binary, so a clone has LF. Accept the recorded
+    # hash for the bytes as they are or with CRLF restored: same content, different line ends.
+    data = full.read_bytes()
+    lf = data.replace(b"\r\n", b"\n")
+    candidates = {hashlib.sha256(b).hexdigest() for b in (data, lf, lf.replace(b"\n", b"\r\n"))}
+    if sha[panel] not in candidates:
+        warnings.append(f"{panel}: checksum differs from the one recorded on 2026-11-14, even after normalising line endings (NASA may have updated the file).")
     full_rows = {tuple(r) for r in csv.reader(full.read_text().replace("\r", "").splitlines()[1:])}
     for row in csv.reader((raw / extract).read_text().splitlines()[1:]):
         if tuple(row) not in full_rows: err(f"{extract}: row {row} not found in the full file")
