@@ -11,7 +11,7 @@ const REPLAY_GAP_MS = 2000;
 
 // Public site (Vercel) or any non-local host: no bridge, replay from saved data only.
 const PUBLIC_SITE =
-  import.meta.env.VITE_PUBLIC_SITE === "1" || !["localhost", "127.0.0.1"].includes(window.location.hostname);
+  import.meta.env.VITE_PUBLIC_SITE === "1" || (typeof window !== "undefined" && !["localhost", "127.0.0.1"].includes(window.location.hostname));
 
 export type StreamMode = "live" | "replay";
 export type SolarEvent = { data: Record<string, unknown>; cached: boolean };
@@ -28,6 +28,9 @@ export function useStream() {
   const addReading = useCallback((r: Reading) => {
     setReadingsByCrew((prev) => ({ ...prev, [r.crew_id]: [...(prev[r.crew_id] ?? []), r] }));
   }, []);
+
+  /** Adds readings made in the app (replay-mode STAND-REACT simulation). */
+  const addReadings = useCallback((rs: Reading[]) => rs.forEach(addReading), [addReading]);
 
   const switchMode = useCallback((m: StreamMode) => {
     modeRef.current = m;
@@ -106,5 +109,5 @@ export function useStream() {
 
   useEffect(() => stopPlayback, []);
 
-  return { mode, readingsByCrew, solarEvent, cabinAir, loadScenario, resetReadings };
+  return { mode, readingsByCrew, solarEvent, cabinAir, loadScenario, resetReadings, addReadings };
 }

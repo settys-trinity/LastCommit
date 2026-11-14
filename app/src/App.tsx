@@ -1,78 +1,105 @@
-import { useEffect, useMemo, useState } from "react";
-import { BRIDGE_URL, useStream } from "./hooks/useStream";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useStream } from "./hooks/useStream";
+import { useBridgeCommands } from "./hooks/useBridgeCommands";
+import { useStationSync } from "./hooks/useStationSync";
 import { evaluate } from "./engine";
 import { getMission, MISSIONS, type MissionId } from "./engine/delay";
-import { KeyValue, Panel, StatusTag, type TagStatus } from "./components/term";
+import { Panel, StatusTag } from "./components/term";
 import { TopBar } from "./components/shell/TopBar";
 import { formatRoundTrip } from "./components/shell/format";
 import { BodyMap } from "./components/bodymap/BodyMap";
 import { SolarBanner } from "./components/solar/SolarBanner";
 import { CabinAirPanel } from "./components/cabin/CabinAirPanel";
 import { BaselinePanel } from "./components/baseline/BaselinePanel";
+import { MissionSelector } from "./components/mission/MissionSelector";
+import { OutboxPanel, useEarthOutbox } from "./components/outbox/OutboxPanel";
+import { StressMoodPanel } from "./components/stress/StressMoodPanel";
+import { StandReactView } from "./components/standreact/StandReactView";
+import { TriageCard } from "./components/triage/TriageCard";
+import { StationPreview } from "./components/station/StationPreview";
 
-const TIER_STATUS: Record<0 | 1 | 2 | 3, TagStatus> = { 0: "ok", 1: "warn", 2: "warn", 3: "fail" };
-
-function Waiting() {
-  return (
-    <div>
-      <StatusTag status="off" /> waiting for module
-    </div>
-  );
-}
+const SPEED_UP = 60; // demo: the 44 min Mars round trip counts down in 44 s (D15)
+const RUN_TIMEOUT_MS = 30_000; // stop showing "running" if lapses never arrives
 
 // /demo: App holds all state; components get props only (plan C9).
 export default function App() {
-  const { mode, readingsByCrew, solarEvent, cabinAir, loadScenario, resetReadings } = useStream();
+  const { mode, readingsByCrew, solarEvent, cabinAir, loadScenario, resetReadings, addReadings } = useStream();
+  const bridge = useBridgeCommands(mode, addReadings);
   const [missionId, setMissionId] = useState<MissionId>("iss");
   const [crewId, setCrewId] = useState("C003");
   const [warning, setWarning] = useState("");
+  const [running, setRunning] = useState(false);
+  const [runError, setRunError] = useState("");
 
   const mission = getMission(missionId);
-  const result = useMemo(
-    () => evaluate(readingsByCrew[crewId] ?? [], crewId, missionId),
-    [readingsByCrew, crewId, missionId],
-  );
+  const crewReadings = useMemo(() => readingsByCrew[crewId] ?? [], [readingsByCrew, crewId]);
+  const result = useMemo(() => evaluate(crewReadings, crewId, missionId), [crewReadings, crewId, missionId]);
+  const t = result.triage;
 
   // Live mode only: the station button starts a run for this crew.
   useEffect(() => {
     if (mode !== "live") return;
-    fetch(`${BRIDGE_URL}/arm`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ crew_id: crewId, duration_s: 20 }),
-    })
-      .then((res) => setWarning(res.ok ? "" : `POST /arm failed: ${res.status}`))
-      .catch((e: Error) => setWarning(`POST /arm failed: ${e.message}`));
-  }, [crewId, mode]);
+    bridge.arm(crewId).then((r) => setWarning(r.ok ? "" : `arm ${crewId}: ${r.error}`));
+  }, [crewId, mode]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Keys 1-4 switch mission.
+  // Running: on while station taps arrive (also runs started by the station button), off at lapses.
+  const lastReading = crewReadings.at(-1);
+  useEffect(() => {
+    if (!lastReading) return;
+    if (lastReading.type === "lapses") setRunning(false);
+    else if (lastReading.type === "reaction_time" && lastReading.source === "station") setRunning(true);
+  }, [lastReading]);
+  useEffect(() => {
+    if (!running) return;
+    const timer = window.setTimeout(() => setRunning(false), RUN_TIMEOUT_MS);
+    return () => window.clearTimeout(timer);
+  }, [running, lastReading]);
+
+  const startTest = async () => {
+    if (running) return;
+    setRunError("");
+    const r = await bridge.startTest(crewId, 20);
+    if (r.ok) setRunning(true);
+    else setRunError(r.error ?? "start failed");
+  };
+  const replay = async () => {
+    setRunError("");
+    const r = await bridge.replayLast();
+    if (!r.ok) setRunError(r.error ?? "replay failed");
+  };
+
+  // Station follows the app: engine tier unchanged, then the OLED text (live mode only, C7).
+  useStationSync(t.tier, mode);
+
+  // Keys: 1-4 mission, s start test, r replay.
+  const keys = useRef({ startTest, replay });
+  keys.current = { startTest, replay };
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
       const m = MISSIONS[Number(e.key) - 1];
       if (m) setMissionId(m.id);
+      else if (e.key === "s") keys.current.startTest();
+      else if (e.key === "r") keys.current.replay();
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
-  // TEMP until nandini/components merges: text mission selector from MISSIONS.
-  const missionSlot = (
-    <span className="whitespace-pre">
-      <span className="text-dim">mission: </span>
-      {MISSIONS.map((m) => (
-        <button
-          key={m.id}
-          type="button"
-          onClick={() => setMissionId(m.id)}
-          className={`px-1 ${m.id === missionId ? "bg-fg text-bg" : "hover:text-ok"}`}
-        >
-          {m.label}
-        </button>
-      ))}
-    </span>
-  );
+  // Earth outbox: one packet per new triage and per mission change (send ignores tier 0).
+  const outbox = useEarthOutbox(SPEED_UP);
+  const sendRef = useRef(outbox.send);
+  sendRef.current = outbox.send;
+  const lastSent = useRef("");
+  useEffect(() => {
+    const key = `${crewId}|${missionId}|${t.tier}|${t.reason}`;
+    if (key === lastSent.current) return; // StrictMode re-runs and repeat renders send nothing
+    lastSent.current = key;
+    sendRef.current(crewId, getMission(missionId), t);
+  }, [t.tier, t.reason, missionId]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const t = result.triage;
+  const missionSlot = <MissionSelector value={missionId} onChange={(id) => setMissionId(id as MissionId)} />;
+
   return (
     <div className="flex min-h-screen flex-col">
       <TopBar
@@ -98,30 +125,33 @@ export default function App() {
       <main className="grid flex-1 grid-cols-1 gap-3 p-2 lg:grid-cols-[1fr_1.2fr_1fr]">
         <div className="flex flex-col gap-3">
           <BaselinePanel crewId={crewId} />
-          <Panel title="stand-react"><Waiting /></Panel>
+          <StandReactView
+            crewId={crewId}
+            readings={crewReadings}
+            running={running}
+            onStart={startTest}
+            onReplay={replay}
+            error={runError}
+          />
         </div>
         <div className="flex flex-col gap-3">
-          <Panel title="triage" status={TIER_STATUS[t.tier]}>
-            <KeyValue
-              rows={[
-                ["tier", String(t.tier)],
-                ["acts", t.acts],
-                ["round_trip", formatRoundTrip(t.round_trip_s)],
-              ]}
-            />
+          <TriageCard triage={t} />
+          <StationPreview tier={t.tier} />
+        </div>
+        <div className="flex flex-col gap-3">
+          <BodyMap data={{ result, readings: crewReadings, cabinAir }} crewId={crewId} />
+          <Panel title="stress / mood">
+            <StressMoodPanel crewId={crewId} readings={crewReadings} />
           </Panel>
-          <Panel title="station"><Waiting /></Panel>
-        </div>
-        <div className="flex flex-col gap-3">
-          <BodyMap result={result} />
-          <Panel title="stress / mood"><Waiting /></Panel>
-          <Panel title="earth outbox"><Waiting /></Panel>
+          <Panel title="earth outbox">
+            <OutboxPanel packets={outbox.packets} speedUp={SPEED_UP} />
+          </Panel>
           <CabinAirPanel samples={cabinAir} />
         </div>
       </main>
 
       <footer className="border-t border-line px-2 text-dim whitespace-pre-wrap">
-        keys: 1-4 mission  s start test  r replay  ? help
+        keys: 1-4 mission  s start test  r replay  b body view
       </footer>
     </div>
   );
