@@ -1,11 +1,9 @@
 import { useEffect } from "react";
-import { Prompt, TypeLines } from "../term";
 import { LazyAstronaut } from "../astronaut/LazyAstronaut";
 
 const ALL_OK = { helmet: "ok", ears: "ok", chest: "ok", abdomen: "ok", backpack: "ok", hands: "ok", legs: "ok" } as const;
-import { COPY } from "./copy";
 
-// Public landing page rendered as a terminal session. Enter opens /demo.
+// Public landing page: only the spinning astronaut, centred. Click it or press Enter to open /demo.
 export function Landing() {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -16,31 +14,10 @@ export function Landing() {
   }, []);
 
   return (
-    <main className="mx-auto flex max-w-[160ch] flex-col gap-8 p-4 lg:flex-row lg:items-start">
-      <div className="min-w-0 max-w-[100ch] flex-1">
-        <TypeLines lines={COPY.boot} speedMs={180} />
-        {COPY.sections.map((s) => (
-          <section key={s.cmd} className="mt-6">
-            <Prompt>{s.cmd}</Prompt>
-            {s.out.map((line) => (
-              <div key={line} className="whitespace-pre-wrap">
-                {line}
-              </div>
-            ))}
-          </section>
-        ))}
-        <div className="mt-8">
-          <Prompt cursor>
-            <a href="/demo" className="text-ok underline underline-offset-4 hover:bg-ok hover:text-bg">
-              {COPY.demoCmd}
-            </a>
-          </Prompt>
-          <div className="text-dim"># {COPY.demoHint}</div>
-        </div>
-      </div>
-      <aside className="shrink-0 overflow-x-auto text-[11px] sm:text-sm">
-        <LazyAstronaut parts={ALL_OK} height={460} showList={false} />
-      </aside>
+    <main className="flex min-h-screen items-center justify-center overflow-hidden p-4">
+      <a href="/demo" aria-label="Open the FARSIDE demo" className="text-[11px] sm:text-sm">
+        <LazyAstronaut parts={ALL_OK} height={560} showList={false} />
+      </a>
     </main>
   );
 }
