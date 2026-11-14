@@ -228,3 +228,5 @@ FakeHackathon.clan
 WESAD/
 ml/out/features.csv
 *.zip
+*.clan
+.DS_Store
