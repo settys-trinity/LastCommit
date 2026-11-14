@@ -1,0 +1,247 @@
+{
+  "meta": {
+    "version": "v0.2",
+    "schema": "data/knowledge.schema.json (documented in docs/knowledge_schema.md)",
+    "keyed_by": "Each indicator is keyed by its reading `type` from docs/schemas.md.",
+    "source_rule": "Every threshold-bearing field has a source: a URL, UNSOURCED (could not source yet) or DESIGN_CHOICE (our decision, recorded here).",
+    "status_rule": "status = worst of the amber/red checks below. See docs/knowledge_schema.md for exact semantics and data/score_reference.py for a tested reference implementation.",
+    "design_choices": [
+      "Amber at bad-direction z >= 2 and red at z >= 3 (plan, 'Triage rules'). Where an indicator has a direction, only deviation in the bad direction counts. The plan wrote |z|; team to confirm.",
+      "z = (value - personal mean) / max(personal spread, min_spread). min_spread is a floor so 3 baseline runs cannot give a spread near zero (plan, fix 1).",
+      "An indicator can reach red without z (z: null) where a clinical limit or a streak is the right trigger.",
+      "Hazard tags use NASA HRP's five hazards. The mapping of each indicator to a hazard is our reading, not a NASA statement.",
+      "Baselines for non-lab types (sleep, mood, reaction time, lapses, sway) are built at run time from the astronaut's first runs. OSDR has no such data. Lab baselines come from data/baselines.json."
+    ],
+    "hazards_reference": "https://www.nasa.gov/hrp/hazards/",
+    "decision_support_only": "Decision support, not diagnosis."
+  },
+  "indicators": [
+    {
+      "type": "sleep_hours",
+      "indicator": "Sleep duration",
+      "body_system": "brain_behaviour",
+      "hazards": ["isolation_confinement", "hostile_closed_environments"],
+      "unit": "h",
+      "input": "checkin",
+      "direction": "low_is_bad",
+      "correlated_with": [],
+      "normal_range": {
+        "min": 7,
+        "max": null,
+        "source": "https://aasm.org/resources/pdf/adultsleepdurationconsensus.pdf"
+      },
+      "min_spread": { "mode": "absolute", "value": 1.0, "cv_pct": null, "source": "UNSOURCED" },
+      "amber_limit": {
+        "z": 2, "outside_normal": true,
+        "below": null, "at_or_below": null, "above": null, "at_or_above": null,
+        "streak": 1,
+        "sources": { "z": "DESIGN_CHOICE" },
+        "note": "Amber when the night is under 7 h (AASM) or clearly below this person's usual."
+      },
+      "red_limit": {
+        "z": null, "outside_normal": false,
+        "below": null, "at_or_below": 6, "above": null, "at_or_above": null,
+        "streak": 3,
+        "sources": { "at_or_below": "https://aasm.org/seven-or-more-hours-of-sleep-per-night-a-health-necessity-for-adults/", "streak": "UNSOURCED" },
+        "note": "AASM/SRS: 6 or fewer hours is inadequate. Red needs 3 nights in a row (the 3 is our choice) so one bad night stays amber."
+      },
+      "action": {
+        "amber": "Protect an 8 h sleep window tonight. Dim screens 1 h before, use eye mask and earplugs, no caffeine after midday.",
+        "red": "Crew medical officer reviews workload. Move safety-critical tasks off the next shift and re-run STAND-REACT before them.",
+        "sources": { "amber": "UNSOURCED", "red": "UNSOURCED" }
+      },
+      "escalation_tier": { "amber": 1, "red": "router" },
+      "params": {},
+      "notes": "Sleep need varies by person (AASM statement covers adults 18-60)."
+    },
+    {
+      "type": "mood",
+      "indicator": "Self-reported mood",
+      "body_system": "brain_behaviour",
+      "hazards": ["isolation_confinement", "distance_from_earth"],
+      "unit": "score_1_5",
+      "input": "checkin",
+      "direction": "low_is_bad",
+      "correlated_with": [],
+      "normal_range": { "min": 4, "max": 5, "source": "UNSOURCED" },
+      "min_spread": { "mode": "absolute", "value": 0.5, "cv_pct": null, "source": "UNSOURCED" },
+      "amber_limit": {
+        "z": 2, "outside_normal": false,
+        "below": null, "at_or_below": 3, "above": null, "at_or_above": null,
+        "streak": 1,
+        "sources": { "z": "DESIGN_CHOICE", "at_or_below": "UNSOURCED" },
+        "note": ""
+      },
+      "red_limit": {
+        "z": null, "outside_normal": false,
+        "below": null, "at_or_below": 2, "above": null, "at_or_above": null,
+        "streak": 3,
+        "sources": { "at_or_below": "UNSOURCED", "streak": "UNSOURCED" },
+        "note": "A single-day score never makes red: mood is self-reported and noisy."
+      },
+      "action": {
+        "amber": "Schedule private time and a call or message to family. Log one thing that went well today.",
+        "red": "Private conversation with the crew medical officer. Book a behavioural health session with ground at the next link window.",
+        "sources": { "amber": "UNSOURCED", "red": "UNSOURCED" }
+      },
+      "escalation_tier": { "amber": 1, "red": "router" },
+      "params": {},
+      "notes": "Compared with the stress classifier output (stress_label) to raise the mismatch flag. Check-in only: not a screening tool."
+    },
+    {
+      "type": "reaction_time_median",
+      "indicator": "STAND-REACT median reaction time",
+      "body_system": "brain_behaviour",
+      "hazards": ["isolation_confinement", "hostile_closed_environments"],
+      "unit": "ms",
+      "input": "station",
+      "direction": "high_is_bad",
+      "correlated_with": ["lapses"],
+      "normal_range": { "min": null, "max": null, "source": "UNSOURCED" },
+      "min_spread": { "mode": "absolute", "value": 15, "cv_pct": null, "source": "UNSOURCED" },
+      "amber_limit": {
+        "z": 2, "outside_normal": false,
+        "below": null, "at_or_below": null, "above": null, "at_or_above": null,
+        "streak": 1,
+        "sources": { "z": "DESIGN_CHOICE" },
+        "note": "Personal baseline only. Our 20-60 s test is not a validated PVT."
+      },
+      "red_limit": {
+        "z": 3, "outside_normal": false,
+        "below": null, "at_or_below": null, "above": null, "at_or_above": null,
+        "streak": 1,
+        "sources": { "z": "DESIGN_CHOICE" },
+        "note": ""
+      },
+      "action": {
+        "amber": "Take a 20 min rest or nap, hydrate, re-test before any critical task.",
+        "red": "No safety-critical tasks until a re-test is back within baseline. Crew medical officer informed.",
+        "sources": { "amber": "UNSOURCED", "red": "UNSOURCED" }
+      },
+      "escalation_tier": { "amber": 1, "red": "router" },
+      "params": {},
+      "notes": "Tune min_spread after 10 bench runs on the real station. Slow median and lapses come from one test, so the engine should not count both as separate amber indicators."
+    },
+    {
+      "type": "lapses",
+      "indicator": "STAND-REACT lapses",
+      "body_system": "brain_behaviour",
+      "hazards": ["isolation_confinement", "hostile_closed_environments"],
+      "unit": "count",
+      "input": "station",
+      "direction": "high_is_bad",
+      "correlated_with": ["reaction_time_median"],
+      "normal_range": { "min": null, "max": null, "source": "UNSOURCED" },
+      "min_spread": { "mode": "absolute", "value": 1, "cv_pct": null, "source": "UNSOURCED" },
+      "amber_limit": {
+        "z": 2, "outside_normal": false,
+        "below": null, "at_or_below": null, "above": null, "at_or_above": null,
+        "streak": 1,
+        "sources": { "z": "DESIGN_CHOICE" },
+        "note": ""
+      },
+      "red_limit": {
+        "z": 3, "outside_normal": false,
+        "below": null, "at_or_below": null, "above": null, "at_or_above": null,
+        "streak": 1,
+        "sources": { "z": "DESIGN_CHOICE" },
+        "note": ""
+      },
+      "action": {
+        "amber": "Take a 20 min rest or nap, hydrate, re-test before any critical task.",
+        "red": "No safety-critical tasks until a re-test is back within baseline. Crew medical officer informed.",
+        "sources": { "amber": "UNSOURCED", "red": "UNSOURCED" }
+      },
+      "escalation_tier": { "amber": 1, "red": "router" },
+      "params": {
+        "lapse_threshold_ms": {
+          "value": 355,
+          "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3197786",
+          "note": "355 ms is the lapse threshold for the 3-min brief PVT (PVT-B); the standard 10-min PVT uses 500 ms. Our test is shorter than both, so lapses are indicative only. Part 3 owns the final value."
+        }
+      },
+      "notes": "Part 3 to confirm the threshold and push it to the firmware."
+    },
+    {
+      "type": "sway_rms",
+      "indicator": "Standing sway (IMU RMS)",
+      "body_system": "neurovestibular",
+      "hazards": ["gravity_fields"],
+      "unit": "g",
+      "input": "station",
+      "direction": "high_is_bad",
+      "correlated_with": [],
+      "normal_range": { "min": null, "max": null, "source": "UNSOURCED" },
+      "min_spread": { "mode": "absolute", "value": 0.005, "cv_pct": null, "source": "UNSOURCED" },
+      "amber_limit": {
+        "z": 2, "outside_normal": false,
+        "below": null, "at_or_below": null, "above": null, "at_or_above": null,
+        "streak": 1,
+        "sources": { "z": "DESIGN_CHOICE" },
+        "note": "Personal baseline only. Not clinical posturography."
+      },
+      "red_limit": {
+        "z": 3, "outside_normal": false,
+        "below": null, "at_or_below": null, "above": null, "at_or_above": null,
+        "streak": 1,
+        "sources": { "z": "DESIGN_CHOICE" },
+        "note": ""
+      },
+      "action": {
+        "amber": "Move slowly, keep a hand hold when changing posture, avoid rapid head turns for the next hour.",
+        "red": "No EVA or vehicle operation. Crew medical officer checks balance and dizziness.",
+        "sources": { "amber": "UNSOURCED", "red": "UNSOURCED" }
+      },
+      "escalation_tier": { "amber": 1, "red": "router" },
+      "params": {},
+      "notes": "Unit g is an assumption: confirm against the firmware (open question in docs/schemas.md). Tune min_spread after 10 bench runs. Part 3 to check the NTRS postural stability reference."
+    },
+    {
+      "type": "lab_glucose",
+      "indicator": "Blood glucose (fasting)",
+      "body_system": "metabolism",
+      "hazards": ["hostile_closed_environments", "distance_from_earth"],
+      "unit": "mg/dL",
+      "input": "osdr",
+      "direction": "both",
+      "correlated_with": [],
+      "normal_range": {
+        "min": 65,
+        "max": 99,
+        "source": "https://osdr.nasa.gov/bio/repo/data/studies/OSD-575"
+      },
+      "min_spread": {
+        "mode": "cv_pct", "value": null, "cv_pct": 5.6,
+        "source": "https://mail.westgard.com/biodatabase1.htm"
+      },
+      "amber_limit": {
+        "z": 2, "outside_normal": true,
+        "below": null, "at_or_below": null, "above": null, "at_or_above": null,
+        "streak": 1,
+        "sources": { "z": "DESIGN_CHOICE" },
+        "note": "Lab-flagged (outside 65-99 mg/dL) or at least 2 SD from the person's own pre-flight baseline."
+      },
+      "red_limit": {
+        "z": null, "outside_normal": false,
+        "below": 54, "at_or_below": null, "above": null, "at_or_above": 250,
+        "streak": 1,
+        "sources": {
+          "below": "https://professional.diabetes.org/sites/dpro/files/2025-05/hypoglycemia-hcp-5-27-25.pdf",
+          "at_or_above": "UNSOURCED"
+        },
+        "note": "Red is clinical only, not z: with 3 baseline draws a z score would make 103 mg/dL red. Below 54 is ADA level 2 hypoglycaemia. 250 is a placeholder, not yet sourced."
+      },
+      "action": {
+        "amber": "Low: take 15 g fast carbohydrate and re-test in 15 min. High: hydrate, check the meal log, re-test fasting tomorrow and tell the crew medical officer.",
+        "red": "Low: 15 g fast carbohydrate now, re-test in 15 min, crew medical officer present. High: crew medical officer reviews symptoms and fluids.",
+        "sources": {
+          "amber": "https://diabetes.org/sites/dpro/files/2025-01/severehypoglycemia2_2024_final.pdf",
+          "red": "https://diabetes.org/sites/dpro/files/2025-01/severehypoglycemia2_2024_final.pdf"
+        }
+      },
+      "escalation_tier": { "amber": 1, "red": "router" },
+      "params": {},
+      "notes": "ADA 15-15 rule covers the low-glucose steps only. The high-glucose steps are UNSOURCED. Needs a fasting reading. Baseline from NASA OSDR OSD-575 (data/baselines.json). Illustrates the method on 4 people and 3 pre-flight draws, not a medical finding."
+    }
+  ]
+}
