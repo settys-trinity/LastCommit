@@ -29,7 +29,7 @@ const sys = (res: { body_systems: { system: string; status: string }[] }, s: str
   res.body_systems.find((b) => b.system === s)!.status;
 
 describe("scoreIndicator matches data/score_reference.py", () => {
-  it("passes the same 24 cases", () => {
+  it("passes the same 25 cases", () => {
     const g = baselines.crew.C003.markers.lab_glucose;
     const cases: [string, string, number[], number | null, number | null, string][] = [
       ["sleep night 1 (4.5 h)", "sleep_hours", [4.5], 7.5, 1.0, "amber"],
@@ -55,9 +55,10 @@ describe("scoreIndicator matches data/score_reference.py", () => {
       ["C003 glucose 103 high: amber, NOT red", "lab_glucose", [103], g.mean, g.spread, "amber"],
       ["glucose 54 is not below 54: amber", "lab_glucose", [54], g.mean, g.spread, "amber"],
       ["glucose 53 red (ADA level 2)", "lab_glucose", [53], g.mean, g.spread, "red"],
-      ["glucose 250 red (placeholder limit)", "lab_glucose", [250], g.mean, g.spread, "red"],
+      ["glucose 250 is not above 250: amber", "lab_glucose", [250], g.mean, g.spread, "amber"],
+      ["glucose 251 red (DKA criterion >250, Kitabchi 2009)", "lab_glucose", [251], g.mean, g.spread, "red"],
     ];
-    expect(cases).toHaveLength(24);
+    expect(cases).toHaveLength(25);
     for (const [name, t, h, m, s, want] of cases) expect(status(t, h, m, s), name).toBe(want);
   });
 

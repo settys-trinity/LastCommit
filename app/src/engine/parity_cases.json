@@ -7132,7 +7132,7 @@
 ],
 "mean": 85.706,
 "spread": 14.385,
-"expected": "red"
+"expected": "amber"
 },
 {
 "type": "lab_glucose",
@@ -7256,7 +7256,7 @@
 ],
 "mean": 82.512,
 "spread": 0.305,
-"expected": "red"
+"expected": "amber"
 },
 {
 "type": "lab_glucose",
