@@ -1,9 +1,9 @@
-"""Write engine/parity_cases.json: random and boundary cases scored by data/score_reference.py.
+"""Write app/src/engine/parity_cases.json: random and boundary cases scored by data/score_reference.py.
 
-engine/score.test.ts checks that the TypeScript engine gives the same status for every case.
+app/src/engine/rules.test.ts checks that the TypeScript engine gives the same status for every case.
 Re-run after any change to data/knowledge.json or data/score_reference.py:
 
-    python engine/make_parity_cases.py
+    python data/make_parity_cases.py
 """
 import json
 import random
@@ -40,7 +40,7 @@ for t, ((lo, hi), (mlo, mhi), (slo, shi), dp, edges) in RANGES.items():
         cases.append({"type": t, "history": hist, "mean": mean, "spread": spread,
                       "expected": ref.score(t, hist, mean, spread)})
 
-out = Path(__file__).parent / "parity_cases.json"
-out.write_text(json.dumps({"generated_by": "engine/make_parity_cases.py", "cases": cases}, indent=0) + "\n")
+out = ROOT / "app" / "src" / "engine" / "parity_cases.json"
+out.write_text(json.dumps({"generated_by": "data/make_parity_cases.py", "cases": cases}, indent=0) + "\n")
 counts = {s: sum(c["expected"] == s for c in cases) for s in ("green", "amber", "red")}
 print(f"Wrote {out.name}: {len(cases)} cases {counts}")

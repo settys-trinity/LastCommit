@@ -1,5 +1,5 @@
 {
-"generated_by": "engine/make_parity_cases.py",
+"generated_by": "data/make_parity_cases.py",
 "cases": [
 {
 "type": "sleep_hours",
