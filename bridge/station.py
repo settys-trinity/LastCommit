@@ -56,6 +56,15 @@ def clean_msg(text):
     return text[:MSG_MAX]
 
 
+def cabin_air(raw, timestamp=None):
+    """Stream message for one gas-sensor sample. Cabin air is an environment hazard, like
+    DONKI events, so it is its own stream kind, not a crew `reading`. The raw value is an
+    uncalibrated 0..1023 index: compare it with the session's own baseline, never as ppm."""
+    return {"kind": "cabin_air",
+            "data": {"timestamp": timestamp or now_iso(), "value": int(raw), "unit": "adc_0_1023",
+                     "source": "station"}}
+
+
 class Run:
     """One STAND-REACT run for one crew member."""
 
@@ -113,6 +122,8 @@ class FakeUno:
                 threading.Thread(target=self._run, args=(seconds,), daemon=True).start()
             elif line == "PING":
                 self._put('{"t":"ready"}')
+            elif line == "BUTTON":  # test hook: pretend the start button was pressed
+                self._put('{"t":"button"}')
         return len(data)
 
     def _run(self, seconds):
@@ -127,6 +138,7 @@ class FakeUno:
                 rt = self._rng.randint(520, 900)  # an occasional lapse
             self._put(json.dumps({"t": "rt", "ms": rt}, separators=(",", ":")))
         self._put('{"t":"sway","rms":%.4f}' % self._rng.uniform(0.02, 0.06))
+        self._put('{"t":"air","raw":%d}' % self._rng.randint(180, 260))
         self._put('{"t":"done"}')
         self._running = False
 
