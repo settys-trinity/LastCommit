@@ -139,7 +139,7 @@ export default function App() {
           <StationPreview tier={t.tier} />
         </div>
         <div className="flex flex-col gap-3">
-          <BodyMap result={result} />
+          <BodyMap data={{ result, readings: crewReadings, cabinAir }} crewId={crewId} />
           <Panel title="stress / mood">
             <StressMoodPanel crewId={crewId} readings={crewReadings} />
           </Panel>
@@ -151,7 +151,7 @@ export default function App() {
       </main>
 
       <footer className="border-t border-line px-2 text-dim whitespace-pre-wrap">
-        keys: 1-4 mission  s start test  r replay  ? help
+        keys: 1-4 mission  s start test  r replay  b body view
       </footer>
     </div>
   );

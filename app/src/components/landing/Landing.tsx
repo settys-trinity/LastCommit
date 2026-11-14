@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { Prompt, TypeLines } from "../term";
 import { LazyAstronaut } from "../astronaut/LazyAstronaut";
 
-const ALL_OK = { brain_behaviour: "green", neurovestibular: "green", metabolism: "green" } as const;
+const ALL_OK = { helmet: "ok", ears: "ok", chest: "ok", abdomen: "ok", backpack: "ok", hands: "ok", legs: "ok" } as const;
 import { COPY } from "./copy";
 
 // Public landing page rendered as a terminal session. Enter opens /demo.
@@ -39,7 +39,7 @@ export function Landing() {
         </div>
       </div>
       <aside className="shrink-0 overflow-x-auto text-[11px] sm:text-sm">
-        <LazyAstronaut systems={ALL_OK} height={420} />
+        <LazyAstronaut parts={ALL_OK} height={460} showList={false} />
       </aside>
     </main>
   );
