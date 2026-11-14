@@ -22,7 +22,9 @@ TYPES = {
     "bp_diastolic": (float, "mmHg"),
     "stress_prob": (float, "prob_0_1"),
     "stress_label": (str, ""),
+    "stress_mood_check": (str, ""),
 }
+STRESS_MOOD_RESULTS = {"hidden_stress", "low_mood_no_stress", "consistent", "uncertain", "no_data"}
 SOURCES = {"station", "replay", "checkin", "ml_live", "ml_saved", "osdr"}
 FIELDS = {"crew_id", "timestamp", "type", "value", "unit", "source"}
 CREW_ID = re.compile(r"C00[1-4]|GUEST")
@@ -60,6 +62,8 @@ def check(r):
         errs.append(f"mood {v!r} not an integer 1 to 5")
     if t == "stress_label" and v not in ("baseline", "stress"):
         errs.append(f"stress_label {v!r} not baseline or stress")
+    if t == "stress_mood_check" and v not in STRESS_MOOD_RESULTS:
+        errs.append(f"stress_mood_check {v!r} not one of {sorted(STRESS_MOOD_RESULTS)}")
     return errs
 
 

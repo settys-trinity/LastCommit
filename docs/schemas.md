@@ -37,6 +37,7 @@ before the rules engine sees it.
 | `bp_diastolic` | number | `mmHg` | Daily check-in (proposed) | Typed in. Team to confirm. |
 | `stress_prob` | number | `prob_0_1` | Stress classifier | Probability the 60 s window is stress. Replayed held-out WESAD subject, not the person on stage. |
 | `stress_label` | string | `""` | Stress classifier | `baseline` or `stress`. One more indicator for the engine; never sets a tier on its own. |
+| `stress_mood_check` | string | `""` | Stress/mood check (`ml/stress_feed.py`, `web-components/stressMoodCheck.ts`) | `hidden_stress`, `low_mood_no_stress`, `consistent`, `uncertain` or `no_data`. The first two are a flag on the brain and behaviour panel. Never sets a tier on its own. See [Stress/mood check](#stressmood-check). |
 | `lab_<analyte>` | number | per analyte, as in OSDR | Inspiration4 labs | e.g. `lab_hemoglobin` in `g/dL`. Feeds `baselines.json`. |
 
 New types are added here first, then in `knowledge.json` (which keys indicators by `type`).
@@ -133,3 +134,25 @@ export type StreamMessage =
   | { kind: "solar_event"; data: Record<string, unknown>; cached: boolean }
   | { kind: "reading"; data: Reading };
 ```
+
+## Stress/mood check
+
+Compares the stress model with the daily mood check-in. Same logic in Python (`ml/stress_feed.py`, used for the replay file) and TypeScript (`web-components/stressMoodCheck.ts`, for the engine when a live check-in arrives).
+
+- Stress level = mean `stress_prob` over the last 5 windows (about 2 minutes).
+- Stressed at >= 0.6, calm at <= 0.4, in between is `uncertain` (no flag).
+- Mood 4 to 5 counts as "fine", 1 to 2 as "low".
+
+| Body | Mood | `value` | Flag | Message to crew |
+|------|------|---------|------|-----------------|
+| stressed | 4 to 5 | `hidden_stress` | yes (amber) | Body signals show stress but self-reported mood is good. Self-report can miss strain: take a 5-minute break and re-check. |
+| calm | 1 to 2 | `low_mood_no_stress` | yes (amber) | Mood is low but body signals look calm. Consider a private behavioural-health check-in with the crew medical officer. |
+| stressed / calm | other | `consistent` | no | Body signals and self-reported mood agree. |
+| in between | any | `uncertain` | no | Stress signal is borderline; no comparison made. |
+| fewer than 5 windows or no mood | | `no_data` | no | Not enough stress data or no mood check-in yet. |
+
+All thresholds are DESIGN_CHOICE. The check is one more indicator and never sets a tier on its own.
+
+### Replay file
+
+`data/scenario_stress_s17.json` (built by `python ml/stress_feed.py`): the last 8 windows of held-out WESAD subject S17 as `stress_prob` + `stress_label` readings for `C003`, 15 s apart, ending 1 minute before the STAND-REACT test, then one `stress_mood_check` reading against the scenario mood. Source `ml_saved`. The mock bridge merges it into the Mars day 143 stream by timestamp.
