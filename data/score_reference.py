@@ -109,7 +109,8 @@ def run_tests():
         ("C003 glucose 103 high: amber, NOT red", "lab_glucose", [103], gm, gs, "amber"),
         ("glucose 54 is not below 54: amber", "lab_glucose", [54], gm, gs, "amber"),
         ("glucose 53 red (ADA level 2)", "lab_glucose", [53], gm, gs, "red"),
-        ("glucose 250 red (placeholder limit)", "lab_glucose", [250], gm, gs, "red"),
+        ("glucose 250 is not above 250: amber", "lab_glucose", [250], gm, gs, "amber"),
+        ("glucose 251 red (DKA criterion >250, Kitabchi 2009)", "lab_glucose", [251], gm, gs, "red"),
     ]
     fails = 0
     for name, t, hist, m, s, want in cases:
