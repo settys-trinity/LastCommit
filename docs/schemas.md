@@ -4,6 +4,8 @@ Source: *FARSIDE: Final Project Plan* (14 Nov 2026), section "Three schemas to a
 
 ## 1. `reading`
 
+> `data/check_readings.py` copies the type, unit and source lists below. Update it whenever they change.
+
 One measurement about one crew member at one moment. Every input to the engine
 (station test, daily check-in, stress model, lab baseline) is turned into readings
 before the rules engine sees it.
