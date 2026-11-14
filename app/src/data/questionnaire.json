@@ -1,0 +1,31 @@
+{
+  "meta": {
+    "description": "5-question check-in, about 30 seconds. Answers go to the on-board assessment input only; they are not readings and never change the tier (D13).",
+    "answers_schema": { "mood": "integer 1-5", "sleep_h": "number 0-14, steps of 0.5", "stress": "integer 1-5", "focus": "integer 1-5", "symptom": "none | headache | nausea | pain | other" },
+    "owner": "Ansh"
+  },
+  "questions": [
+    { "id": "mood", "text": "How is your mood right now?", "type": "scale", "min": 1, "max": 5, "labels": { "1": "Very low", "3": "OK", "5": "Very good" } },
+    { "id": "sleep_h", "text": "How many hours did you sleep last night?", "type": "number", "min": 0, "max": 14, "step": 0.5 },
+    { "id": "stress", "text": "How stressed do you feel?", "type": "scale", "min": 1, "max": 5, "labels": { "1": "Not at all", "5": "Very stressed" } },
+    { "id": "focus", "text": "How easy is it to focus?", "type": "scale", "min": 1, "max": 5, "labels": { "1": "Very hard", "5": "Easy" } },
+    { "id": "symptom", "text": "Any physical symptom?", "type": "choice", "options": ["none", "headache", "nausea", "pain", "other"] }
+  ],
+  "scoring": {
+    "flags": [
+      { "id": "mood", "flag_if": "value <= 3", "message": "Mood is lower than usual. Try the breathing exercise.", "source": "DESIGN_CHOICE, same limit as knowledge.json mood amber (at_or_below 3)" },
+      { "id": "sleep_h", "flag_if": "value < 7", "message": "Less than 7 hours of sleep. Protect your next sleep period.", "source": "https://aasm.org/resources/pdf/adultsleepdurationconsensus.pdf (same as knowledge.json sleep_hours normal_range min 7)" },
+      { "id": "stress", "flag_if": "value >= 4", "message": "Stress is high. Try the breathing exercise.", "source": "DESIGN_CHOICE" },
+      { "id": "focus", "flag_if": "value <= 2", "message": "Focus is hard. Avoid safety-critical tasks until you feel better.", "source": "DESIGN_CHOICE" },
+      { "id": "symptom", "flag_if": "value != 'none'", "message": "Tell your crew medical officer about this symptom.", "source": "DESIGN_CHOICE" }
+    ],
+    "overall": [
+      { "flags": 0, "label": "Doing well" },
+      { "flags": 1, "label": "Take care" },
+      { "flags_at_least": 2, "label": "Check in with your crew medical officer" }
+    ],
+    "offer_breathing_if": "mood <= 3 or stress >= 4",
+    "never_red": "Self-report alone never makes red (knowledge.json mood note)."
+  },
+  "points": { "questionnaire": 10, "breathing_session": 10, "station_checkin": 10, "badge": { "name": "Steady crew", "after_checkins": 3, "cut_first": true } }
+}
