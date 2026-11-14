@@ -2,6 +2,7 @@
 
 - `test_donki.py`: checks DONKI FLR and SEP on api.nasa.gov, falling back to kauai.ccmc.gsfc.nasa.gov.
 - `test_donki_flr.py`: tries FLR variants in order to find one that works.
+- `cache_donki.py`: fetches SEP events from api.nasa.gov and writes `donki_cache.json`.
 
 Both read `NASA_API_KEY` from `.env` in the repo root. Run with `.venv\Scripts\python.exe data\<script>.py`.
 
@@ -22,3 +23,9 @@ Attempts in `test_donki_flr.py`, all failed:
 The 404 comes from NASA's DONKI service behind the api.nasa.gov gateway, so our key is not the cause. The kauai host resets every connection from this network, while other NASA hosts answer.
 
 **Decision:** the project uses SEP only for the cached demo data. FLR is not used.
+
+## Cached DONKI event
+
+`donki_cache.json` holds the 14 DONKI SEP events from 2024-05-01 to 2024-05-31, fetched 2026-11-14T02:19:02Z from `https://api.nasa.gov/DONKI/SEP?startDate=2024-05-01&endDate=2024-05-31` (API key stripped).
+
+The first event is `2024-05-09T13:59:00-SEP-001`, a solar particle event on **9 May 2024 at 13:59 UTC**. Show this data on screen labelled "cached".
