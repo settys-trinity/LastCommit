@@ -1,8 +1,73 @@
 @import "tailwindcss";
 
+/* Palette from src/theme.ts (keep in step). Tailwind classes: bg-bg, text-fg, text-ok, border-line, font-mono ... */
+@theme {
+  --color-bg: #0b0c0b;
+  --color-panel: #0f110f;
+  --color-fg: #c9cfc9;
+  --color-dim: #5f665f;
+  --color-ok: #4af626;
+  --color-warn: #ffb000;
+  --color-fail: #ff4d4d;
+  --color-line: #2a2f2a;
+  --font-mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+}
+
+/* D18 hard rules: square corners, no shadows. */
+*,
+*::before,
+*::after {
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+html {
+  scroll-behavior: auto;
+}
+
 body {
   margin: 0;
-  background-color: #0b0f17;
-  color: #e5e7eb;
-  font-family: system-ui, sans-serif;
+  background-color: var(--color-bg);
+  color: var(--color-fg);
+  font-family: var(--font-mono);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+html[data-text="green"] body {
+  color: var(--color-ok);
+}
+
+::selection {
+  background: var(--color-ok);
+  color: #000;
+}
+
+/* Scanlines: 1 px every 3 px at 4% opacity. The only gradient allowed. */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(to bottom, rgb(255 255 255 / 0.04) 0 1px, transparent 1px 3px);
+  z-index: 50;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+.cursor-blink {
+  animation: blink 1s steps(1) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
 }

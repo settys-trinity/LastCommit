@@ -9,16 +9,20 @@ const CONNECT_TIMEOUT_MS = 3000;
 const RECONNECT_MS = 3000;
 const REPLAY_GAP_MS = 2000;
 
+// Public site (Vercel) or any non-local host: no bridge, replay from saved data only.
+const PUBLIC_SITE =
+  import.meta.env.VITE_PUBLIC_SITE === "1" || !["localhost", "127.0.0.1"].includes(window.location.hostname);
+
 export type StreamMode = "live" | "replay";
 export type SolarEvent = { data: Record<string, unknown>; cached: boolean };
 
 // The serial bridge does not loop: readings arrive only after POST /scenario, /start or /replay.
 export function useStream() {
-  const [mode, setMode] = useState<StreamMode>("live");
+  const [mode, setMode] = useState<StreamMode>(PUBLIC_SITE ? "replay" : "live");
   const [readingsByCrew, setReadingsByCrew] = useState<Record<string, Reading[]>>({});
   const [solarEvent, setSolarEvent] = useState<SolarEvent | null>(null);
   const [cabinAir, setCabinAir] = useState<CabinAirSample[]>([]);
-  const modeRef = useRef<StreamMode>("live");
+  const modeRef = useRef<StreamMode>(PUBLIC_SITE ? "replay" : "live");
   const playback = useRef<number[]>([]);
 
   const addReading = useCallback((r: Reading) => {
@@ -31,6 +35,7 @@ export function useStream() {
   }, []);
 
   useEffect(() => {
+    if (PUBLIC_SITE) return; // never open a WebSocket on the public site
     let ws: WebSocket | null = null;
     let connectTimer = 0;
     let retryTimer = 0;
