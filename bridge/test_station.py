@@ -86,6 +86,19 @@ class FakeUnoTest(unittest.TestCase):
         self.assertEqual(uno.sent, ["START:20"])
 
 
+class LapseThreshold(unittest.TestCase):
+    def test_pvt_b_threshold(self):
+        self.assertEqual(LAPSE_MS, 355)  # D7, PVT-B (Basner et al. 2011)
+
+    def test_boundary(self):
+        run = Run("C001")
+        for ms in [354, 355, 356, 2000]:
+            run.handle({"t": "rt", "ms": ms})
+        out = run.handle({"t": "done"})
+        lapses = [r for r in out if r["type"] == "lapses"][0]["value"]
+        self.assertEqual(lapses, 2)  # strictly slower than 355 ms: 356 and 2000
+
+
 class CabinAir(unittest.TestCase):
     def test_message(self):
         m = cabin_air(312)
