@@ -110,9 +110,13 @@ const Mission MISSIONS[N_MISSIONS] = {  // docs/delay_table.md
   {"ISS", 0.5f}, {"MOON", 2.6f}, {"MARS", 2640.0f}, {"CONJUNCT", -1.0f},
 };
 
-// Sources: NEWS2 (Royal College of Physicians 2017) for SpO2 scale 1, HR, RR, systolic BP low side;
-// BP high side: AHA hypertensive crisis >= 180; reaction 355 ms = PVT-B lapse (Basner 2011);
-// CO2, skin temp, tilt, reaction red: DESIGN_CHOICE, verify before the pitch.
+// Sources (full list: pitch/threshold_sources.md):
+// NEWS2 (Royal College of Physicians 2017) for SpO2 scale 1, HR, RR, systolic BP low side;
+// BP high side: AHA hypertensive crisis >= 180;
+// CO2: amber 3950 ppm = NASA-STD-3001 limit of 3 mmHg (1-h average), red 7000 ppm = 5.3 mmHg SMAC
+//      (7-180 days); both converted at 760 mmHg cabin pressure (1 mmHg ~ 1316 ppm);
+// reaction median: DESIGN_CHOICE, informed by the 355 ms PVT-B lapse cutoff (Basner 2011; 355 ms is
+//      per tap, not a limit on a median); skin temp, tilt: DESIGN_CHOICE.
 const Limit LIMITS[N_CH] = {
   // name    unit    ambLo ambHi redLo redHi  hyst  validLo validHi noise  lag   dec
   {"SpO2",  "%",     93,   1e9,  91,   1e9,   0.5f, 50,     100.5f, 0.25f, 0.00f, 0},
@@ -120,7 +124,7 @@ const Limit LIMITS[N_CH] = {
   {"RR",    "/min",  11,   21,   8,    25,    0.5f, 2,      70,     0.3f,  0.10f, 0},
   {"BP",    "mmHg",  100,  140,  90,   180,   2.0f, 40,     280,    1.5f,  0.20f, 0},
   {"SKIN",  "C",     30,   37,   28,   39,    0.2f, 10,     45,     0.04f, 0.30f, 1},
-  {"CO2",   "ppm",   -1e9, 4000, -1e9, 5300,  100,  100,    50000,  20,    0.00f, 0},
+  {"CO2",   "ppm",   -1e9, 3950, -1e9, 7000,  100,  100,    50000,  20,    0.00f, 0},
   {"REACT", "ms",    -1e9, 356,  -1e9, 500,   10,   80,     5000,   0,     0.35f, 0},
   {"TILT",  "deg",   -1e9, 5,    -1e9, 10,    0.5f, -1,     181,    0.15f, 0.25f, 1},
 };
@@ -134,7 +138,7 @@ const Scenario SCENARIOS[] = {
   {"LIVE",          {0,   0,   0,  0,   0,     0,    0,    0},      0,   0},
   {"NOMINAL",       {97,  68,  14, 118, 33.5f, 1500, 290,  1.0f},   0,   1},   // all green
   {"HYPOXIA",       {89,  118, 23, 124, 33.0f, 1500, 380,  1.5f},   3,   12},  // SpO2 red, HR + RR + reaction amber
-  {"CO2 BUILDUP",   {96,  92,  22, 132, 34.0f, 6000, 400,  1.2f},   3,   16},  // CO2 red, RR + reaction amber
+  {"CO2 BUILDUP",   {96,  92,  22, 132, 34.0f, 7500, 400,  1.2f},   3,   16},  // CO2 red, RR + reaction amber
   {"FATIGUE",       {97,  74,  15, 120, 33.2f, 1500, 520,  6.0f},   3,   12},  // reaction red, tilt amber
   {"CARDIO",        {96,  136, 18, 186, 33.8f, 1500, 300,  1.0f},   3,   10},  // HR red, BP red
   {"HEAT STRESS",   {96,  124, 22, 108, 39.4f, 1500, 370,  2.0f},   3,   14},  // skin red, HR + RR + reaction amber
