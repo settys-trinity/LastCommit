@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import type { Reading } from "../../types";
 import { LazyAstronaut } from "../astronaut/LazyAstronaut";
 import { partStatuses, type PartData } from "../astronaut/parts";
 import { Panel, StatusTag, type TagStatus } from "../term";
@@ -13,9 +14,19 @@ const SHORT: [string, string][] = [
 const TAG = { green: "ok", amber: "warn", red: "fail" } as const;
 
 // BODY panel: one small astronaut and a one-line system summary. Click opens the full body view.
-export function BodyMap({ data, crewId }: { data: PartData; crewId: string }) {
-  const [open, setOpen] = useState(false);
-  const close = useCallback(() => setOpen(false), []);
+export function BodyMap({ data, crewId, running, onRunTest, onCheckin }: {
+  data: PartData;
+  crewId: string;
+  running: boolean;
+  onRunTest: () => void;
+  onCheckin: (r: Reading) => void;
+}) {
+    // "/demo#body" (the landing page's [b]) opens straight into the body view.
+  const [open, setOpen] = useState(() => window.location.hash === "#body");
+  const close = useCallback(() => {
+    setOpen(false);
+    if (window.location.hash) window.history.replaceState(null, "", window.location.pathname); // a reload stays on the dashboard
+  }, []);
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "b" && !e.ctrlKey && !e.metaKey && !e.altKey) setOpen(true);
@@ -45,9 +56,9 @@ export function BodyMap({ data, crewId }: { data: PartData; crewId: string }) {
         })}
       </div>
       <button type="button" onClick={() => setOpen(true)} className="hover:bg-fg hover:text-bg">
-        [b] open body view
+        [b] open body view: click a body part to run its test
       </button>
-      {open && <BodyViewer data={data} crewId={crewId} onClose={close} />}
+      {open && <BodyViewer data={data} crewId={crewId} running={running} onRunTest={onRunTest} onCheckin={onCheckin} onClose={close} />}
     </Panel>
   );
 }

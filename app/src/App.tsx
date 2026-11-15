@@ -81,6 +81,7 @@ export default function App() {
       if (m) setMissionId(m.id);
       else if (e.key === "s") keys.current.startTest();
       else if (e.key === "r") keys.current.replay();
+      else if (e.key === "h") window.location.assign("/"); // home: the landing page
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
@@ -139,7 +140,13 @@ export default function App() {
           <StationPreview tier={t.tier} />
         </div>
         <div className="flex flex-col gap-3">
-          <BodyMap data={{ result, readings: crewReadings, cabinAir }} crewId={crewId} />
+          <BodyMap
+            data={{ result, readings: crewReadings, cabinAir }}
+            crewId={crewId}
+            running={running}
+            onRunTest={startTest}
+            onCheckin={(r) => addReadings([r])}
+          />
           <Panel title="stress / mood">
             <StressMoodPanel crewId={crewId} readings={crewReadings} />
           </Panel>
@@ -151,7 +158,7 @@ export default function App() {
       </main>
 
       <footer className="border-t border-line px-2 text-dim whitespace-pre-wrap">
-        keys: 1-4 mission  s start test  r replay  b body view
+        keys: 1-4 mission  s start test  r replay  b body view  h home
       </footer>
     </div>
   );
