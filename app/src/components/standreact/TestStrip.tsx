@@ -17,8 +17,8 @@ function useElapsed(running: boolean): number {
   return start === null ? 0 : (now - start) / 1000;
 }
 
-// NEXT STEP: one big start button (a progress bar while running) and the last result on one line.
-// The full tap log and chart live in StandReactView; the per-part results live in the body view.
+// NEXT STEP: one big start button (a progress bar and the live last tap while running), the run's taps as they
+// arrive (lapses marked * and in amber, not by colour alone), and the last result on one line.
 export function TestStrip({ crewId, readings, running, onStart, onReplay, error }: {
   crewId: string;
   readings: Reading[];
@@ -30,7 +30,12 @@ export function TestStrip({ crewId, readings, running, onStart, onReplay, error 
   const elapsed = useElapsed(running);
   const run = latestRun(readings.filter((r) => r.crew_id === crewId), running);
   const last = (type: string) => run.filter((r) => r.type === type).at(-1);
-  const taps = run.filter((r) => r.type === "reaction_time").length;
+  const tapReadings = run.filter((r) => r.type === "reaction_time");
+  const taps = tapReadings.length;
+  const lastTap = tapReadings.at(-1);
+  const slow = (r: Reading) => Number(r.value) > LAPSE_MS;
+  // Where the taps came from: the real station, or the replay/simulation. Live taps prove the hardware on stage.
+  const from = lastTap ? (lastTap.source === "station" ? "live from the station" : `source: ${lastTap.source}`) : "";
   const median = last("reaction_time_median");
   const lapses = last("lapses");
   const sway = last("sway_rms");
@@ -38,11 +43,30 @@ export function TestStrip({ crewId, readings, running, onStart, onReplay, error 
   return (
     <div>
       {running ? (
-        <div className="border border-ok px-3 py-2 text-xl whitespace-pre text-ok">{`TEST RUNNING  ${progressBar(elapsed)}  taps ${taps}`}</div>
+        <div className="border border-ok px-3 py-2 text-xl whitespace-pre-wrap text-ok">
+          {`TEST RUNNING  ${progressBar(elapsed)}  taps ${taps}`}
+          {lastTap && (
+            <span className={slow(lastTap) ? "text-warn" : "text-fg"}>
+              {`  · last ${lastTap.value} ms`}
+              {slow(lastTap) && " [WARN]"}
+            </span>
+          )}
+        </div>
       ) : (
         <button type="button" onClick={onStart} className="w-full border border-fg px-3 py-2 text-left text-xl font-bold hover:bg-fg hover:text-bg">
           [s] START 20 s TEST
         </button>
+      )}
+      {tapReadings.length > 0 && (
+        <div className="mt-2 flex flex-wrap items-baseline gap-x-3" aria-live="polite">
+          <span className="text-dim">{running ? "taps" : "last taps"}</span>
+          {tapReadings.slice(-12).map((r, i) => (
+            <span key={`${r.timestamp}-${i}`} className={`tabular-nums ${slow(r) ? "text-warn" : ""}`}>
+              {`${r.value}${slow(r) ? "*" : ""}`}
+            </span>
+          ))}
+          <span className="text-dim">ms · * over {LAPSE_MS} ms (lapse) · {from}</span>
+        </div>
       )}
       <div className="mt-2 flex flex-wrap items-baseline gap-x-4">
         <span className="text-dim">last test</span>
