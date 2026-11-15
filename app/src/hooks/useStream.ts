@@ -14,12 +14,37 @@ const PUBLIC_SITE =
   import.meta.env.VITE_PUBLIC_SITE === "1" || (typeof window !== "undefined" && !["localhost", "127.0.0.1"].includes(window.location.hostname));
 
 export type StreamMode = "live" | "replay";
+
+// C003 starts every session with 3 earlier STAND-REACT runs as its personal baseline (the engine needs
+// 3 runs per crew member before it can flag one), so the first live run on stage is already judged.
+// Values: the 3 baseline runs from the Mars day 143 scenario. Dated 3, 2 and 1 days before app start,
+// so every live run sorts after them. Source "replay": recorded earlier, not live.
+const BASELINE_CREW = "C003";
+const BASELINE_RUNS: { median: number; lapses: number; sway: number }[] = [
+  { median: 340, lapses: 1, sway: 0.049 },
+  { median: 350, lapses: 0, sway: 0.052 },
+  { median: 345, lapses: 1, sway: 0.05 },
+];
+
+export function baselineSeed(now: number = Date.now()): Record<string, Reading[]> {
+  const day = 24 * 60 * 60 * 1000;
+  const readings = BASELINE_RUNS.flatMap((run, i) => {
+    const timestamp = new Date(now - (BASELINE_RUNS.length - i) * day).toISOString().replace(/\.\d{3}Z$/, "Z");
+    const base = { crew_id: BASELINE_CREW, timestamp, source: "replay" as const };
+    return [
+      { ...base, type: "reaction_time_median", value: run.median, unit: "ms" },
+      { ...base, type: "lapses", value: run.lapses, unit: "count" },
+      { ...base, type: "sway_rms", value: run.sway, unit: "g" },
+    ];
+  });
+  return { [BASELINE_CREW]: readings };
+}
 export type SolarEvent = { data: Record<string, unknown>; cached: boolean };
 
 // The serial bridge does not loop: readings arrive only after POST /scenario, /start or /replay.
 export function useStream() {
   const [mode, setMode] = useState<StreamMode>(PUBLIC_SITE ? "replay" : "live");
-  const [readingsByCrew, setReadingsByCrew] = useState<Record<string, Reading[]>>({});
+  const [readingsByCrew, setReadingsByCrew] = useState<Record<string, Reading[]>>(() => baselineSeed());
   const [solarEvent, setSolarEvent] = useState<SolarEvent | null>(null);
   const [cabinAir, setCabinAir] = useState<CabinAirSample[]>([]);
   const modeRef = useRef<StreamMode>(PUBLIC_SITE ? "replay" : "live");
@@ -104,7 +129,7 @@ export function useStream() {
 
   const resetReadings = useCallback(() => {
     stopPlayback();
-    setReadingsByCrew({});
+    setReadingsByCrew(baselineSeed()); // reset keeps C003's 3 baseline runs
   }, []);
 
   useEffect(() => stopPlayback, []);
