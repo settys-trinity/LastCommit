@@ -9,6 +9,7 @@ import type { OutboxPacket } from "../outbox/OutboxPanel";
 import { getMission, type MissionId } from "../../engine/delay";
 import { BRIDGE_URL } from "../../hooks/useStream";
 import { StatusTag } from "../term";
+import type { Answers } from "../wellbeing/questionnaire";
 import groundFile from "../../data/ground_replies.json";
 import cache from "./assess_cache.json";
 import { ReportPanel } from "./ReportPanel";
@@ -30,16 +31,18 @@ interface Props {
   readings: Reading[];
   packet: OutboxPacket | undefined; // latest outbox packet for this crew (gives the reply time)
   speedUp: number;
+  checkin?: Answers | null;          // Diksha's 5-question check-in; context for /assess, never the tier (D13)
 }
 
-export function AssessReport({ crewId, missionId, triage, readings, packet, speedUp }: Props) {
+export function AssessReport({ crewId, missionId, triage, readings, packet, speedUp, checkin }: Props) {
   const [assessment, setAssessment] = useState<Assessment | null>(null);
   const [loading, setLoading] = useState(false);
   const readingsRef = useRef(readings);
   readingsRef.current = readings;
   const mission = getMission(missionId);
   const scenario = pickScenario(triage);
-  const key = `${crewId}|${missionId}|${triage.tier}|${triage.reason}`;
+  // a new check-in also re-asks, so the answer reflects how the astronaut says they feel
+  const key = `${crewId}|${missionId}|${triage.tier}|${triage.reason}|${checkin ? JSON.stringify(checkin) : ""}`;
 
   useEffect(() => {
     if (triage.tier === 0) {
@@ -67,6 +70,7 @@ export function AssessReport({ crewId, missionId, triage, readings, packet, spee
       readings: readingsRef.current.slice(-30),
       engine_findings: [triage.reason, triage.action].filter(Boolean),
       scenario,
+      ...(checkin ? { questionnaire: checkin } : {}),
     };
     const ctrl = new AbortController();
     const timer = window.setTimeout(() => ctrl.abort(), 20_000);

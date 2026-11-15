@@ -170,6 +170,7 @@ export default function App() {
             readings={crewReadings}
             packet={t.tier > 0 ? outbox.packets.find((p) => p.crewId === crewId) : undefined}
             speedUp={SPEED_UP}
+            checkin={checkin}
           />
         </Panel>
         <div className="grid gap-4 lg:grid-cols-[1.5fr_1fr]">
