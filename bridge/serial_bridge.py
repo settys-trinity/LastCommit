@@ -19,6 +19,11 @@ Endpoints (all JSON):
     POST /stress   {"crew_id":"C003","last_n":8,"interval_s":1.0,"mood":4}
                                        stream the saved stress model output (held-out WESAD S17) live, one window
                                        per interval_s, source "ml_saved"; mood (optional) adds a stress_mood_check
+    GET  /sim                          {"feeds":[...], "running": scenario or null}
+    POST /sim      {"scenario":"hypoxia","speed":1.0,"loop":true}
+                                       Simulation mode: replay data/wokwi_feed_<scenario>.jsonl (recorded Wokwi
+                                       ESP32 output, 8 channels) as {"kind":"sim","data":{...}} once per second
+    POST /sim/stop                     stop the replay (back to Station mode)
 """
 import argparse
 import asyncio
@@ -33,6 +38,7 @@ from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
+import sim
 import stress
 from station import CREW_IDS, FakeUno, Run, cabin_air, clean_msg, parse_line
 
@@ -59,6 +65,8 @@ class Bridge:
         self.armed = ("GUEST", 20)  # (crew_id, duration_s) the button starts; set by /start and /arm
         self.loop = None
         self.outbox = None
+        self.sim_task = None
+        self.sim_scenario = None
 
     # ---- serial side (background thread) ----
     def open_serial(self):
@@ -153,6 +161,31 @@ class MsgBody(BaseModel):
     text: str
 
 
+class SimBody(BaseModel):
+    scenario: str
+    speed: float = Field(1.0, gt=0, le=20)
+    loop: bool = True
+
+
+async def replay_sim(bridge, scenario, lines, speed, loop):
+    try:
+        while True:
+            for raw in lines:
+                bridge.publish(sim.sim_message(raw, scenario))
+                await asyncio.sleep(1.0 / speed)
+            if not loop:
+                break
+    finally:
+        if bridge.sim_task is asyncio.current_task():  # not when a newer replay replaced this one
+            bridge.sim_task, bridge.sim_scenario = None, None
+
+
+def stop_sim(bridge):
+    if bridge.sim_task is not None and not bridge.sim_task.done():
+        bridge.sim_task.cancel()
+    bridge.sim_task, bridge.sim_scenario = None, None
+
+
 class StressBody(BaseModel):
     crew_id: str = "C003"
     last_n: int = Field(8, ge=5, le=120)
@@ -177,7 +210,7 @@ def make_app(bridge):
     def health():
         return {"ok": True, "serial": bridge.label, "connected": bridge.connected,
                 "running": bridge.run is not None, "armed": bridge.armed[0],
-                "stress_feed": stress.available()}
+                "stress_feed": stress.available(), "sim": bridge.sim_scenario}
 
     @app.websocket("/ws/stream")
     async def stream(ws: WebSocket):
@@ -247,6 +280,30 @@ def make_app(bridge):
                                                  body.interval_s, body.mood))
         return {"ok": True, "crew_id": body.crew_id, "windows": body.last_n,
                 "seconds": round(body.last_n * body.interval_s, 1)}
+
+    @app.get("/sim")
+    def sim_status():
+        return {"feeds": sim.list_feeds(DATA), "running": bridge.sim_scenario}
+
+    @app.post("/sim")
+    async def sim_start(body: SimBody):
+        if not body.scenario.replace("_", "").replace("-", "").isalnum():
+            raise HTTPException(400, "scenario: letters, digits, _ and - only")
+        path = sim.feed_path(DATA, body.scenario)
+        if not path.exists():
+            raise HTTPException(404, f"no feed {path.name}; have {sim.list_feeds(DATA)}")
+        lines = sim.load_feed(path)
+        if not lines:
+            raise HTTPException(422, f"{path.name} has no JSON lines")
+        stop_sim(bridge)
+        bridge.sim_scenario = body.scenario
+        bridge.sim_task = asyncio.create_task(replay_sim(bridge, body.scenario, lines, body.speed, body.loop))
+        return {"ok": True, "scenario": body.scenario, "lines": len(lines), "loop": body.loop}
+
+    @app.post("/sim/stop")
+    def sim_stop():
+        stop_sim(bridge)
+        return {"ok": True}
 
     return app
 
