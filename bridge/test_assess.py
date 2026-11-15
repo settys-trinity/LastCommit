@@ -6,13 +6,17 @@ import unittest
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-os.environ.pop("ANTHROPIC_API_KEY", None)
+for _k in ("ANTHROPIC_API_KEY", "GEMINI_API_KEY", "GOOGLE_API_KEY"):
+    os.environ.pop(_k, None)
 
 import assess  # noqa: E402
 from assess import AssessBody, SAMPLES, assess_body, load_cache, valid  # noqa: E402
 
+for _k in ("ANTHROPIC_API_KEY", "GEMINI_API_KEY", "GOOGLE_API_KEY"):  # assess loads .env on import
+    os.environ.pop(_k, None)
+
 FIELDS = {"crew_id", "mission", "tier", "who_acts", "summary", "findings", "do_now",
-          "message_to_earth", "time_b_s", "source", "made_at"}
+          "message_to_earth", "time_b_s", "source", "model", "made_at"}
 
 GOOD = {
     "summary": "You are tired.",
@@ -100,6 +104,37 @@ class Fallback(unittest.TestCase):
             raise AssertionError("live call made")
         out = run(mars(use_cache=True), never)
         self.assertEqual(out["source"], "cache")
+
+
+class Provider(unittest.TestCase):
+    def tearDown(self):
+        for k in ("ANTHROPIC_API_KEY", "GEMINI_API_KEY", "GOOGLE_API_KEY"):
+            os.environ.pop(k, None)
+
+    def test_pick_provider(self):
+        self.assertIsNone(assess.provider())
+        os.environ["ANTHROPIC_API_KEY"] = "PASTE_YOUR_KEY_HERE"
+        self.assertIsNone(assess.provider())
+        os.environ["GEMINI_API_KEY"] = "AIza-test-key"
+        self.assertEqual(assess.provider(), "gemini")
+        os.environ["ANTHROPIC_API_KEY"] = "sk-ant-test-key"
+        self.assertEqual(assess.provider(), "claude")
+
+    def test_gemini_route_and_label(self):
+        os.environ["GEMINI_API_KEY"] = "AIza-test-key"
+        real = assess.call_gemini
+
+        async def fake(body):
+            return {**GOOD, "tier": 0}
+        assess.call_gemini = fake
+        try:
+            out = asyncio.run(assess_body(mars()))
+        finally:
+            assess.call_gemini = real
+        self.assertEqual((out["source"], out["model"], out["tier"]), ("live", assess.GEMINI_MODEL, 2))
+
+    def test_cache_has_no_model(self):
+        self.assertIsNone(run(mars())["model"])
 
 
 class Endpoint(unittest.TestCase):

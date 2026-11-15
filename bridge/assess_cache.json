@@ -1,32 +1,72 @@
 {
   "nominal": {
-    "summary": "All checks are inside your normal range today. No action needed beyond your usual routine.",
+    "summary": "Crew member C003 shows stable physical and cognitive performance with no abnormalities reported.",
     "findings": [
-      {"part": "head", "text": "Reaction time and focus match your normal days. Sleep was 7.5 hours."},
-      {"part": "legs", "text": "Balance is steady, the same as your baseline."},
-      {"part": "air", "text": "Cabin air has not changed from the start of the session."}
+      {
+        "part": "head",
+        "text": "Sleep duration, mood, and focus scores are within normal ranges. Reaction time is stable with no lapses."
+      },
+      {
+        "part": "legs",
+        "text": "Balance and sway measurements are within expected limits."
+      },
+      {
+        "part": "air",
+        "text": "Cabin air sensor index is consistent with baseline levels."
+      }
     ],
-    "do_now": ["Keep your normal work and rest plan", "Do the next check at the usual time"],
-    "message_to_earth": "Crew member C003: all indicators within personal baseline. No action taken on board."
+    "do_now": [
+      "Continue with scheduled mission tasks.",
+      "Maintain current hydration and nutritional intake."
+    ],
+    "message_to_earth": "Crew member C003 is performing within normal parameters. No health concerns reported at this time."
   },
   "hypoxia": {
-    "summary": "The cabin air reading rose well above where it started, and your reactions and balance got worse at the same time. Treat this as a possible air problem first.",
+    "summary": "Tier 2 assessment for C003. Crew member reports headache and dizziness with degraded cognitive performance and elevated cabin air readings.",
     "findings": [
-      {"part": "air", "text": "Cabin air index is about twice this session's starting level. The sensor is not calibrated, so this shows a change, not an exact amount."},
-      {"part": "head", "text": "Reaction time is slower than your normal and you missed 3 taps. You report a headache and feeling dizzy."},
-      {"part": "legs", "text": "Balance is less steady than your baseline."}
+      {
+        "part": "head",
+        "text": "Reported headache and dizziness. Cognitive tests show slower reaction time than baseline and 3 lapses in focus."
+      },
+      {
+        "part": "legs",
+        "text": "Sway measurement is 0.064g."
+      },
+      {
+        "part": "air",
+        "text": "Cabin air index is 620, which is significantly higher than the baseline of 300."
+      }
     ],
-    "do_now": ["Move to the safe-haven module or put on an oxygen mask", "Crew medical officer checks breathing and finger oxygen now", "Check the air system and cabin fans", "Repeat the station test in 10 minutes"],
-    "message_to_earth": "Cabin air index rose to about 2x session baseline with slower reaction time, 3 lapses and worse sway in C003. Crew moved to clean air and the crew medical officer is assessing."
+    "do_now": [
+      "Increase ventilation or scrub cabin air immediately.",
+      "Monitor crew member for worsening dizziness.",
+      "Ensure crew member remains seated until air quality stabilizes.",
+      "Verify life support sensor calibration."
+    ],
+    "message_to_earth": "Crew member C003 reports headache and dizziness with increased cabin air index and slowed reaction time. Cabin ventilation adjustments are in progress."
   },
   "fatigue": {
-    "summary": "You slept only 4 hours, and your reaction time, missed taps and balance are all worse than your normal. This looks like tiredness building up over several short nights.",
+    "summary": "Crew member C003 is experiencing significant fatigue, decreased focus, and impaired balance after only 4 hours of sleep. Tier 2 protocol applies; crew medical officer must intervene.",
     "findings": [
-      {"part": "head", "text": "Sleep was 4 hours, after 4.5 and 5 hours on the nights before. Reaction time is slower than usual and you missed 3 taps. You rated stress high and focus low."},
-      {"part": "legs", "text": "Balance is a little less steady than your baseline."},
-      {"part": "air", "text": "Cabin air has not changed, so it is not the cause."}
+      {
+        "part": "head",
+        "text": "Sleep is very low at 4 hours. Reaction time is slower than normal, focus is poor, and lapse count is elevated."
+      },
+      {
+        "part": "legs",
+        "text": "Balance is currently unstable as indicated by increased body sway."
+      },
+      {
+        "part": "air",
+        "text": "Cabin air quality is stable with a negligible increase of 5 units above baseline."
+      }
     ],
-    "do_now": ["Stop any critical or risky task for now", "Take a 30-minute rest or nap", "Drink water and eat something", "Repeat the station test after the rest"],
-    "message_to_earth": "C003: 3 short nights (4.0 h last night), slower reaction time, 3 lapses and higher sway versus baseline. Crew medical officer has paused critical tasks and scheduled rest."
+    "do_now": [
+      "Ground the crew member from all safety-critical tasks.",
+      "Ensure the crew member stays in a quiet, low-stimulus environment.",
+      "Monitor for any worsening of motor coordination or cognitive lapses.",
+      "Schedule an immediate recovery sleep period."
+    ],
+    "message_to_earth": "Crew member C003 shows signs of acute sleep deprivation, affecting cognitive speed and physical balance. The crew medical officer is overseeing a rest-and-recovery protocol."
   }
 }
