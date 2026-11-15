@@ -17,6 +17,7 @@ import { TestStrip } from "./components/standreact/TestStrip";
 import { TriageCard } from "./components/triage/TriageCard";
 import { EarthCountdown } from "./components/triage/EarthCountdown";
 import { StationLine } from "./components/station/StationLine";
+import { AssessReport } from "./components/report/AssessReport";
 
 const SPEED_UP = 60; // demo: the 44 min Mars round trip counts down in 44 s (D15)
 const RUN_TIMEOUT_MS = 30_000; // stop showing "running" if lapses never arrives
@@ -148,6 +149,16 @@ export default function App() {
             </div>
           </Panel>
         </div>
+        <Panel title="on board vs earth">
+          <AssessReport
+            crewId={crewId}
+            missionId={missionId}
+            triage={t}
+            readings={crewReadings}
+            packet={t.tier > 0 ? outbox.packets.find((p) => p.crewId === crewId) : undefined}
+            speedUp={SPEED_UP}
+          />
+        </Panel>
         <div className="grid gap-4 lg:grid-cols-[1.5fr_1fr]">
           <Panel title="next step">
             <TestStrip crewId={crewId} readings={crewReadings} running={running} onStart={startTest} onReplay={replay} error={runError} />
