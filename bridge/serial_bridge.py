@@ -24,6 +24,7 @@ Endpoints (all JSON):
                                        Simulation mode: replay data/wokwi_feed_<scenario>.jsonl (recorded Wokwi
                                        ESP32 output, 8 channels) as {"kind":"sim","data":{...}} once per second
     POST /sim/stop                     stop the replay (back to Station mode)
+    POST /assess                       on-board AI assessment (bridge/assess.py, Om), mounted when present
 """
 import argparse
 import asyncio
@@ -205,6 +206,12 @@ def make_app(bridge):
 
     app = FastAPI(title="FARSIDE serial bridge", lifespan=lifespan)
     app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
+    try:  # Om's POST /assess (bridge/assess.py). Optional, so the bridge still starts without it.
+        from assess import router as assess_router
+        app.include_router(assess_router)
+        print("[bridge] /assess mounted")
+    except Exception as e:  # missing file or a bad import must never stop the station
+        print(f"[bridge] /assess not available ({e}); station and sim still work")
 
     @app.get("/health")
     def health():

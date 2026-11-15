@@ -47,7 +47,7 @@ CONFIRM (checked against `main` at `18eb680`): the questionnaire and ground-repl
 | "The personal monitor has no fire detector; ours could add one." | "NASA has no fire detector." |
 | "Future: trained on NASA medical records by data request." | "Trained on NASA doctor consultations." |
 
-If cabin CO2 comes up: NASA's standard is a 1-hour average of **3 mmHg** or less (about **3,950 ppm**); the 7-to-180-day limit (SMAC) is **5.3 mmHg** (about **7,000 ppm**). Our sim uses amber ≥ 3,950 ppm and red ≥ 7,000 ppm (CONFIRM: only once Diksha has changed the Wokwi limits from 4000/5300; see `pitch/threshold_sources.md`).
+If cabin CO2 comes up: NASA's standard is a 1-hour average of **3 mmHg** or less (about **3,950 ppm**); the 7-to-180-day limit (SMAC) is **5.3 mmHg** (about **7,000 ppm**). Our sim uses amber ≥ 3,950 ppm and red ≥ 7,000 ppm. The Wokwi sketch and the bridge both use these limits; sources in `pitch/threshold_sources.md`.
 
 ## Judge questions
 
