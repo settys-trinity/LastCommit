@@ -17,7 +17,7 @@ class Limits(unittest.TestCase):
             ("rr", 14, "green"), ("rr", 21, "amber"), ("rr", 25, "red"),
             ("sbp", 118, "green"), ("sbp", 140, "amber"), ("sbp", 180, "red"), ("sbp", 90, "red"),
             ("rt_ms", 355, "green"), ("rt_ms", 356, "amber"), ("rt_ms", 500, "red"),
-            ("co2_ppm", 3999, "green"), ("co2_ppm", 4000, "amber"), ("co2_ppm", 5300, "red"),
+            ("co2_ppm", 3949, "green"), ("co2_ppm", 3950, "amber"), ("co2_ppm", 6999, "amber"), ("co2_ppm", 7000, "red"),
         ]
         for key, value, want in cases:
             self.assertEqual(sim.status(key, value), want, (key, value))
