@@ -2,3 +2,6 @@ fastapi
 uvicorn[standard]
 websockets
 pyserial
+anthropic
+python-dotenv
+google-genai
