@@ -1,144 +1,189 @@
-# LastCommit: FARSIDE
+# FARSIDE
 
-FARSIDE is a crew health station where the communication delay to Earth decides who acts on a health finding. The same reading means "message Earth" on the ISS and "crew medical officer acts now" on Mars.
+### Crew health decision support for missions beyond real-time contact with Earth
 
-Built by Team Last Commit for HackAthlone 2026 (NASA Space Apps Challenge).
+**Same data. Different distance. Different decision.**
 
-**Live site:** https://lastcommit.earth (dashboard at https://lastcommit.earth/demo)
+[Live demo](https://lastcommit.earth/demo) · [Wokwi simulation](https://wokwi.com/projects/480704307052933121) · Built by Team Last Commit for HackAthlone 2026 (NASA Space Apps Challenge)
 
-> Decision support, not diagnosis. Values from the Wokwi simulation are simulated; the demo scenario values are invented demo numbers.
+![FARSIDE dashboard](docs/img/dashboard.png)
+
+---
+
+## The problem
+
+Every crewed mission so far has had a doctor on the line. Low Earth orbit and lunar missions rely on **real-time support from flight surgeons on the ground**: the ISS is less than a quarter of a second away and the Moon about 1.3 seconds one way. When a crew member's health changes, the crew describes it and Earth decides what to do.
+
+Mars breaks that model:
+
+- **Up to 22 minutes one way, 44 minutes round trip.** A question asked at the start of a medical event gets its answer three quarters of an hour later.
+- **No link at all during solar conjunction.** For about 2 to 3 weeks per Mars mission, the Sun blocks communication.
+- **Past roughly 10 minutes of delay, NASA expects the crew to manage on their own** (NASA/TM-20250003885).
+
+Today's crew health tools grade a reading as normal or abnormal. None of them answers the question that matters on Mars: **who acts on this finding, and how fast?** A low oxygen saturation that should be reported to Earth from the ISS needs the crew medical officer to act immediately on Mars. If that switch is left to judgement in the moment, under stress and with incomplete information, the crew loses the time that matters most.
+
+## Our solution
+
+FARSIDE is a crew health station that makes **communication delay part of the medical decision**.
+
+1. It checks each crew member's readings against **sourced clinical limits and their own personal baseline**.
+2. It routes the worst finding using the **round-trip delay of the current mission**, so the same reading leads to "message Earth" near home and "crew medical officer acts now" far from it.
+3. It gives the crew a **plain-language explanation in seconds**, while the report is still travelling to Earth, and shows exactly when the ground reply will arrive.
+
+FARSIDE is decision support, not diagnosis. A transparent rules engine sets every decision. The AI only explains it.
 
 ## Preview
 
-| Landing | Dashboard (`/demo`) | Body view (`/demo#body`) |
-|---|---|---|
-| ![Landing page](docs/img/landing.png) | ![Dashboard](docs/img/dashboard.png) | ![Body view](docs/img/body-view.png) |
+| Landing page | Body view |
+|---|---|
+| ![Landing page](docs/img/landing.png) | ![Body view](docs/img/body-view.png) |
 
-Screenshots from a local build of `main`, without the bridge running (so the dashboard shows the replay badge and "bridge unreachable").
+The dashboard (top) shows the status card, who acts, what to do now, the Earth reply countdown and the reaction test. The body view links each part of the astronaut to its test.
 
 ## How it works
 
-1. **Readings** come from the station (Arduino STAND-REACT test), the bridge's replay scenarios or the Wokwi simulation. Every reading has exactly six fields: `crew_id, timestamp, type, value, unit, source` (`docs/schemas.md`).
-2. **Rules engine** (in the browser): `score(readings, crewId)` grades each indicator against `data/knowledge.json` and the crew member's own baseline. `evaluate(readings, crewId, missionId)` returns the `EngineResult` (`docs/engine_contract.md`).
-3. **Router**: `route(worst, missionId)` in `app/src/engine/triage.ts` picks the tier from the worst finding and the mission's round trip (`app/src/engine/delay.ts`):
+```mermaid
+flowchart LR
+    A[Check-in station<br/>or Wokwi simulation] -->|readings| B[Rules engine<br/>limits + personal baseline]
+    B -->|worst finding| C[Router<br/>finding x mission delay]
+    C -->|tier| D[Crew dashboard<br/>and station LEDs]
+    C -->|report| E[Earth outbox<br/>round-trip countdown]
+    B --> F[On-board AI<br/>plain-language assessment]
+    F --> D
+```
 
-| Tier | Station LED | Who acts |
-|---|---|---|
-| 0 | off | nobody |
-| 1 | green | crew self-care (amber finding) |
-| 2 | amber | crew medical officer acts now (red finding, round trip over `SAFE_WAIT_S = 600` s or no link) |
-| 3 | red | message Earth (red finding, round trip 600 s or less) |
-
-| Mission | Round trip |
+| Step | What happens |
 |---|---|
-| `iss` | 0.5 s |
-| `moon` | 2.6 s |
-| `mars` | 2640 s (44 min, shown at 60x speed) |
-| `conjunction` | no link |
+| **Measure** | The station runs a 20-second reaction and balance test and reads cabin air. The Wokwi simulation adds SpO2, heart rate, breathing rate, blood pressure, skin temperature, posture and cabin CO2. |
+| **Score** | Each reading is graded green, amber or red against published limits (NEWS2, NASA standards, PVT research) and the crew member's own pre-flight baseline. |
+| **Route** | The worst finding and the mission's round trip decide who acts. The decision runs entirely on board. |
+| **Explain** | An on-board AI assessment summarises the findings and next steps in plain language. It never changes the decision, and it falls back to cached answers with no connection. |
+| **Report** | A report packet goes to Earth. The crew sees when it arrives and when a reply can come back. |
 
-4. **Station sync**: the app sends the engine tier unchanged to the station (`POST /tier`, `POST /msg`). The bridge never runs the engine.
-5. **On-board assessment**: `POST /assess` (`bridge/assess.py`) asks Claude (or Gemini) for a plain-language summary. The AI never changes the tier. With no key, no network or no answer in 15 s it falls back to `bridge/assess_cache.json` and says "cache".
+### Decision model
 
-The stress model and the stress/mood check never set a tier. Cabin air is environment data, never a crew reading.
+| Worst finding | Round trip 10 min or less (ISS, Moon) | Round trip over 10 min, or no link (Mars, conjunction) | Station LED |
+|---|---|---|---|
+| Normal | Nobody needs to act | Nobody needs to act | Off |
+| Amber | Crew self-care | Crew self-care | Green |
+| Red | **Message Earth**: a flight surgeon decides | **Crew medical officer acts now** | Red / Amber |
 
-## What's in the app
+The 10-minute threshold is our design choice, informed by NASA's notional figure. The decision does not depend on its exact value: the ISS (0.5 s) and Moon (2.6 s) sit far below it, and Mars (44 min) far above it.
 
-- **Dashboard** (`/demo`): status card (tier, who acts, what to do, why), Earth reply and outbox countdown, on-board vs Earth panel, STAND-REACT test strip with live taps, mission selector, crew selector, keyboard shortcuts.
-- **Body view** (`/demo#body`): 3D astronaut; each part opens its test (attention, sleep, reaction time, mood, blood glucose with NASA baseline, balance, cabin air).
-- **Panels**: Inspiration4 baseline panel, stress/mood check, solar event banner (cached DONKI), cabin air, sensor strip and report (Simulation mode).
+### Mission profiles
 
-## Repo layout
+| Mission | Round trip | Source |
+|---|---|---|
+| ISS | 0.5 s | Rucker et al., IAC 2019 |
+| Moon | 2.6 s | NASA/TM-20250003885 |
+| Mars (far side) | 44 min | NASA/TM-20250003885, AIAA ASCEND 2022 |
+| Mars solar conjunction | No link | AIAA ASCEND 2022 |
 
-```
-app/        React + Vite + TypeScript app (deployed to Vercel)
-  src/engine/      score.ts, rules.ts, triage.ts (router), delay.ts (missions)
-  src/components/  one folder per panel
-  src/data/        copies of data/ files used by the app (must equal data/*)
-bridge/     FastAPI bridge: serial station, replay, stress feed, Wokwi sim replay, /assess
-firmware/   Arduino Uno station (stand_react/), module tests (tests/)
-data/       NASA DONKI cache, OSDR Inspiration4 baselines, knowledge.json, scenarios, scripts
-ml/         WESAD stress model (physio-only), replayed stress feed
-docs/       schemas, engine contract, knowledge schema, delay table, decisions, screenshots
-pitch/      demo script, threshold sources, backups
-```
+Mars is shown at 60x speed in the demo, so the 44-minute countdown runs in 44 seconds.
 
-## Setup (Windows PowerShell)
+## Wokwi simulation
 
-```powershell
-python -m venv .venv
-Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned
-.\.venv\Scripts\Activate.ps1
-pip install -r bridge\requirements.txt
-pip install requests pandas   # for the data scripts
+**[Open the simulation on Wokwi](https://wokwi.com/projects/480704307052933121)**
 
+The Wokwi project is the full target station: an ESP32 with **8 health channels**, a crew display, a wrist watch and an Earth link model. It runs in any browser with no hardware. It uses the same decision rule as the app. Source: [`firmware/wokwi/`](firmware/wokwi/).
+
+| Channel | Simulated with | Limits based on |
+|---|---|---|
+| Blood oxygen (SpO2) | Slider | NEWS2 |
+| Heart rate | Slider | NEWS2 |
+| Breathing rate | Slider | NEWS2 |
+| Systolic blood pressure | Slider | NEWS2 (low) |
+| Skin temperature | DHT22 sensor | Design choice |
+| Posture | MPU6050 accelerometer | Design choice |
+| Cabin CO2 | Slider | NASA-STD-3001 and SMAC limits |
+| Reaction time | Button and LED (5-tap test) | Design choice, informed by PVT research |
+
+What it shows:
+
+- **Seven clinical scenarios:** Nominal, Hypoxia, CO2 build-up, Fatigue, Cardio, Heat stress and Orthostatic. Each one develops from baseline through onset to a plateau, with realistic noise.
+- **Crew display (ILI9341):** a colour tile per channel with trend arrows, who acts, an ECG trace and Earth link status.
+- **Mars distance slider:** sets the round trip anywhere from 6 to 44 minutes. Who acts is recalculated live as the delay crosses the threshold.
+- **Forecast:** an estimate of the time until a channel turns red, from its recent trend.
+- **Earth link model:** report packets, one-way travel time, ground reply, and store-and-forward when there is no link.
+- **Wrist watch (OLED):** alarm, acknowledge, and a 1-minute guided box breathing exercise.
+- **Clinical safety details:** partial NEWS2 score, limits that alarm fast and clear slowly, and sensor fault handling.
+- **Serial output:** one JSON line per second. The bridge can record and replay it into the app's Simulation mode.
+
+**Controls:** blue button cycles the mission, yellow cycles the scenario, white starts the reaction test, green acknowledges an alarm or starts box breathing. All physiological values in the simulation are simulated.
+
+## Hardware station
+
+The physical check-in station runs the **STAND-REACT** test on an Arduino Uno R3:
+
+- **Reaction time and lapses:** the crew member taps a touch pad when the OLED shows "TAP!" for 20 seconds. A tap slower than 355 ms counts as a lapse (PVT-B, Basner et al. 2011).
+- **Balance:** an ADXL345 accelerometer worn at the sternum measures sway while standing.
+- **Cabin air:** a gas sensor tracks change in cabin air quality. It is environment data, never a crew reading.
+- **Tier LEDs:** green, amber and red LEDs show the engine's decision, and the OLED shows who acts.
+
+The station connects to the app through a Python bridge over USB serial.
+
+## Features
+
+- **Mission selector:** ISS, Moon, Mars and Mars solar conjunction, with the decision updating instantly.
+- **Earth outbox:** every report packet with a live round-trip countdown and the ground reply when it arrives.
+- **On board vs Earth:** the on-board assessment beside the ground diagnosis, so every reply from Earth can be compared with what the crew did.
+- **Interactive 3D astronaut:** each body part opens its test: attention, sleep, reaction time, mood, blood glucose, balance and cabin air.
+- **Personal baselines:** each crew member is compared with their own pre-flight values, not only a population range.
+- **Stress and mood check:** a stress model on physiological signals, shown as a flag that never changes the tier.
+- **Solar event alerts:** NASA DONKI solar particle events.
+- **Works offline:** the decision runs locally, and the AI assessment falls back to cached answers.
+
+## Data and evidence
+
+| Source | Used for |
+|---|---|
+| [NASA OSDR Inspiration4](https://osdr.nasa.gov/bio/repo/data/studies/OSD-575) (OSD-569 blood count, OSD-575 metabolic panel) | Pre-flight personal baselines for 4 anonymised crew members |
+| [NASA DONKI](https://api.nasa.gov/) | Solar particle events |
+| [NEWS2](https://www.rcp.ac.uk/improving-care/resources/national-early-warning-score-news-2/) (Royal College of Physicians) | Alert limits for SpO2, heart rate, breathing rate and blood pressure |
+| [NASA-STD-3001](https://www.nasa.gov/wp-content/uploads/2023/12/ochmo-tb-004-carbon-dioxide.pdf) and SMAC | Cabin CO2 limits (3 mmHg, about 3,950 ppm; 5.3 mmHg, about 7,000 ppm) |
+| [Basner, Mollicone & Dinges 2011](https://pmc.ncbi.nlm.nih.gov/articles/PMC3197786) | 355 ms lapse threshold for the reaction test |
+| NASA/TM-20250003885, AIAA ASCEND 2022, Rucker et al. 2019 | Mission communication delays |
+| WESAD | Training data for the stress model |
+
+Every limit is labelled in the data as sourced, design choice or unsourced, and the app says when a value is simulated or cached.
+
+## Tech stack
+
+| Layer | Technology |
+|---|---|
+| App | React 19, TypeScript, Vite, Three.js, Tailwind CSS, deployed on Vercel |
+| Rules engine | TypeScript, runs in the browser, tested with Vitest |
+| Bridge | Python, FastAPI, WebSockets, pyserial |
+| On-board assessment | Claude (Anthropic) or Gemini, with an offline cache |
+| Stress model | scikit-learn, LightGBM, NeuroKit2 |
+| Hardware | Arduino Uno R3, ADXL345, SSD1306 OLED |
+| Simulation | ESP32 on Wokwi, ILI9341, SSD1306, DHT22, MPU6050 |
+
+## Run locally
+
+**App**
+
+```bash
 cd app
 npm install
+npm run dev
 ```
 
-Keys go in a `.env` file in the repo root. `.env` is gitignored. Never commit it.
+**Bridge** (second terminal, from the repo root)
 
+```bash
+pip install -r bridge/requirements.txt
+python bridge/serial_bridge.py --fake        # no hardware
+python bridge/serial_bridge.py --port COM5   # with the station plugged in
 ```
-NASA_API_KEY=...        # DONKI scripts (free at https://api.nasa.gov)
-ANTHROPIC_API_KEY=...   # /assess with Claude (optional)
-GEMINI_API_KEY=...      # /assess with Gemini if no Anthropic key (optional)
-```
 
-## Run
+Open the app, go to `/demo`, and pick a mission. Without the bridge, the app runs in replay mode.
 
-| Task | Command |
-|------|---------|
-| App (dev) | `cd app; npm run dev` |
-| Bridge with the station | `python bridge\serial_bridge.py --port COM5` |
-| Bridge without hardware | `python bridge\serial_bridge.py --fake` |
-| Mock bridge (replay only) | `cd bridge; uvicorn mock_server:app --port 8000` |
-| Wokwi feed replay | `POST http://localhost:8000/sim` with `{"scenario":"hypoxia"}` (see `bridge/README.md`) |
-| Record the AI cache | `python bridge\assess.py --record` |
+For station wiring and firmware upload, see [`firmware/README.md`](firmware/README.md).
 
-Station wiring and firmware upload: `firmware/README.md`.
+## Limitations
 
-## Checks
-
-| Changed | Run |
-|---|---|
-| `app/` | `cd app; npm test; npm run build` |
-| `data/knowledge*`, `data/baselines*` | `python data/validate.py`, `python data/score_reference.py`, `python data/make_parity_cases.py` |
-| A readings file | `python data/check_readings.py <file>` |
-| `bridge/` | `python bridge/test_station.py`, `python bridge/test_stress.py`, `python bridge/test_sim.py`, `python bridge/test_assess.py` |
-
-## Data sources
-
-- **NASA DONKI** solar particle events: https://api.nasa.gov/DONKI/SEP. 14 events for May 2024 cached in `data/donki_cache.json`, shown on screen as "cached". Solar flares (FLR) were unreachable and are not used (`data/README.md`).
-- **NASA OSDR Inspiration4** complete blood count (OSD-569) and comprehensive metabolic panel (OSD-575): https://osdr.nasa.gov/bio/repo/data/studies/OSD-575. Anonymised crew IDs C001 to C004; no names are stored.
-- **WESAD** for the stress model (physio-only, leave-one-subject-out accuracy 91.6%). The dataset is not in the repo.
-- Thresholds: NEWS2 and NASA standards, listed in `pitch/threshold_sources.md`. `SAFE_WAIT_S = 600` is a design choice informed by NASA/TM-20250003885.
-
-## Data and evidence (OSDR and thresholds)
-
-**What worked**
-- Both Inspiration4 clinical files (OSD-575 CMP, OSD-569 CBC) download and parse with pandas.
-- 48/48 pre-flight rows in `data/raw/*_extract.csv` match NASA's rows exactly (checked 2026-11-14). The SHA-256 of both full files is recorded in `baselines.json`.
-- `baselines.json` (C001-C004: glucose, calcium, WBC, haemoglobin), `osdr_readings.json` (same draws as `reading` objects), `knowledge.json` v0.2 (5 indicators plus `lapses`).
-- `python data/validate.py` checks all of it against the schemas. `python data/score_reference.py` runs 24 tests of the scoring rules.
-
-**What failed / watch**
-- If NASA's download URL breaks, save the files into `data/raw/` by hand. `fetch_osdr.py` last ran on 2026-11-14; checksums match.
-- C003 L-92 CBC columns are shifted in NASA's file (platelets 12.9, MPV 330). Excluded. C003 CBC uses male reference ranges.
-- R+45 glucose is 36-44 mg/dL for 3 of 4 crew. Unexplained; not used.
-- Some `knowledge.json` fields are still UNSOURCED (list: `python data/validate.py`). Mood, sway, min spreads and action text are the biggest gaps. High-glucose red limit (250) is a placeholder.
-
-**Rebuild:** `python data/fetch_osdr.py && python data/build_baselines.py && python data/validate.py`
-
-**Design choices to confirm:** see `docs/knowledge_schema.md` (bad-direction z instead of |z|; red without z; sleep red = 3 nights at 6 h or less).
-
-## Team
-
-| Person | Area |
-|---|---|
-| Shreya (`settys-trinity`) | Frontend lead, app shell, dashboard, station sync, deploy; merges PRs |
-| Om | Integrator: triage router, mission table, docs, `/assess`; approves PRs |
-| Ansh (`Ansh-0403`) | Rules engine, knowledge and baselines, evidence, demo backups |
-| Nandini (`NandiniLashkari`) | Stress model, Earth outbox, mission selector, sensors report |
-| Daksh | Station hardware, firmware, serial bridge, Simulation mode |
-| Diksha (`dik17sha`) | Pitch, dashboard redesign, Wokwi recordings |
-
-Decisions: `docs/decisions.md`. Rules for contributors and AI agents: `CLAUDE.md`.
+- FARSIDE is a hackathon prototype for decision support. It is not a medical device and does not diagnose.
+- Simulated and demo values are labelled as such. The physical station measures reaction time, balance and cabin air only.
+- In this prototype the on-board assessment uses a cloud model. On a mission it would run on hardware carried by the crew.
+- The 10-minute safe-wait threshold is a design choice informed by NASA's notional figure.
