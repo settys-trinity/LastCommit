@@ -1,0 +1,32 @@
+{
+  "nominal": {
+    "summary": "All checks are inside your normal range today. No action needed beyond your usual routine.",
+    "findings": [
+      {"part": "head", "text": "Reaction time and focus match your normal days. Sleep was 7.5 hours."},
+      {"part": "legs", "text": "Balance is steady, the same as your baseline."},
+      {"part": "air", "text": "Cabin air has not changed from the start of the session."}
+    ],
+    "do_now": ["Keep your normal work and rest plan", "Do the next check at the usual time"],
+    "message_to_earth": "Crew member C003: all indicators within personal baseline. No action taken on board."
+  },
+  "hypoxia": {
+    "summary": "The cabin air reading rose well above where it started, and your reactions and balance got worse at the same time. Treat this as a possible air problem first.",
+    "findings": [
+      {"part": "air", "text": "Cabin air index is about twice this session's starting level. The sensor is not calibrated, so this shows a change, not an exact amount."},
+      {"part": "head", "text": "Reaction time is slower than your normal and you missed 3 taps. You report a headache and feeling dizzy."},
+      {"part": "legs", "text": "Balance is less steady than your baseline."}
+    ],
+    "do_now": ["Move to the safe-haven module or put on an oxygen mask", "Crew medical officer checks breathing and finger oxygen now", "Check the air system and cabin fans", "Repeat the station test in 10 minutes"],
+    "message_to_earth": "Cabin air index rose to about 2x session baseline with slower reaction time, 3 lapses and worse sway in C003. Crew moved to clean air and the crew medical officer is assessing."
+  },
+  "fatigue": {
+    "summary": "You slept only 4 hours, and your reaction time, missed taps and balance are all worse than your normal. This looks like tiredness building up over several short nights.",
+    "findings": [
+      {"part": "head", "text": "Sleep was 4 hours, after 4.5 and 5 hours on the nights before. Reaction time is slower than usual and you missed 3 taps. You rated stress high and focus low."},
+      {"part": "legs", "text": "Balance is a little less steady than your baseline."},
+      {"part": "air", "text": "Cabin air has not changed, so it is not the cause."}
+    ],
+    "do_now": ["Stop any critical or risky task for now", "Take a 30-minute rest or nap", "Drink water and eat something", "Repeat the station test after the rest"],
+    "message_to_earth": "C003: 3 short nights (4.0 h last night), slower reaction time, 3 lapses and higher sway versus baseline. Crew medical officer has paused critical tasks and scheduled rest."
+  }
+}

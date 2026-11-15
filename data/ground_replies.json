@@ -1,0 +1,46 @@
+{
+  "meta": {
+    "description": "Pre-written ground team replies for the demo. Shown after the Earth countdown, next to the on-board assessment.",
+    "simulated": true,
+    "disclaimer": "Simulated flight surgeon reply for a hackathon demo. Not medical advice.",
+    "arrives": "After the mission round trip plus doctor review. ISS 0.5 s, Moon 2.6 s, Mars up to 44 min round trip, solar conjunction no link.",
+    "owner": "Ansh"
+  },
+  "replies": [
+    {
+      "scenario": "nominal",
+      "from": "Ground team flight surgeon (simulated)",
+      "headline": "All readings are within your normal limits. No action needed.",
+      "diagnosis": "No concerns. Your readings match your usual values.",
+      "do_now": ["Carry on with the planned schedule.", "Keep up fluids and your exercise session."],
+      "avoid": [],
+      "follow_up": "Next routine check-in as scheduled."
+    },
+    {
+      "scenario": "hypoxia",
+      "from": "Ground team flight surgeon (simulated)",
+      "headline": "Low blood oxygen confirmed. Treat it as low oxygen until proven otherwise.",
+      "diagnosis": "Blood oxygen is below the safe limit. That fits low oxygen, either from the cabin air or from the body. Check both.",
+      "do_now": [
+        "Put on an oxygen mask from the emergency kit and follow the low-oxygen checklist.",
+        "Check the cabin oxygen and carbon dioxide readings. If the cabin air is the cause, move to a module with normal air.",
+        "Crew medical officer rechecks blood oxygen every 5 minutes and logs it."
+      ],
+      "avoid": ["Exercise or heavy work.", "Working alone.", "Spacewalk preparation."],
+      "follow_up": "Send new readings after 15 minutes on oxygen. If blood oxygen does not recover, the crew medical officer follows the emergency procedure without waiting for us."
+    },
+    {
+      "scenario": "fatigue",
+      "from": "Ground team flight surgeon (simulated)",
+      "headline": "Your reaction test shows tiredness after short sleep.",
+      "diagnosis": "Slower reactions and missed taps after several short nights point to sleep loss, not illness.",
+      "do_now": [
+        "Move safety-critical tasks off your next shift.",
+        "Protect a full sleep period tonight.",
+        "Re-run the reaction test before any safety-critical task."
+      ],
+      "avoid": ["Robotic arm or rover driving.", "Spacewalk preparation.", "Caffeine late in your day."],
+      "follow_up": "Send the reaction test result after your next sleep period."
+    }
+  ]
+}
