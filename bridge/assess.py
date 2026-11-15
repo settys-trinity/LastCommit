@@ -15,7 +15,9 @@ Rules (never break)
     - Plain language, JSON only.
     - No answer in 15 s, no API key, or a bad answer -> the cached answer for the
       closest scenario (nominal, hypoxia, fatigue), with "source": "cache".
-    - The API key lives only in .env (ANTHROPIC_API_KEY). Never commit .env.
+    - The API key lives only in .env. Never commit .env.
+      ANTHROPIC_API_KEY -> Claude. Else GEMINI_API_KEY (free from Google AI Studio)
+      -> Gemini (GEMINI_MODEL, default gemini-3.1-flash-lite). Neither -> cache.
 
 Record the cache (needs the key):  python bridge/assess.py --record
 """
@@ -41,6 +43,7 @@ except ImportError:  # dotenv is optional; a real env var works too
     pass
 
 MODEL = "claude-opus-5-5"
+GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-3.1-flash-lite")  # 2.5-flash retired
 TIMEOUT_S = 15.0
 CACHE_PATH = Path(__file__).resolve().parent / "assess_cache.json"
 PARTS = ["head", "chest", "arm", "legs", "air"]
@@ -133,10 +136,33 @@ def user_prompt(body: AssessBody) -> str:
 
 # ---------- model call (tests replace this) ----------
 
+def provider() -> Optional[str]:
+    """Which live model to use: Claude if its key is set, else Gemini, else none (cache)."""
+    if real_key("ANTHROPIC_API_KEY"):
+        return "claude"
+    if real_key("GEMINI_API_KEY") or real_key("GOOGLE_API_KEY"):
+        return "gemini"
+    return None
+
+
+def real_key(name: str) -> bool:
+    """Set and not a placeholder like PASTE_YOUR_KEY_HERE."""
+    value = os.environ.get(name, "").strip()
+    return len(value) > 8 and "PASTE" not in value.upper()
+
+
+def model_name() -> Optional[str]:
+    p = provider()
+    return MODEL if p == "claude" else GEMINI_MODEL if p == "gemini" else None
+
+
 async def call_model(body: AssessBody) -> dict:
-    """One live Claude call. Returns the parsed JSON. Raises on any problem."""
-    if not os.environ.get("ANTHROPIC_API_KEY"):
-        raise RuntimeError("no ANTHROPIC_API_KEY")
+    """One live model call. Returns the parsed JSON. Raises on any problem."""
+    p = provider()
+    if p == "gemini":
+        return await call_gemini(body)
+    if p is None:
+        raise RuntimeError("no ANTHROPIC_API_KEY or GEMINI_API_KEY")
     import anthropic
 
     client = anthropic.AsyncAnthropic(max_retries=0, timeout=TIMEOUT_S)
@@ -151,6 +177,26 @@ async def call_model(body: AssessBody) -> dict:
         raise RuntimeError(f"stop_reason {response.stop_reason}")
     text = next(b.text for b in response.content if b.type == "text")
     return json.loads(text)
+
+
+async def call_gemini(body: AssessBody) -> dict:
+    """One live Gemini call (free key from Google AI Studio). Same rules, same JSON."""
+    from google import genai
+    from google.genai import types
+
+    key = os.environ["GEMINI_API_KEY"] if real_key("GEMINI_API_KEY") else os.environ["GOOGLE_API_KEY"]
+    client = genai.Client(api_key=key)
+    response = await client.aio.models.generate_content(
+        model=GEMINI_MODEL,
+        contents=user_prompt(body) + "\n\nReply with one JSON object matching this JSON schema:\n"
+        + json.dumps(SCHEMA),
+        config=types.GenerateContentConfig(
+            system_instruction=SYSTEM,
+            response_mime_type="application/json",
+            max_output_tokens=2000,
+        ),
+    )
+    return json.loads(response.text)
 
 
 # ---------- cache ----------
@@ -192,6 +238,7 @@ def finish(body: AssessBody, answer: dict, source: str, started: float, note: st
         "message_to_earth": answer["message_to_earth"],
         "time_b_s": round(time.perf_counter() - started, 2),
         "source": source,
+        "model": model_name() if source == "live" else None,
         "made_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
     }
     if note:
