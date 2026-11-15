@@ -1,3 +1,5 @@
+import type { SimData } from "./components/sensors/sim";
+
 // Copied from docs/schemas.md (Reading, StreamMessage) and docs/engine_contract.md (engine output).
 // Keep in step with those docs.
 
@@ -15,7 +17,8 @@ export interface Reading {
 export type StreamMessage =
   | { kind: "solar_event"; data: Record<string, unknown>; cached: boolean }
   | { kind: "reading"; data: Reading }
-  | { kind: "cabin_air"; data: { timestamp: string; value: number; unit: "adc_0_1023"; source: "station" } };
+  | { kind: "cabin_air"; data: { timestamp: string; value: number; unit: "adc_0_1023"; source: "station" } }
+  | { kind: "sim"; data: SimData }; // bridge Simulation mode (bridge/sim.py): display only, never a reading
 
 export type CabinAirSample = Extract<StreamMessage, { kind: "cabin_air" }>["data"];
 
