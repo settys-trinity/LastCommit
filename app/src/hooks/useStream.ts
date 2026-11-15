@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { CabinAirSample, Reading, StreamMessage } from "../types";
+import type { SimData } from "../components/sensors/sim";
 import scenario from "../data/scenario_mars_day143.json";
 
 export const BRIDGE_URL: string = import.meta.env.VITE_BRIDGE_URL || "http://localhost:8000";
@@ -47,6 +48,7 @@ export function useStream() {
   const [readingsByCrew, setReadingsByCrew] = useState<Record<string, Reading[]>>(() => baselineSeed());
   const [solarEvent, setSolarEvent] = useState<SolarEvent | null>(null);
   const [cabinAir, setCabinAir] = useState<CabinAirSample[]>([]);
+  const [sim, setSim] = useState<SimData | null>(null); // latest Wokwi feed line (Simulation mode)
   const modeRef = useRef<StreamMode>(PUBLIC_SITE ? "replay" : "live");
   const playback = useRef<number[]>([]);
 
@@ -87,6 +89,7 @@ export function useStream() {
         }
         if (msg.kind === "solar_event") setSolarEvent({ data: msg.data, cached: msg.cached });
         else if (msg.kind === "reading") addReading(msg.data);
+        else if (msg.kind === "sim") setSim(msg.data);
         else if (msg.kind === "cabin_air") {
           const sample = msg.data;
           setCabinAir((prev) => [...prev, sample].slice(-CABIN_AIR_MAX));
@@ -136,5 +139,5 @@ export function useStream() {
 
   useEffect(() => stopPlayback, []);
 
-  return { mode, readingsByCrew, solarEvent, cabinAir, loadScenario, resetReadings, addReadings };
+  return { mode, readingsByCrew, solarEvent, cabinAir, sim, loadScenario, resetReadings, addReadings };
 }

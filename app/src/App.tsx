@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useStream } from "./hooks/useStream";
+import { BRIDGE_URL, useStream } from "./hooks/useStream";
 import { useBridgeCommands } from "./hooks/useBridgeCommands";
 import { useStationSync } from "./hooks/useStationSync";
 import { evaluate } from "./engine";
@@ -20,13 +20,17 @@ import { StationLine } from "./components/station/StationLine";
 import { WellbeingView } from "./components/wellbeing/WellbeingView";
 import { POINTS, score, type Answers } from "./components/wellbeing/questionnaire";
 import { AssessReport } from "./components/report/AssessReport";
+import { SensorStrip, type SensorMode } from "./components/sensors/SensorStrip";
+import { startSim, stopSim } from "./components/sensors/sim";
+
+const SIM_SCENARIOS = ["nominal", "hypoxia", "fatigue"]; // data/wokwi_feed_<name>.jsonl on the bridge
 
 const SPEED_UP = 60; // demo: the 44 min Mars round trip counts down in 44 s (D15)
 const RUN_TIMEOUT_MS = 30_000; // stop showing "running" if lapses never arrives
 
 // /demo: App holds all state; components get props only (plan C9).
 export default function App() {
-  const { mode, readingsByCrew, solarEvent, cabinAir, loadScenario, resetReadings, addReadings } = useStream();
+  const { mode, readingsByCrew, solarEvent, cabinAir, sim, loadScenario, resetReadings, addReadings } = useStream();
   const bridge = useBridgeCommands(mode, addReadings);
   const [missionId, setMissionId] = useState<MissionId>("iss");
   const [crewId, setCrewId] = useState("C003");
@@ -42,6 +46,19 @@ export default function App() {
   const [points, setPoints] = useState(0);
   const [breaths, setBreaths] = useState(0); // finished 1-minute breathing sessions
   const closeWell = useCallback(() => setWellOpen(false), []);
+  // Sensors: Station (3 real sensors) or Simulation (8-channel Wokwi feed replayed by the bridge, POST /sim).
+  // Simulation is display only: it never changes the tier.
+  const [sensorMode, setSensorMode] = useState<SensorMode>("station");
+  const [simScenario, setSimScenario] = useState("hypoxia");
+  const [simError, setSimError] = useState("");
+  const changeSensorMode = useCallback(
+    (m: SensorMode, scenario: string) => {
+      setSensorMode(m);
+      const call = m === "simulation" ? startSim(BRIDGE_URL, scenario) : stopSim(BRIDGE_URL);
+      call.then((r) => setSimError(r.ok ? "" : `${r.error} (is the bridge running?)`));
+    },
+    [],
+  );
   const closeBody = useCallback(() => {
     setBodyOpen(false);
     if (window.location.hash) window.history.replaceState(null, "", window.location.pathname); // a reload stays on the dashboard
@@ -93,8 +110,9 @@ export default function App() {
     loadScenario().catch((e: Error) => setWarning(e.message));
   };
 
-  const keys = useRef({ startTest, replay, loadDemo, resetReadings });
-  keys.current = { startTest, replay, loadDemo, resetReadings };
+  const toggleSim = () => changeSensorMode(sensorMode === "simulation" ? "station" : "simulation", simScenario);
+  const keys = useRef({ startTest, replay, loadDemo, resetReadings, toggleSim });
+  keys.current = { startTest, replay, loadDemo, resetReadings, toggleSim };
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.ctrlKey || e.metaKey || e.altKey) return;
@@ -108,6 +126,7 @@ export default function App() {
       else if (e.key === "o") setShowLog((v) => !v);
       else if (e.key === "m") keys.current.loadDemo(); // demo data: Mars day 143
       else if (e.key === "c") keys.current.resetReadings(); // clear all readings
+      else if (e.key === "v") keys.current.toggleSim(); // sensors: Station <-> Simulation
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
@@ -173,6 +192,22 @@ export default function App() {
             checkin={checkin}
           />
         </Panel>
+        <Panel title="sensors">
+          <SensorStrip
+            mode={sensorMode}
+            onModeChange={(m) => changeSensorMode(m, simScenario)}
+            scenarios={SIM_SCENARIOS}
+            scenario={simScenario}
+            onScenarioChange={(s) => {
+              setSimScenario(s);
+              if (sensorMode === "simulation") changeSensorMode("simulation", s);
+            }}
+            readings={crewReadings}
+            sim={sim}
+            cabinAir={cabinAir.length ? cabinAir[cabinAir.length - 1] : null}
+            error={simError}
+          />
+        </Panel>
         <div className="grid gap-4 lg:grid-cols-[1.5fr_1fr]">
           <Panel title="next step">
             <TestStrip crewId={crewId} readings={crewReadings} running={running} onStart={startTest} onReplay={replay} error={runError} />
@@ -211,6 +246,7 @@ export default function App() {
             { key: "b", label: "body view", run: () => setBodyOpen(true) },
             { key: "w", label: "wellbeing", run: () => setWellOpen(true) },
             { key: "o", label: "outbox log", run: () => setShowLog((v) => !v) },
+            { key: "v", label: sensorMode === "simulation" ? "station sensors" : "simulation", run: toggleSim },
             { key: "m", label: "demo data", run: loadDemo },
             { key: "c", label: "reset", run: resetReadings },
             { key: "h", label: "home", run: () => window.location.assign("/") },
@@ -265,4 +301,4 @@ export default function App() {
       )}
     </div>
   );
-}
+}
