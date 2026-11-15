@@ -96,7 +96,9 @@ export function useStream() {
       ws.onclose = () => {
         window.clearTimeout(connectTimer);
         if (stopped) return;
-        // Dropped or never opened: retry. Stays in replay mode until a connection opens.
+        // Dropped or never opened (no bridge): fall back to replay now. onclose clears the connect timer,
+        // so without this the app stayed on [LIVE] with no bridge. onopen switches back to live.
+        switchMode("replay");
         retryTimer = window.setTimeout(connect, RECONNECT_MS);
       };
     };
