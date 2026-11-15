@@ -23,7 +23,7 @@ Not taken (checked against `main` at `342afc4`): the PDF report and the ground-r
 
 - [x] Copied after Om's `/assess` (PR #44) was merged.
 
-The cache is one file, `bridge/assess_cache.json` (not `data/assess_cache/*.json` as first planned), with the cached on-board assessments for `nominal`, `hypoxia` and `fatigue`. Copied unchanged to `pitch/backup/assess_cache/assess_cache.json` from `main` at `342afc4`. If the cache on `main` changes, copy it again.
+The cache is one file, `bridge/assess_cache.json` (not `data/assess_cache/*.json` as first planned), with the cached on-board assessments for `nominal`, `hypoxia` and `fatigue` (fields `summary`, `findings`, `do_now`, `message_to_earth`). Refreshed after Om's PR #50 replaced it with live-recorded responses: copied unchanged to `pitch/backup/assess_cache/assess_cache.json` from `main` at `1159715`. If the cache on `main` changes again, copy it again.
 
 ## 3. Video
 
