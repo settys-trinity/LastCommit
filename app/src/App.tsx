@@ -1,22 +1,22 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useStream } from "./hooks/useStream";
 import { useBridgeCommands } from "./hooks/useBridgeCommands";
 import { useStationSync } from "./hooks/useStationSync";
 import { evaluate } from "./engine";
 import { getMission, MISSIONS, type MissionId } from "./engine/delay";
 import { Panel, StatusTag } from "./components/term";
-import { TopBar } from "./components/shell/TopBar";
-import { formatRoundTrip } from "./components/shell/format";
-import { BodyMap } from "./components/bodymap/BodyMap";
+import { CrewSelector } from "./components/shell/CrewSelector";
+import { BodyViewer } from "./components/bodymap/BodyViewer";
 import { SolarBanner } from "./components/solar/SolarBanner";
 import { CabinAirPanel } from "./components/cabin/CabinAirPanel";
 import { BaselinePanel } from "./components/baseline/BaselinePanel";
 import { MissionSelector } from "./components/mission/MissionSelector";
 import { OutboxPanel, useEarthOutbox } from "./components/outbox/OutboxPanel";
 import { StressMoodPanel } from "./components/stress/StressMoodPanel";
-import { StandReactView } from "./components/standreact/StandReactView";
+import { TestStrip } from "./components/standreact/TestStrip";
 import { TriageCard } from "./components/triage/TriageCard";
-import { StationPreview } from "./components/station/StationPreview";
+import { EarthCountdown } from "./components/triage/EarthCountdown";
+import { StationLine } from "./components/station/StationLine";
 
 const SPEED_UP = 60; // demo: the 44 min Mars round trip counts down in 44 s (D15)
 const RUN_TIMEOUT_MS = 30_000; // stop showing "running" if lapses never arrives
@@ -30,8 +30,14 @@ export default function App() {
   const [warning, setWarning] = useState("");
   const [running, setRunning] = useState(false);
   const [runError, setRunError] = useState("");
+  // Body view: its own full page, opened with b, the footer button or "/demo#body" from the landing page.
+  const [bodyOpen, setBodyOpen] = useState(() => window.location.hash === "#body");
+  const [showLog, setShowLog] = useState(false);
+  const closeBody = useCallback(() => {
+    setBodyOpen(false);
+    if (window.location.hash) window.history.replaceState(null, "", window.location.pathname); // a reload stays on the dashboard
+  }, []);
 
-  const mission = getMission(missionId);
   const crewReadings = useMemo(() => readingsByCrew[crewId] ?? [], [readingsByCrew, crewId]);
   const result = useMemo(() => evaluate(crewReadings, crewId, missionId), [crewReadings, crewId, missionId]);
   const t = result.triage;
@@ -72,8 +78,14 @@ export default function App() {
   useStationSync(t.tier, mode);
 
   // Keys: 1-4 mission, s start test, r replay.
-  const keys = useRef({ startTest, replay });
-  keys.current = { startTest, replay };
+  // Demo data: the Mars day 143 scenario holds readings for C003 only, so loading it also selects C003.
+  const loadDemo = () => {
+    setCrewId("C003");
+    loadScenario().catch((e: Error) => setWarning(e.message));
+  };
+
+  const keys = useRef({ startTest, replay, loadDemo, resetReadings });
+  keys.current = { startTest, replay, loadDemo, resetReadings };
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.ctrlKey || e.metaKey || e.altKey) return;
@@ -82,6 +94,10 @@ export default function App() {
       else if (e.key === "s") keys.current.startTest();
       else if (e.key === "r") keys.current.replay();
       else if (e.key === "h") window.location.assign("/"); // home: the landing page
+      else if (e.key === "b") setBodyOpen(true);
+      else if (e.key === "o") setShowLog((v) => !v);
+      else if (e.key === "m") keys.current.loadDemo(); // demo data: Mars day 143
+      else if (e.key === "c") keys.current.resetReadings(); // clear all readings
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
@@ -99,67 +115,103 @@ export default function App() {
     sendRef.current(crewId, getMission(missionId), t);
   }, [t.tier, t.reason, missionId]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const missionSlot = <MissionSelector value={missionId} onChange={(id) => setMissionId(id as MissionId)} />;
+  const big = "w-full border border-fg px-3 py-2 text-left text-xl font-bold hover:bg-fg hover:text-bg";
 
   return (
     <div className="flex min-h-screen flex-col">
-      <TopBar
-        crewId={crewId}
-        onCrewChange={setCrewId}
-        missionLabel={mission.label}
-        link={formatRoundTrip(mission.round_trip_s)}
-        missionSlot={missionSlot}
-        mode={mode}
-        onLoadScenario={() => loadScenario().catch((e: Error) => setWarning(e.message))}
-        onReset={resetReadings}
-      />
-
-      <div className="border-b border-line px-2 whitespace-pre-wrap">
-        <SolarBanner solarEvent={solarEvent} />
-        {warning && (
-          <div>
-            <StatusTag status="warn" /> {warning}
-          </div>
-        )}
-      </div>
-
-      <main className="grid flex-1 grid-cols-1 gap-3 p-2 lg:grid-cols-[1fr_1.2fr_1fr]">
-        <div className="flex flex-col gap-3">
-          <BaselinePanel crewId={crewId} />
-          <StandReactView
-            crewId={crewId}
-            readings={crewReadings}
-            running={running}
-            onStart={startTest}
-            onReplay={replay}
-            error={runError}
-          />
+      {/* Header: who and where. Mission buttons are the one control the astronaut changes here. */}
+      <header className="flex flex-wrap items-start gap-x-8 gap-y-2 border-b border-line px-3 py-2">
+        <a href="/" className="text-xl font-bold text-ok hover:bg-ok hover:text-bg">FARSIDE</a>
+        <span className="text-xl">
+          <span className="text-dim">crew </span>
+          {crewId}
+        </span>
+        {/* [&_p]:hidden hides the selector's source line here; sources are in the deck and docs/delay_table.md. */}
+        <div className="ml-auto [&_p]:hidden">
+          <MissionSelector value={missionId} onChange={(id) => setMissionId(id as MissionId)} />
         </div>
-        <div className="flex flex-col gap-3">
+      </header>
+      {warning && (
+        <div className="border-b border-line px-3">
+          <StatusTag status="warn" /> {warning}
+        </div>
+      )}
+
+      {/* Layer 1: only what the astronaut acts on. Details live in the body view (b). */}
+      <main className="mx-auto flex w-full max-w-[1500px] flex-1 flex-col gap-4 p-3">
+        <div className="grid gap-4 lg:grid-cols-[1.5fr_1fr]">
           <TriageCard triage={t} />
-          <StationPreview tier={t.tier} />
-        </div>
-        <div className="flex flex-col gap-3">
-          <BodyMap
-            data={{ result, readings: crewReadings, cabinAir }}
-            crewId={crewId}
-            running={running}
-            onRunTest={startTest}
-            onCheckin={(r) => addReadings([r])}
-          />
-          <Panel title="stress / mood">
-            <StressMoodPanel crewId={crewId} readings={crewReadings} />
+          <Panel title="earth reply">
+            <EarthCountdown packet={t.tier > 0 ? outbox.packets.find((p) => p.crewId === crewId) : undefined} speedUp={SPEED_UP} />
+            <div className="mt-3 border-t border-line pt-2">
+              <StationLine tier={t.tier} />
+            </div>
           </Panel>
-          <Panel title="earth outbox">
+        </div>
+        <div className="grid gap-4 lg:grid-cols-[1.5fr_1fr]">
+          <Panel title="next step">
+            <TestStrip crewId={crewId} readings={crewReadings} running={running} onStart={startTest} onReplay={replay} error={runError} />
+          </Panel>
+          <Panel title="details">
+            <button type="button" onClick={() => setBodyOpen(true)} className={big}>
+              [b] SEE EACH FINDING ON THE BODY
+            </button>
+            <div className="mt-2 text-dim">sleep, mood and stress, blood glucose (NASA baseline), reaction, balance, cabin air</div>
+            <button type="button" onClick={() => setShowLog((v) => !v)} className="mt-2 hover:bg-fg hover:text-bg">
+              [o] {showLog ? "hide" : "show"} Earth outbox log ({outbox.packets.length})
+            </button>
+          </Panel>
+        </div>
+        {showLog && (
+          <Panel title="earth outbox log">
             <OutboxPanel packets={outbox.packets} speedUp={SPEED_UP} />
           </Panel>
-          <CabinAirPanel samples={cabinAir} />
-        </div>
+        )}
       </main>
 
-      <footer className="border-t border-line px-2 text-dim whitespace-pre-wrap">
-        keys: 1-4 mission  s start test  r replay  b body view  h home
+      {/* Bottom bar: every action as a button with its key, then the demo controls. */}
+      <footer className="border-t border-line px-3 py-1 text-dim">
+        <div className="flex flex-wrap items-center gap-x-5 gap-y-1">
+          <span>[1-4] mission</span>
+          {[
+            { key: "s", label: "start test", run: startTest },
+            { key: "r", label: "replay test", run: replay },
+            { key: "b", label: "body view", run: () => setBodyOpen(true) },
+            { key: "o", label: "outbox log", run: () => setShowLog((v) => !v) },
+            { key: "m", label: "demo data", run: loadDemo },
+            { key: "c", label: "reset", run: resetReadings },
+            { key: "h", label: "home", run: () => window.location.assign("/") },
+          ].map((a) => (
+            <button key={a.key} type="button" onClick={a.run} className="hover:bg-fg hover:text-bg">
+              <span className="text-fg">[{a.key}]</span> {a.label}
+            </button>
+          ))}
+          <span className="text-line">│</span>
+          <CrewSelector value={crewId} onChange={setCrewId} />
+          <span className={mode === "live" ? "text-ok" : "text-warn"}>{mode === "live" ? "[LIVE]" : "[REPLAY]"}</span>
+        </div>
+        <SolarBanner solarEvent={solarEvent} />
       </footer>
+
+      {bodyOpen && (
+        <BodyViewer
+          data={{ result, readings: crewReadings, cabinAir }}
+          crewId={crewId}
+          running={running}
+          onRunTest={startTest}
+          onCheckin={(r) => addReadings([r])}
+          onClose={closeBody}
+          extra={{
+            abdomen: <BaselinePanel crewId={crewId} />,
+            chest: (
+              <Panel title="stress / mood">
+                <StressMoodPanel crewId={crewId} readings={crewReadings} />
+              </Panel>
+            ),
+            backpack: <CabinAirPanel samples={cabinAir} />,
+          }}
+        />
+      )}
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import type { Reading } from "../../types";
 import { LazyAstronaut } from "../astronaut/LazyAstronaut";
 import { checkinReading, hint, PARTS, partRows, partSeries, partStatuses, type PartData, type PartId } from "../astronaut/parts";
@@ -20,13 +20,14 @@ const VIEW_NOTE: Partial<Record<PartId, string>> = {
 // BODY page: a large astronaut where only the highlighted points are clickable. Hover a point for
 // "<part>: click here to run <test>"; click it to run that test, click it again (or press x) to unselect.
 // Keys: d dashboard, h home.
-export function BodyViewer({ data, crewId, running, onRunTest, onCheckin, onClose }: {
+export function BodyViewer({ data, crewId, running, onRunTest, onCheckin, onClose, extra = {} }: {
   data: PartData;
   crewId: string;
   running: boolean;
   onRunTest: () => void;
   onCheckin: (r: Reading) => void;
   onClose: () => void;
+  extra?: Partial<Record<PartId, ReactNode>>; // full detail panels per part, passed in by App (baseline, stress, cabin air)
 }) {
   const [part, setPart] = useState<PartId | null>(null);
   const [saved, setSaved] = useState("");
@@ -163,6 +164,7 @@ export function BodyViewer({ data, crewId, running, onRunTest, onCheckin, onClos
                     </div>
                   )}
                 </div>
+                {extra[part] && <div className="mt-3">{extra[part]}</div>}
               </div>
             )}
           </div>
