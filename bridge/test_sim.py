@@ -49,6 +49,30 @@ class Parse(unittest.TestCase):
         json.dumps(msg)  # must be JSON-serialisable for the WebSocket
 
 
+class WokwiSketch(unittest.TestCase):
+    # Real line format from firmware/wokwi/sketch.ino (v2), shortened
+    LINE = ('{"t":"vitals","scenario":"Hypoxia","mission":"Mars","round_trip_s":2640.0,"spo2":89.5,"hr":104,'
+            '"rr":22,"sys":118,"skin_c":33.4,"co2_ppm":2600,"reaction_ms":420,"tilt_deg":1.2,"tier":2,'
+            '"acts":"crew_medical_officer","worst":"SpO2","source":"preset","status":[2,0,1,0,0,0,0,1]}')
+
+    def test_all_8_channels(self):
+        ch = sim.normalise(sim.parse_feed_line(self.LINE))
+        self.assertEqual(len(ch), 8)
+        self.assertEqual(ch["sbp"]["value"], 118)
+        self.assertEqual(ch["rt_ms"]["value"], 420)
+
+    def test_event_lines_skipped(self):
+        for line in ('{"t":"decision","n":3,"tier":2}', '{"t":"packet_tx","seq":1}', '{"t":"ground_reply","seq":1}'):
+            self.assertIsNone(sim.parse_feed_line(line))
+
+    def test_pass_through(self):
+        d = sim.sim_message(sim.parse_feed_line(self.LINE), "hypoxia")["data"]
+        self.assertEqual(d["acts"], "crew_medical_officer")
+        self.assertEqual(d["round_trip_s"], 2640.0)
+        self.assertEqual(d["source"], "simulation")
+        self.assertEqual(d["worst"], "red")  # our grading of the channels, not the sketch's channel name
+
+
 class Feeds(unittest.TestCase):
     def test_load_skips_noise(self):
         with tempfile.TemporaryDirectory() as tmp:

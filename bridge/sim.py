@@ -22,7 +22,7 @@ CHANNELS = {
     "spo2": ("%", "Blood oxygen", ("spo2", "SpO2", "sp_o2", "o2", "oxygen")),
     "hr": ("bpm", "Heart rate", ("hr", "heart_rate", "HR", "bpm", "pulse")),
     "rr": ("/min", "Breathing rate", ("rr", "resp", "resp_rate", "breathing_rate", "br")),
-    "sbp": ("mmHg", "Blood pressure (systolic)", ("sbp", "bp", "bp_sys", "bp_systolic", "systolic")),
+    "sbp": ("mmHg", "Blood pressure (systolic)", ("sbp", "sys", "bp", "bp_sys", "bp_systolic", "systolic")),
     "skin_c": ("degC", "Skin temperature", ("skin_c", "skin", "skin_temp", "temp", "temp_c", "t_skin")),
     "tilt_deg": ("deg", "Posture / tilt", ("tilt_deg", "tilt", "accel_tilt", "posture")),
     "co2_ppm": ("ppm", "Cabin CO2", ("co2_ppm", "co2", "CO2", "air", "cabin_co2")),
@@ -41,7 +41,7 @@ LIMITS = {
     "rt_ms": (lambda v: v >= 356, lambda v: v >= 500),
 }
 
-PASS_THROUGH = ("mission", "scenario", "tier", "who", "who_acts", "rtt_s")
+PASS_THROUGH = ("mission", "scenario", "tier", "acts", "who", "who_acts", "round_trip_s", "rtt_s", "news2_partial", "forecast")
 FEED_PREFIX = "wokwi_feed_"
 
 
@@ -67,7 +67,12 @@ def parse_feed_line(line):
         obj = json.loads(line)
     except ValueError:
         return None
-    return obj if isinstance(obj, dict) else None
+    if not isinstance(obj, dict):
+        return None
+    # The Wokwi sketch also prints event lines (decision, packet_tx, ground_reply, ...). Keep only "vitals".
+    if isinstance(obj.get("t"), str) and obj["t"] != "vitals":
+        return None
+    return obj
 
 
 def normalise(raw):
