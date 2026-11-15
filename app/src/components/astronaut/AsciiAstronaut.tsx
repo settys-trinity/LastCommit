@@ -4,7 +4,7 @@ import { AsciiEffect } from "three/examples/jsm/effects/AsciiEffect.js";
 import { PALETTE } from "../../theme";
 import { StatusTag, type TagStatus } from "../term";
 import { StaticAstronaut } from "./StaticAstronaut";
-import { PARTS, type PartId, type PartStatuses } from "./parts";
+import { hint, PARTS, type PartId, type PartStatuses } from "./parts";
 
 const TINT: Record<TagStatus, string> = {
   ok: PALETTE.green,
@@ -12,6 +12,14 @@ const TINT: Record<TagStatus, string> = {
   fail: PALETTE.red,
   info: PALETTE.fg,
   off: "#8a918a",
+};
+// Hotspot border/text colour per status, so a marker reads its part's state at a glance (plus the detail tag).
+const SPOT: Record<TagStatus, string> = {
+  ok: "border-ok text-ok",
+  warn: "border-warn text-warn",
+  fail: "border-fail text-fail",
+  info: "border-fg text-fg",
+  off: "border-dim text-dim",
 };
 const SPIN_RAD_PER_S = (10 * Math.PI) / 180;
 
@@ -22,6 +30,8 @@ type Props = {
   height?: number;
   detail?: "low" | "high"; // high = more characters, for the full-screen body view
   showList?: boolean; // accessible text list of parts under the figure
+  hotspots?: boolean; // clickable markers at each part instead of whole-mesh picking, with a hover hint
+  look?: "ascii" | "wire" | "solid"; // solid = plain white shaded figure (body page); wire = hologram; ascii = text figure
 };
 
 /** Original suited astronaut from three.js primitives. Each mesh carries userData.part. */
@@ -47,13 +57,13 @@ function buildAstronaut(): THREE.Group {
   // helmet: shell, neck ring, visor and its frame, lamps, antenna
   add("helmet", new THREE.SphereGeometry(0.55, 32, 24), [0, 1.8, 0]);
   add("helmet", new THREE.TorusGeometry(0.38, 0.07, 10, 32), [0, 1.32, 0], { rot: [HALF_PI, 0, 0] });
-  add("helmet", new THREE.SphereGeometry(0.44, 32, 24), [0, 1.78, 0.3], { scale: [1, 0.72, 0.5] });
-  add("helmet", new THREE.TorusGeometry(0.42, 0.035, 8, 32), [0, 1.78, 0.36], { scale: [1, 0.75, 1] });
+  add("visor", new THREE.SphereGeometry(0.44, 32, 24), [0, 1.78, 0.3], { scale: [1, 0.72, 0.5] });
+  add("visor", new THREE.TorusGeometry(0.42, 0.035, 8, 32), [0, 1.78, 0.36], { scale: [1, 0.75, 1] });
   both((s) => add("helmet", new THREE.BoxGeometry(0.12, 0.08, 0.1), [0.32 * s, 2.12, 0.28]));
   add("helmet", new THREE.CylinderGeometry(0.015, 0.015, 0.38, 6), [0.3, 2.42, -0.12]);
   add("helmet", new THREE.SphereGeometry(0.04, 8, 6), [0.3, 2.62, -0.12]);
-  // ears: comms pods on the helmet sides (inner ear, balance)
-  both((s) => add("ears", new THREE.CylinderGeometry(0.14, 0.14, 0.12, 20), [0.57 * s, 1.8, 0], { rot: [0, 0, HALF_PI] }));
+  // comms pods on the helmet sides (part of the helmet)
+  both((s) => add("helmet", new THREE.CylinderGeometry(0.14, 0.14, 0.12, 20), [0.57 * s, 1.8, 0], { rot: [0, 0, HALF_PI] }));
   // chest: upper torso, shoulder joints, chest control unit with three dials
   add("chest", new THREE.CapsuleGeometry(0.52, 0.3, 8, 24), [0, 0.98, 0]);
   both((s) => add("chest", new THREE.SphereGeometry(0.21, 20, 14), [0.62 * s, 1.18, 0]));
@@ -98,24 +108,56 @@ function webglAvailable(): boolean {
   }
 }
 
+/** Hologram look: each mesh becomes a faint see-through fill plus its edges as lines (same part tag). */
+function toWire(fig: THREE.Group) {
+  fig.traverse((o) => {
+    if (!(o instanceof THREE.Mesh) || o.userData.wired) return;
+    (o.material as THREE.Material).dispose();
+    o.material = new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.08, depthWrite: false });
+    const lines = new THREE.LineSegments(new THREE.EdgesGeometry(o.geometry, 1), new THREE.LineBasicMaterial({ transparent: true, opacity: 0.9 }));
+    lines.userData.part = o.userData.part;
+    o.add(lines);
+    o.userData.wired = true;
+  });
+}
+
+/** Solid look: plain white, softly shaded, smooth. */
+const SOLID_WHITE = "#e9ece9";
+function toSolid(fig: THREE.Group) {
+  fig.traverse((o) => {
+    if (!(o instanceof THREE.Mesh) || o.userData.solid) return;
+    (o.material as THREE.Material).dispose();
+    o.material = new THREE.MeshStandardMaterial({ color: SOLID_WHITE, roughness: 0.55, metalness: 0.05 });
+    o.userData.solid = true;
+  });
+}
+
 function paint(fig: THREE.Group, parts: PartStatuses, selected: PartId | null | undefined) {
   fig.traverse((o) => {
-    if (!(o instanceof THREE.Mesh)) return;
+    if (o instanceof THREE.Mesh && o.material instanceof THREE.MeshStandardMaterial) {
+      // Solid look: everything white; only the selected part takes its status colour.
+      const p = o.userData.part as PartId;
+      o.material.color.set(p === selected ? TINT[parts[p] ?? "off"] : SOLID_WHITE);
+      return;
+    }
+    if (!(o instanceof THREE.Mesh) && !(o instanceof THREE.LineSegments)) return;
     const p = o.userData.part as PartId;
-    const m = o.material as THREE.MeshLambertMaterial;
+    const m = o.material as THREE.MeshLambertMaterial | THREE.MeshBasicMaterial | THREE.LineBasicMaterial;
     m.color.set(TINT[parts[p] ?? "off"]);
-    m.emissive.set(p === selected ? 0x333333 : 0x000000);
+    if (m instanceof THREE.MeshLambertMaterial) m.emissive.set(p === selected ? 0x333333 : 0x000000);
+    else if (m instanceof THREE.MeshBasicMaterial) m.opacity = p === selected ? 0.35 : 0.08;
   });
 }
 
 // ASCII-rendered three.js astronaut. Status colours: each part's material is tinted and AsciiEffect's colour
 // mode gives every character its pixel's colour (one pass). The text list is the accessible version.
-export default function AsciiAstronaut({ parts = {}, onSelect, selected = null, height = 360, detail = "low", showList = true }: Props) {
+export default function AsciiAstronaut({ parts = {}, onSelect, selected = null, height = 360, detail = "low", showList = true, hotspots = false, look = "ascii" }: Props) {
   const host = useRef<HTMLDivElement>(null);
   const figRef = useRef<THREE.Group | null>(null);
   const redraw = useRef<() => void>(() => {});
   const [hover, setHover] = useState<PartId | null>(null);
   const [noGl] = useState(() => !webglAvailable());
+  const spotRefs = useRef<Partial<Record<PartId, HTMLButtonElement | null>>>({});
   const onSelectRef = useRef(onSelect);
   onSelectRef.current = onSelect;
 
@@ -132,13 +174,24 @@ export default function AsciiAstronaut({ parts = {}, onSelect, selected = null, 
     if (!el || noGl) return;
     const width = Math.round(height * 0.72);
     const high = detail === "high";
-    const frameMs = high ? 80 : 50; // ~12 fps for the big view (more characters), ~20 fps otherwise
+    const wire = look === "wire";
+    const canvas = look !== "ascii";
+    const frameMs = canvas ? 33 : high ? 80 : 50; // canvas ~30 fps; ASCII ~12 fps big view (more characters), ~20 fps otherwise
 
-    const renderer = new THREE.WebGLRenderer({ antialias: false });
-    renderer.setClearColor(PALETTE.bg);
-    const effect = new AsciiEffect(renderer, " .:-=+*#%@", { resolution: high ? 0.28 : 0.18, color: true });
-    effect.setSize(width, height);
-    effect.domElement.style.background = PALETTE.bg;
+    const renderer = new THREE.WebGLRenderer({ antialias: canvas, alpha: canvas });
+    renderer.setClearColor(PALETTE.bg, canvas ? 0 : 1);
+    // One view object either way: the ASCII effect, or the plain canvas for the hologram.
+    let effect: { domElement: HTMLElement; render: (s: THREE.Scene, c: THREE.Camera) => void };
+    if (canvas) {
+      renderer.setPixelRatio(Math.min(2, window.devicePixelRatio || 1));
+      renderer.setSize(width, height);
+      effect = { domElement: renderer.domElement, render: (s, c) => renderer.render(s, c) };
+    } else {
+      const ascii = new AsciiEffect(renderer, " .:-=+*#%@", { resolution: high ? 0.28 : 0.18, color: true });
+      ascii.setSize(width, height);
+      ascii.domElement.style.background = PALETTE.bg;
+      effect = ascii;
+    }
     el.replaceChildren(effect.domElement); // exactly one figure per component, even after a remount
 
     const scene = new THREE.Scene();
@@ -150,20 +203,57 @@ export default function AsciiAstronaut({ parts = {}, onSelect, selected = null, 
     sun.position.set(3, 4, 5);
     scene.add(sun);
     const fig = buildAstronaut();
+    if (look === "solid") {
+      toSolid(fig);
+      scene.add(new THREE.HemisphereLight(0xffffff, 0x3a403a, 1.1)); // soft sky/ground fill so shadows stay grey, not black
+      const rim = new THREE.DirectionalLight(0xffffff, 0.8);
+      rim.position.set(-4, 3, -4);
+      scene.add(rim);
+    }
+    if (wire) {
+      toWire(fig);
+      // Scanner base: two rings under the boots.
+      [1.15, 0.8].forEach((r, i) => {
+        const ring = new THREE.LineSegments(
+          new THREE.EdgesGeometry(new THREE.CircleGeometry(r, 64)),
+          new THREE.LineBasicMaterial({ color: PALETTE.green, transparent: true, opacity: i ? 0.25 : 0.5 }),
+        );
+        ring.rotation.x = -Math.PI / 2;
+        ring.position.y = -2.15;
+        scene.add(ring);
+      });
+    }
     scene.add(fig);
     figRef.current = fig;
     paint(fig, parts, selected);
 
-    const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    // Hotspots: project each part's anchor through the moving figure and pin its button there.
+    const v = new THREE.Vector3();
+    const placeSpots = () => {
+      fig.updateMatrixWorld();
+      const box = effect.domElement.getBoundingClientRect();
+      const base = el.getBoundingClientRect();
+      for (const p of PARTS) {
+        const b = spotRefs.current[p.id];
+        if (!b) continue;
+        v.set(...p.anchor).applyMatrix4(fig.matrixWorld).project(camera);
+        b.style.left = `${box.left - base.left + ((v.x + 1) / 2) * box.width}px`;
+        b.style.top = `${box.top - base.top + ((1 - v.y) / 2) * box.height}px`;
+      }
+    };
+
+    const fixed = look === "solid"; // the white figure stands still, facing the viewer
+    const still = fixed || window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     let visible = true;
     let raf = 0;
     let last = 0;
     const start = performance.now();
     const draw = (now: number) => {
       const t = (now - start) / 1000;
-      fig.rotation.y = still ? 0.35 : Math.sin(t * SPIN_RAD_PER_S) * 0.9; // slow sway, front stays readable
+      fig.rotation.y = fixed ? 0 : still ? 0.35 : Math.sin(t * SPIN_RAD_PER_S) * 0.9; // slow sway, front stays readable
       fig.position.y = -0.45 + (still ? 0 : Math.sin(t * 1.2) * 0.05);
       effect.render(scene, camera);
+      if (hotspots) placeSpots();
     };
     redraw.current = () => draw(performance.now());
     const loop = (now: number) => {
@@ -203,9 +293,11 @@ export default function AsciiAstronaut({ parts = {}, onSelect, selected = null, 
       const p = pick(e);
       if (p) onSelectRef.current?.(p);
     };
-    effect.domElement.addEventListener("pointermove", onMove);
-    effect.domElement.addEventListener("pointerleave", onLeave);
-    effect.domElement.addEventListener("pointerup", onClick);
+    if (!hotspots) {
+      effect.domElement.addEventListener("pointermove", onMove);
+      effect.domElement.addEventListener("pointerleave", onLeave);
+      effect.domElement.addEventListener("pointerup", onClick);
+    }
 
     return () => {
       cancelAnimationFrame(raf);
@@ -214,8 +306,8 @@ export default function AsciiAstronaut({ parts = {}, onSelect, selected = null, 
       effect.domElement.removeEventListener("pointermove", onMove);
       effect.domElement.removeEventListener("pointerleave", onLeave);
       effect.domElement.removeEventListener("pointerup", onClick);
-      fig.traverse((o) => {
-        if (o instanceof THREE.Mesh) {
+      scene.traverse((o) => {
+        if (o instanceof THREE.Mesh || o instanceof THREE.LineSegments) {
           o.geometry.dispose();
           (o.material as THREE.Material).dispose();
         }
@@ -225,13 +317,53 @@ export default function AsciiAstronaut({ parts = {}, onSelect, selected = null, 
       redraw.current = () => {};
       el.replaceChildren();
     };
-  }, [height, detail, noGl]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [height, detail, noGl, hotspots, look]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  const canvas = look !== "ascii";
   const label = (id: PartId) => PARTS.find((p) => p.id === id)!.label;
   return (
     <div>
-      {noGl ? <StaticAstronaut /> : <div ref={host} className={onSelect ? "cursor-pointer" : ""} aria-hidden="true" />}
-      {onSelect && <div className="h-[1.5em] text-dim">{hover ? `> ${hover}: ${label(hover)}` : ""}</div>}
+      {noGl ? (
+        <StaticAstronaut />
+      ) : hotspots ? (
+        <div className="relative inline-block">
+          <div ref={host} aria-hidden="true" />
+          {PARTS.map((p) => {
+            const st = parts[p.id] ?? "off";
+            const on = p.id === selected;
+            return (
+              <button
+                key={p.id}
+                ref={(b) => {
+                  spotRefs.current[p.id] = b;
+                }}
+                type="button"
+                onClick={() => onSelect?.(p.id)}
+                onPointerEnter={() => setHover(p.id)}
+                onPointerLeave={() => setHover((h) => (h === p.id ? null : h))}
+                onFocus={() => setHover(p.id)}
+                onBlur={() => setHover((h) => (h === p.id ? null : h))}
+                aria-label={hint(p.id)}
+                aria-pressed={on}
+                className={`group absolute z-10 hover:z-30 focus:z-30 -translate-x-1/2 border font-bold leading-none ${canvas ? "px-2 py-1 text-lg" : "px-1"} ${SPOT[st]} ${on ? "bg-fg text-bg" : "bg-bg hover:bg-fg hover:text-bg"}`}
+              >
+                <span className={on ? "" : "animate-pulse"}>{on ? "[x]" : "[+]"}</span>
+                {hover === p.id && (
+                  <span
+                    role="tooltip"
+                                        className="absolute top-1/2 left-full ml-3 w-max max-w-[34ch] -translate-y-1/2 border border-fg bg-bg px-3 py-2 text-left text-base leading-snug font-normal whitespace-normal text-fg"
+                  >
+                    {hint(p.id)}
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+      ) : (
+        <div ref={host} className={onSelect ? "cursor-pointer" : ""} aria-hidden="true" />
+      )}
+      {onSelect && !hotspots && <div className="h-[1.5em] text-dim">{hover ? `> ${hover}: ${label(hover)}` : ""}</div>}
       {showList && (
         <ul aria-label="astronaut parts">
           {PARTS.map((p) => {
