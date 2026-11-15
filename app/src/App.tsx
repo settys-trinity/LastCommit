@@ -17,6 +17,8 @@ import { TestStrip } from "./components/standreact/TestStrip";
 import { TriageCard } from "./components/triage/TriageCard";
 import { EarthCountdown } from "./components/triage/EarthCountdown";
 import { StationLine } from "./components/station/StationLine";
+import { WellbeingView } from "./components/wellbeing/WellbeingView";
+import { POINTS, score, type Answers } from "./components/wellbeing/questionnaire";
 
 const SPEED_UP = 60; // demo: the 44 min Mars round trip counts down in 44 s (D15)
 const RUN_TIMEOUT_MS = 30_000; // stop showing "running" if lapses never arrives
@@ -33,6 +35,12 @@ export default function App() {
   // Body view: its own full page, opened with b, the footer button or "/demo#body" from the landing page.
   const [bodyOpen, setBodyOpen] = useState(() => window.location.hash === "#body");
   const [showLog, setShowLog] = useState(false);
+  // Wellbeing: check-in answers (sent to POST /assess by the report panel; never change the tier, D13) and points.
+  const [wellOpen, setWellOpen] = useState(false);
+  const [checkin, setCheckin] = useState<Answers | null>(null);
+  const [points, setPoints] = useState(0);
+  const [breaths, setBreaths] = useState(0); // finished 1-minute breathing sessions
+  const closeWell = useCallback(() => setWellOpen(false), []);
   const closeBody = useCallback(() => {
     setBodyOpen(false);
     if (window.location.hash) window.history.replaceState(null, "", window.location.pathname); // a reload stays on the dashboard
@@ -95,6 +103,7 @@ export default function App() {
       else if (e.key === "r") keys.current.replay();
       else if (e.key === "h") window.location.assign("/"); // home: the landing page
       else if (e.key === "b") setBodyOpen(true);
+      else if (e.key === "w") setWellOpen(true);
       else if (e.key === "o") setShowLog((v) => !v);
       else if (e.key === "m") keys.current.loadDemo(); // demo data: Mars day 143
       else if (e.key === "c") keys.current.resetReadings(); // clear all readings
@@ -125,6 +134,10 @@ export default function App() {
         <span className="text-xl">
           <span className="text-dim">crew </span>
           {crewId}
+        </span>
+        <span className="text-xl">
+          <span className="text-dim">points </span>
+          {points}
         </span>
         {/* [&_p]:hidden hides the selector's source line here; sources are in the deck and docs/delay_table.md. */}
         <div className="ml-auto [&_p]:hidden">
@@ -157,6 +170,13 @@ export default function App() {
               [b] SEE EACH FINDING ON THE BODY
             </button>
             <div className="mt-2 text-dim">sleep, mood and stress, blood glucose (NASA baseline), reaction, balance, cabin air</div>
+            <button type="button" onClick={() => setWellOpen(true)} className={`${big} mt-3`}>
+              [w] CHECK-IN AND BREATHING
+            </button>
+            <div className="mt-2 text-dim">
+              {checkin ? `last check-in: ${score(checkin).label}` : "no check-in yet · 5 questions, about 30 s"}
+              {breaths > 0 ? ` · breathing done ${breaths}×` : " · no breathing break yet"}
+            </div>
             <button type="button" onClick={() => setShowLog((v) => !v)} className="mt-2 hover:bg-fg hover:text-bg">
               [o] {showLog ? "hide" : "show"} Earth outbox log ({outbox.packets.length})
             </button>
@@ -177,6 +197,7 @@ export default function App() {
             { key: "s", label: "start test", run: startTest },
             { key: "r", label: "replay test", run: replay },
             { key: "b", label: "body view", run: () => setBodyOpen(true) },
+            { key: "w", label: "wellbeing", run: () => setWellOpen(true) },
             { key: "o", label: "outbox log", run: () => setShowLog((v) => !v) },
             { key: "m", label: "demo data", run: loadDemo },
             { key: "c", label: "reset", run: resetReadings },
@@ -192,6 +213,24 @@ export default function App() {
         </div>
         <SolarBanner solarEvent={solarEvent} />
       </footer>
+
+      {wellOpen && (
+        <WellbeingView
+          crewId={crewId}
+          answers={checkin}
+          points={points}
+          breaths={breaths}
+          onSubmit={(a) => {
+            setCheckin(a);
+            setPoints((p) => p + POINTS.questionnaire);
+          }}
+          onBreathingDone={() => {
+            setPoints((p) => p + POINTS.breathing_session);
+            setBreaths((n) => n + 1);
+          }}         
+          onClose={closeWell}
+        />
+      )}
 
       {bodyOpen && (
         <BodyViewer
