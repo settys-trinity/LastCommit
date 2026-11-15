@@ -1,0 +1,374 @@
+{
+  "version": 1,
+  "author": "Team Last Commit - FARSIDE",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "board-esp32-devkit-c-v4", "id": "esp", "top": 0, "left": 0, "attrs": {} },
+    {
+      "type": "wokwi-potentiometer",
+      "id": "potDist",
+      "top": -231.7,
+      "left": -585.8,
+      "attrs": { "value": "1023" }
+    },
+    {
+      "type": "wokwi-text",
+      "id": "t_potDist",
+      "top": -259.2,
+      "left": -585.6,
+      "attrs": { "text": "MARS DIST" }
+    },
+    {
+      "type": "wokwi-potentiometer",
+      "id": "potSpO2",
+      "top": -126.1,
+      "left": -499.4,
+      "attrs": { "value": "870" }
+    },
+    {
+      "type": "wokwi-text",
+      "id": "t_potSpO2",
+      "top": -153.6,
+      "left": -480,
+      "attrs": { "text": "SpO2" }
+    },
+    {
+      "type": "wokwi-potentiometer",
+      "id": "potHR",
+      "top": -231.7,
+      "left": -393.8,
+      "attrs": { "value": "259" }
+    },
+    {
+      "type": "wokwi-text",
+      "id": "t_potHR",
+      "top": -259.2,
+      "left": -403.2,
+      "attrs": { "text": "HEART RATE" }
+    },
+    {
+      "type": "wokwi-potentiometer",
+      "id": "potRR",
+      "top": -279.7,
+      "left": -278.6,
+      "attrs": { "value": "284" }
+    },
+    {
+      "type": "wokwi-text",
+      "id": "t_potRR",
+      "top": -307.2,
+      "left": -278.4,
+      "attrs": { "text": "BREATHING" }
+    },
+    {
+      "type": "wokwi-potentiometer",
+      "id": "potBP",
+      "top": -308.5,
+      "left": -144.2,
+      "attrs": { "value": "378" }
+    },
+    {
+      "type": "wokwi-text",
+      "id": "t_potBP",
+      "top": -336,
+      "left": -163.2,
+      "attrs": { "text": "SYSTOLIC BP" }
+    },
+    {
+      "type": "wokwi-potentiometer",
+      "id": "potCO2",
+      "top": -49.3,
+      "left": -633.8,
+      "attrs": { "value": "148" }
+    },
+    {
+      "type": "wokwi-text",
+      "id": "t_potCO2",
+      "top": -76.8,
+      "left": -633.6,
+      "attrs": { "text": "CABIN CO2" }
+    },
+    {
+      "type": "wokwi-text",
+      "id": "t_sim",
+      "top": -326.4,
+      "left": -720,
+      "attrs": { "text": "SIMULATED CHANNELS: turn a knob in LIVE scenario" }
+    },
+    {
+      "type": "wokwi-dht22",
+      "id": "dhtSkin",
+      "top": -134.1,
+      "left": 205.8,
+      "attrs": { "temperature": "33.5", "humidity": "45" }
+    },
+    {
+      "type": "wokwi-mpu6050",
+      "id": "imu",
+      "top": 60,
+      "left": 260,
+      "attrs": { "accelX": "0", "accelY": "0", "accelZ": "1" }
+    },
+    {
+      "type": "board-ssd1306",
+      "id": "oled",
+      "top": 262.34,
+      "left": 336.23,
+      "attrs": { "i2cAddress": "0x3c" }
+    },
+    {
+      "type": "wokwi-ili9341",
+      "id": "lcd",
+      "top": -417.5,
+      "left": 682.8,
+      "rotate": 90,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-led-ring",
+      "id": "ring",
+      "top": 20,
+      "left": 440,
+      "attrs": { "pixels": "16" }
+    },
+    { "type": "wokwi-buzzer", "id": "bz", "top": 300, "left": 130, "attrs": { "volume": "0.2" } },
+    {
+      "type": "wokwi-text",
+      "id": "t_dht",
+      "top": -160,
+      "left": 196,
+      "attrs": { "text": "SKIN TEMP" }
+    },
+    {
+      "type": "wokwi-text",
+      "id": "t_imu",
+      "top": 40,
+      "left": 262,
+      "attrs": { "text": "POSTURE" }
+    },
+    {
+      "type": "wokwi-text",
+      "id": "t_oled",
+      "top": 240,
+      "left": 326.4,
+      "attrs": { "text": "WRIST WATCH" }
+    },
+    {
+      "type": "wokwi-text",
+      "id": "t_lcd",
+      "top": -393.6,
+      "left": 691.2,
+      "attrs": { "text": "CREW DISPLAY" }
+    },
+    {
+      "type": "wokwi-text",
+      "id": "t_ring",
+      "top": 0,
+      "left": 440,
+      "attrs": { "text": "EARTH LINK RING" }
+    },
+    { "type": "wokwi-text", "id": "t_bz", "top": 280, "left": 140, "attrs": { "text": "ALARM" } },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btnMission",
+      "top": 44.6,
+      "left": -259.2,
+      "rotate": 180,
+      "attrs": { "color": "blue", "bounce": "0" }
+    },
+    {
+      "type": "wokwi-text",
+      "id": "t_btnMission",
+      "top": 48,
+      "left": -420,
+      "attrs": { "text": "MISSION" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btnScenario",
+      "top": 111.8,
+      "left": -259.2,
+      "rotate": 180,
+      "attrs": { "color": "yellow", "bounce": "0" }
+    },
+    {
+      "type": "wokwi-text",
+      "id": "t_btnScenario",
+      "top": 118,
+      "left": -420,
+      "attrs": { "text": "SCENARIO" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btnTap",
+      "top": 179,
+      "left": -259.2,
+      "rotate": 180,
+      "attrs": { "color": "white", "bounce": "0" }
+    },
+    {
+      "type": "wokwi-text",
+      "id": "t_btnTap",
+      "top": 188,
+      "left": -420,
+      "attrs": { "text": "TAP (reaction test)" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btnWatch",
+      "top": 246.2,
+      "left": -259.2,
+      "rotate": 180,
+      "attrs": { "color": "green", "bounce": "0" }
+    },
+    {
+      "type": "wokwi-text",
+      "id": "t_btnWatch",
+      "top": 258,
+      "left": -420,
+      "attrs": { "text": "WATCH (ack / breathe)" }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "ledPrompt",
+      "top": 330,
+      "left": -150,
+      "attrs": { "color": "white" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r_ledPrompt",
+      "top": 420,
+      "left": -160,
+      "rotate": 90,
+      "attrs": { "value": "220" }
+    },
+    {
+      "type": "wokwi-text",
+      "id": "t_ledPrompt",
+      "top": 310,
+      "left": -150,
+      "attrs": { "text": "TAP" }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "ledGreen",
+      "top": 330,
+      "left": -90,
+      "attrs": { "color": "green" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r_ledGreen",
+      "top": 420,
+      "left": -100,
+      "rotate": 90,
+      "attrs": { "value": "220" }
+    },
+    {
+      "type": "wokwi-text",
+      "id": "t_ledGreen",
+      "top": 310,
+      "left": -90,
+      "attrs": { "text": "T1" }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "ledAmber",
+      "top": 330,
+      "left": -30,
+      "attrs": { "color": "orange" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r_ledAmber",
+      "top": 420,
+      "left": -40,
+      "rotate": 90,
+      "attrs": { "value": "220" }
+    },
+    {
+      "type": "wokwi-text",
+      "id": "t_ledAmber",
+      "top": 310,
+      "left": -30,
+      "attrs": { "text": "T2" }
+    },
+    { "type": "wokwi-led", "id": "ledRed", "top": 330, "left": 30, "attrs": { "color": "red" } },
+    {
+      "type": "wokwi-resistor",
+      "id": "r_ledRed",
+      "top": 420,
+      "left": 20,
+      "rotate": 90,
+      "attrs": { "value": "220" }
+    },
+    { "type": "wokwi-text", "id": "t_ledRed", "top": 310, "left": 30, "attrs": { "text": "T3" } }
+  ],
+  "connections": [
+    [ "esp:TX", "$serialMonitor:RX", "", [] ],
+    [ "esp:RX", "$serialMonitor:TX", "", [] ],
+    [ "potDist:VCC", "esp:3V3", "red", [] ],
+    [ "potDist:GND", "esp:GND.1", "black", [] ],
+    [ "potDist:SIG", "esp:VP", "green", [] ],
+    [ "potSpO2:VCC", "esp:3V3", "red", [] ],
+    [ "potSpO2:GND", "esp:GND.1", "black", [] ],
+    [ "potSpO2:SIG", "esp:34", "green", [] ],
+    [ "potHR:VCC", "esp:3V3", "red", [] ],
+    [ "potHR:GND", "esp:GND.1", "black", [] ],
+    [ "potHR:SIG", "esp:35", "green", [] ],
+    [ "potRR:VCC", "esp:3V3", "red", [] ],
+    [ "potRR:GND", "esp:GND.1", "black", [] ],
+    [ "potRR:SIG", "esp:32", "green", [] ],
+    [ "potBP:VCC", "esp:3V3", "red", [] ],
+    [ "potBP:GND", "esp:GND.1", "black", [] ],
+    [ "potBP:SIG", "esp:33", "green", [] ],
+    [ "potCO2:VCC", "esp:3V3", "red", [] ],
+    [ "potCO2:GND", "esp:GND.1", "black", [] ],
+    [ "potCO2:SIG", "esp:VN", "green", [] ],
+    [ "dhtSkin:VCC", "esp:3V3", "red", [] ],
+    [ "dhtSkin:GND", "esp:GND.2", "black", [] ],
+    [ "dhtSkin:SDA", "esp:15", "green", [] ],
+    [ "imu:VCC", "esp:3V3", "red", [] ],
+    [ "imu:GND", "esp:GND.2", "black", [] ],
+    [ "imu:SDA", "esp:21", "blue", [] ],
+    [ "imu:SCL", "esp:22", "violet", [] ],
+    [ "oled:VCC", "esp:3V3", "red", [] ],
+    [ "oled:GND", "esp:GND.2", "black", [] ],
+    [ "oled:SDA", "esp:21", "blue", [] ],
+    [ "oled:SCL", "esp:22", "violet", [] ],
+    [ "lcd:VCC", "esp:5V", "red", [] ],
+    [ "lcd:GND", "esp:GND.2", "black", [] ],
+    [ "lcd:CS", "esp:5", "orange", [] ],
+    [ "lcd:D/C", "esp:2", "yellow", [] ],
+    [ "lcd:MOSI", "esp:23", "blue", [] ],
+    [ "lcd:SCK", "esp:18", "violet", [] ],
+    [ "lcd:LED", "esp:3V3", "red", [] ],
+    [ "ring:VCC", "esp:5V", "red", [] ],
+    [ "ring:GND", "esp:GND.2", "black", [] ],
+    [ "ring:DIN", "esp:14", "green", [] ],
+    [ "bz:1", "esp:GND.3", "black", [] ],
+    [ "bz:2", "esp:12", "green", [] ],
+    [ "btnMission:1.l", "esp:25", "green", [] ],
+    [ "btnMission:2.l", "esp:GND.1", "black", [] ],
+    [ "btnScenario:1.l", "esp:26", "green", [] ],
+    [ "btnScenario:2.l", "esp:GND.1", "black", [] ],
+    [ "btnTap:1.l", "esp:27", "green", [] ],
+    [ "btnTap:2.l", "esp:GND.1", "black", [] ],
+    [ "btnWatch:1.l", "esp:0", "green", [] ],
+    [ "btnWatch:2.l", "esp:GND.1", "black", [] ],
+    [ "ledPrompt:A", "esp:13", "green", [] ],
+    [ "ledPrompt:C", "r_ledPrompt:1", "black", [] ],
+    [ "r_ledPrompt:2", "esp:GND.3", "black", [] ],
+    [ "ledGreen:A", "esp:16", "green", [] ],
+    [ "ledGreen:C", "r_ledGreen:1", "black", [] ],
+    [ "r_ledGreen:2", "esp:GND.3", "black", [] ],
+    [ "ledAmber:A", "esp:17", "green", [] ],
+    [ "ledAmber:C", "r_ledAmber:1", "black", [] ],
+    [ "r_ledAmber:2", "esp:GND.3", "black", [] ],
+    [ "ledRed:A", "esp:4", "green", [] ],
+    [ "ledRed:C", "r_ledRed:1", "black", [] ],
+    [ "r_ledRed:2", "esp:GND.3", "black", [] ]
+  ],
+  "dependencies": {}
+}
